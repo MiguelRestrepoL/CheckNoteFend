@@ -1,35 +1,90 @@
-import React, { useState } from "react";
-import { useLocation, Link } from "react-router-dom";
+
+import React, { useState, useEffect } from "react";
+import { useLocation, Link, useNavigate } from "react-router-dom";
 // NO importar inicio.css - usar solo globalcss2.css
 
 export default function Inicio() {
   const [menuOpen, setMenuOpen] = useState(false);
+  const [tareas, setTareas] = useState({
+    pendiente: [],
+    en_progreso: [],
+    terminada: []
+  });
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState("");
+  
   const location = useLocation();
+  const navigate = useNavigate();
   const successMessage = location.state?.success;
 
   // Recupera los datos del usuario del localStorage, si están disponibles
   const storedUser = localStorage.getItem('user');
   const user = storedUser ? JSON.parse(storedUser) : { nombres: 'Usuario' };
 
-  // Estado para manejar las tareas (puedes conectar esto con tu backend más tarde)
-  const [tareas] = useState({
-    pendientes: [
-      { id: 1, titulo: "Sacar al perro", prioridad: "ALTA" },
-      { id: 2, titulo: "Comprar víveres", prioridad: "MEDIA" }
-    ],
-    proceso: [
-      { id: 3, titulo: "Hacer trabajo DS2", prioridad: "BAJA" },
-      { id: 4, titulo: "Estudiar React", prioridad: "ALTA" }
-    ],
-    completadas: [
-      { id: 5, titulo: "P.Integrador", prioridad: "MEDIA" },
-      { id: 6, titulo: "Ejercicio matutino", prioridad: "BAJA" }
-    ]
-  });
+  // Cargar tareas del usuario al montar el componente
+  useEffect(() => {
+    const cargarTareas = async () => {
+      const token = localStorage.getItem('token');
+      
+      if (!token) {
+        setError("No hay sesión activa. Redirigiendo al login...");
+        setTimeout(() => {
+          navigate('/login');
+        }, 2000);
+        return;
+      }
+
+      try {
+        setLoading(true);
+        setError("");
+
+        const response = await fetch("https://checknote-27fe.onrender.com/api/v1/tasks", {
+          method: "GET",
+          headers: {
+            "Authorization": `Bearer ${token}`,
+          },
+        });
+
+        if (!response.ok) {
+          if (response.status === 401) {
+            localStorage.removeItem('token');
+            localStorage.removeItem('user');
+            localStorage.removeItem('userId');
+            localStorage.removeItem('userName');
+            setError("Tu sesión ha expirado. Redirigiendo al login...");
+            setTimeout(() => {
+              navigate('/login');
+            }, 2000);
+            return;
+          }
+          throw new Error(`Error ${response.status}: ${response.statusText}`);
+        }
+
+        const tareasData = await response.json();
+        
+        // Organizar tareas por estado para el tablero Kanban
+        const tareasOrganizadas = {
+          pendiente: tareasData.filter(tarea => tarea.estado === 'pendiente'),
+          en_progreso: tareasData.filter(tarea => tarea.estado === 'en_progreso'),
+          terminada: tareasData.filter(tarea => tarea.estado === 'terminada')
+        };
+
+        setTareas(tareasOrganizadas);
+
+      } catch (err) {
+        console.error("Error al cargar las tareas:", err);
+        setError("Error al cargar las tareas: " + err.message);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    cargarTareas();
+  }, [navigate]);
 
   // Calcular progreso basado en tareas completadas
-  const totalTareas = tareas.pendientes.length + tareas.proceso.length + tareas.completadas.length;
-  const tareasCompletadas = tareas.completadas.length;
+  const totalTareas = tareas.pendiente.length + tareas.en_progreso.length + tareas.terminada.length;
+  const tareasCompletadas = tareas.terminada.length;
   const porcentajeProgreso = totalTareas > 0 ? Math.round((tareasCompletadas / totalTareas) * 100) : 0;
 
   const toggleMenu = () => {
@@ -46,6 +101,14 @@ export default function Inicio() {
   };
 
   const renderTareas = (listaTareas) => {
+    if (loading) {
+      return (
+        <div className="kanban-task" style={{ opacity: 0.7, textAlign: 'center' }}>
+          <div className="kanban-task-title">⏳ Cargando...</div>
+        </div>
+      );
+    }
+
     if (listaTareas.length === 0) {
       return (
         <div className="kanban-task" style={{ opacity: 0.5, fontStyle: 'italic' }}>
@@ -55,10 +118,10 @@ export default function Inicio() {
     }
 
     return listaTareas.map(tarea => (
-      <div key={tarea.id} className="kanban-task">
+      <div key={tarea.id || tarea._id} className="kanban-task">
         <div className="kanban-task-title">{tarea.titulo}</div>
         <span className={`kanban-task-priority ${getPriorityClass(tarea.prioridad)}`}>
-          {tarea.prioridad}
+          {tarea.prioridad.toUpperCase()}
         </span>
       </div>
     ));
@@ -95,10 +158,28 @@ export default function Inicio() {
             <div className="success-message">{successMessage}</div>
           )}
 
+          {/* Mensaje de error */}
+          {error && (
+            <div style={{
+              padding: '12px',
+              borderRadius: 'var(--radius-sm)',
+              background: 'linear-gradient(135deg, #ef4444, #dc2626)',
+              color: 'white',
+              fontSize: '14px',
+              textAlign: 'center',
+              fontWeight: '500',
+              marginBottom: 'var(--spacing-lg)'
+            }}>
+              {error}
+            </div>
+          )}
+
           {/* Tarjeta de progreso */}
           <section className="task-card">
             <h3 className="task-title">Panel de Tareas</h3>
-            <p className="task-sub">Progreso general de tus tareas</p>
+            <p className="task-sub">
+              {loading ? "Cargando tus tareas..." : "Progreso general de tus tareas"}
+            </p>
 
             <div className="progress-wrap">
               <div className="progress-bar">
@@ -125,10 +206,10 @@ export default function Inicio() {
             <div className="kanban-column">
               <div className="kanban-header">
                 <span className="kanban-icon">⏰</span>
-                <h4 className="kanban-title">Pendientes ({tareas.pendientes.length})</h4>
+                <h4 className="kanban-title">Pendientes ({tareas.pendiente.length})</h4>
               </div>
               <div className="kanban-tasks">
-                {renderTareas(tareas.pendientes)}
+                {renderTareas(tareas.pendiente)}
               </div>
             </div>
 
@@ -136,10 +217,10 @@ export default function Inicio() {
             <div className="kanban-column">
               <div className="kanban-header">
                 <span className="kanban-icon">⚡</span>
-                <h4 className="kanban-title">En Proceso ({tareas.proceso.length})</h4>
+                <h4 className="kanban-title">En Proceso ({tareas.en_progreso.length})</h4>
               </div>
               <div className="kanban-tasks">
-                {renderTareas(tareas.proceso)}
+                {renderTareas(tareas.en_progreso)}
               </div>
             </div>
 
@@ -147,10 +228,10 @@ export default function Inicio() {
             <div className="kanban-column">
               <div className="kanban-header">
                 <span className="kanban-icon">✅</span>
-                <h4 className="kanban-title">Completadas ({tareas.completadas.length})</h4>
+                <h4 className="kanban-title">Completadas ({tareas.terminada.length})</h4>
               </div>
               <div className="kanban-tasks">
-                {renderTareas(tareas.completadas)}
+                {renderTareas(tareas.terminada)}
               </div>
             </div>
           </div>

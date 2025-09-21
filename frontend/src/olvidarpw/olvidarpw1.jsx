@@ -15,7 +15,7 @@ export default function OlvidarPw1() {
     setError("");
 
     try {
-      const res = await fetch("http://localhost:3001/api/forgot-password", {
+      const res = await fetch("https://checknote-27fe.onrender.com/api/v1/auth/request-password-reset", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ email }),
