@@ -1,8 +1,9 @@
-import React from "react";
+import React, { useState } from "react";
 import { useLocation, Link } from "react-router-dom";
 // NO importar inicio.css - usar solo globalcss2.css
 
 export default function Inicio() {
+  const [menuOpen, setMenuOpen] = useState(false);
   const location = useLocation();
   const successMessage = location.state?.success;
 
@@ -10,12 +11,16 @@ export default function Inicio() {
   const storedUser = localStorage.getItem('user');
   const user = storedUser ? JSON.parse(storedUser) : { nombres: 'Usuario' };
 
+  const toggleMenu = () => {
+    setMenuOpen(!menuOpen);
+  };
+
   return (
     <div className="page-root">
       {/* TOPBAR */}
       <header className="topbar">
         <div className="topbar-left">
-          <img src="/usuario.png" alt="usuario" className="icon user-icon" />
+          <img src="/usuario.png" alt="usuario" className="icon" />
           <span className="username">{user.nombres || 'Invitado'}</span>
         </div>
 
@@ -43,7 +48,7 @@ export default function Inicio() {
 
           {/* Tarjeta de progreso */}
           <section className="task-card">
-            <h3 className="task-title">Ejemplo de Tarea Importante</h3>
+            <h3 className="task-title">{nombre_tarea}</h3>
             <p className="task-sub">Progreso de la tarea</p>
 
             <div className="progress-wrap">
@@ -54,7 +59,7 @@ export default function Inicio() {
 
             <div className="progress-info">
               <span>48% completado</span>
-              <span>Prioridad: Media</span>
+              <span>Prioridad ✏️</span>
             </div>
           </section>
 
@@ -65,45 +70,66 @@ export default function Inicio() {
             <button className="filter">⭐ Prioridad</button>
           </div>
 
-          {/* Lista de tareas */}
-          <div className="task-list">
-            <div className="task-row">
-              <div className="task-left">
-                <span className="task-ico">📄</span>
-                <span className="task-label">Tareas totales</span>
+          {/* Layout Kanban */}
+          <div className="kanban-container">
+            {/* Columna Pendientes */}
+            <div className="kanban-column">
+              <div className="kanban-header">
+                <span className="kanban-icon">⏰</span>
+                <h4 className="kanban-title">Tareas pendientes</h4>
               </div>
-              <div className="task-right">
-                <span className="task-number">20</span>
-                <span className="task-arrow">›</span>
-              </div>
-            </div>
-
-            <div className="task-row highlighted">
-              <div className="task-left">
-                <span className="task-ico">✅</span>
-                <span className="task-label">Tareas completadas</span>
-              </div>
-              <div className="task-right">
-                <span className="task-number done">15</span>
-                <span className="task-arrow">›</span>
+              <div className="kanban-tasks">
+                <div className="kanban-task">
+                  <div className="kanban-task-title">Sacar al perro</div>
+                  <span className="kanban-task-priority priority-alta">ALTA</span>
+                </div>
               </div>
             </div>
 
-            <div className="task-row">
-              <div className="task-left">
-                <span className="task-ico">📂</span>
-                <span className="task-label">Tareas pendientes</span>
+            {/* Columna En Proceso */}
+            <div className="kanban-column">
+              <div className="kanban-header">
+                <span className="kanban-icon">⚡</span>
+                <h4 className="kanban-title">Tareas en proceso</h4>
               </div>
-              <div className="task-right">
-                <span className="task-number pending">5</span>
-                <span className="task-arrow">›</span>
+              <div className="kanban-tasks">
+                <div className="kanban-task">
+                  <div className="kanban-task-title">Hacer trabajo DS2</div>
+                  <span className="kanban-task-priority priority-baja">BAJA</span>
+                </div>
+              </div>
+            </div>
+
+            {/* Columna Completadas */}
+            <div className="kanban-column">
+              <div className="kanban-header">
+                <span className="kanban-icon">✅</span>
+                <h4 className="kanban-title">Tareas completadas</h4>
+              </div>
+              <div className="kanban-tasks">
+                <div className="kanban-task">
+                  <div className="kanban-task-title">P.Integrador</div>
+                  <span className="kanban-task-priority priority-media">MEDIA</span>
+                </div>
               </div>
             </div>
           </div>
 
-          {/* Botón agregar */}
+          {/* Botón flotante expandible */}
           <div className="add-wrap">
-            <Link to="/crear-tarea" className="add-btn">+</Link>
+            <div className="floating-menu">
+              <div className={`floating-options ${menuOpen ? 'active' : ''}`}>
+                <Link to="/crear-tarea" className="floating-option create">📝</Link>
+                <Link to="/editar-tarea" className="floating-option edit">✏️</Link>
+                <Link to="/eliminar-tarea" className="floating-option delete">🗑️</Link>
+              </div>
+              <button 
+                className={`add-btn ${menuOpen ? 'active' : ''}`}
+                onClick={toggleMenu}
+              >
+                +
+              </button>
+            </div>
           </div>
         </div>
       </main>

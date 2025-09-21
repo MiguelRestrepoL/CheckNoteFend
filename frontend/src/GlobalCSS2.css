@@ -125,6 +125,11 @@ body {
   filter: brightness(0) invert(1); 
 }
 
+/* Si el icono usuario.png ya es blanco/claro, quita el filtro */
+.user-icon.no-filter {
+  filter: none;
+}
+
 /* ============================================
    BUSCADOR
    ============================================ */
@@ -268,92 +273,145 @@ body {
 }
 
 /* ============================================
-   LISTA DE TAREAS
+   KANBAN LAYOUT
    ============================================ */
-.task-list { 
-  width: 100%; 
-  max-width: 620px; 
-  display: flex; 
-  flex-direction: column; 
-  gap: var(--spacing-md); 
+.kanban-container {
+  width: 100%;
+  display: flex;
+  gap: var(--spacing-xl);
+  justify-content: center;
+  flex-wrap: wrap;
 }
 
-.task-row {
-  display: flex; 
-  justify-content: space-between; 
-  align-items: center;
+.kanban-column {
+  flex: 1;
+  min-width: 250px;
+  max-width: 300px;
   background: var(--bg-task-row);
-  padding: var(--spacing-md) var(--spacing-lg); 
-  border-radius: var(--radius-sm); 
-  box-shadow: var(--shadow-task-inset);
-  transition: all var(--transition);
-  cursor: pointer;
+  border-radius: var(--radius-md);
+  padding: var(--spacing-lg);
+  box-shadow: var(--shadow-filter);
 }
 
-.task-row:hover {
-  background: linear-gradient(180deg, rgba(255,255,255,0.06), rgba(255,255,255,0.04));
+.kanban-header {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-sm);
+  margin-bottom: var(--spacing-lg);
+  padding-bottom: var(--spacing-sm);
+  border-bottom: 1px solid rgba(255,255,255,0.1);
 }
 
-.task-row.highlighted {
-  box-shadow: 0 0 0 3px rgba(26,188,156,0.12);
-}
-
-.task-left { 
-  display: flex; 
-  gap: var(--spacing-md); 
-  align-items: center; 
-}
-
-.task-ico { 
-  font-size: 18px; 
-  opacity: 0.95; 
-  width: var(--icon-sm); 
-  text-align: center; 
-}
-
-.task-label { 
-  font-size: 15px; 
+.kanban-title {
+  font-size: 16px;
+  font-weight: 600;
   color: var(--text-primary);
 }
 
-.task-right { 
-  display: flex; 
-  gap: var(--spacing-md); 
-  align-items: center; 
+.kanban-icon {
+  font-size: 18px;
+  opacity: 0.9;
 }
 
-.task-number { 
-  font-weight: 700; 
-  color: var(--text-gray); 
-  font-size: 16px;
+.kanban-tasks {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-md);
 }
 
-.task-number.done { 
-  color: var(--primary); 
+.kanban-task {
+  background: rgba(255,255,255,0.05);
+  padding: var(--spacing-md);
+  border-radius: var(--radius-sm);
+  border-left: 3px solid var(--primary);
+  cursor: pointer;
+  transition: all var(--transition);
 }
 
-.task-number.pending { 
-  color: #ff4d4f; 
+.kanban-task:hover {
+  background: rgba(255,255,255,0.08);
+  transform: translateY(-1px);
 }
 
-.task-arrow { 
-  color: var(--text-muted); 
-  font-size: 20px; 
-  transition: transform var(--transition);
+.kanban-task-title {
+  font-size: 14px;
+  color: var(--text-primary);
+  margin-bottom: var(--spacing-xs);
+  font-weight: 500;
 }
 
-.task-row:hover .task-arrow {
-  transform: translateX(2px);
+.kanban-task-priority {
+  font-size: 12px;
+  padding: 2px 8px;
+  border-radius: 12px;
+  font-weight: 500;
 }
+
+.priority-alta { background: #ff4d4f; color: white; }
+.priority-media { background: #faad14; color: white; }
+.priority-baja { background: #52c41a; color: white; }
 
 /* ============================================
-   BOTÓN AGREGAR
+   BOTÓN FLOTANTE EXPANDIBLE
    ============================================ */
-.add-wrap { 
-  display: flex; 
-  justify-content: center; 
-  width: 100%; 
-  margin-top: var(--spacing-xs); 
+/* ============================================
+   BOTÓN FLOTANTE EXPANDIBLE
+   ============================================ */
+.floating-menu {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.floating-options {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-md);
+  margin-bottom: var(--spacing-lg);
+  opacity: 0;
+  transform: translateY(20px);
+  transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+  pointer-events: none;
+}
+
+.floating-options.active {
+  opacity: 1;
+  transform: translateY(0);
+  pointer-events: all;
+}
+
+.floating-option {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
+  color: white;
+  text-decoration: none;
+  font-size: 20px;
+  font-weight: 600;
+  box-shadow: var(--shadow-add-btn);
+  transition: all var(--transition);
+  cursor: pointer;
+  border: none;
+}
+
+.floating-option:hover {
+  transform: translateY(-2px) scale(1.05);
+}
+
+.floating-option.create {
+  background: linear-gradient(135deg, #10b981, #059669);
+}
+
+.floating-option.edit {
+  background: linear-gradient(135deg, #3b82f6, #1d4ed8);
+}
+
+.floating-option.delete {
+  background: linear-gradient(135deg, #ef4444, #dc2626);
 }
 
 .add-btn {
@@ -366,10 +424,11 @@ body {
   font-size: 28px; 
   cursor: pointer; 
   box-shadow: var(--shadow-add-btn);
-  transition: all var(--transition);
+  transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
   display: flex;
   align-items: center;
   justify-content: center;
+  text-decoration: none;
 }
 
 .add-btn:hover {
@@ -377,8 +436,17 @@ body {
   box-shadow: 0 12px 32px rgba(2,6,23,0.55);
 }
 
-.add-btn:active {
-  transform: translateY(0);
+.add-btn.active {
+  transform: rotate(45deg);
+  background: #ff4444;
+  color: white;
+}
+
+.add-wrap { 
+  display: flex; 
+  justify-content: center; 
+  width: 100%; 
+  margin-top: var(--spacing-xl); 
 }
 
 /* ============================================
@@ -522,13 +590,37 @@ body {
     font-size: 14px;
   }
   
+  .floating-option {
+    width: 40px;
+    height: 40px;
+    font-size: 16px;
+  }
+  
   .add-btn {
     width: 48px;
     height: 48px;
     font-size: 24px;
   }
+  
+  /* Kanban responsive */
+  .kanban-container {
+    flex-direction: column;
+    gap: var(--spacing-lg);
+  }
+  
+  .kanban-column {
+    min-width: 100%;
+    max-width: none;
+  }
 }
 
+
+
+
+
+/* ============================================
+   RESPONSIVE - MÓVIL PEQUEÑO
+   ============================================ */
 @media (max-width: 360px) {
   .topbar {
     padding: var(--spacing-sm);
