@@ -5,6 +5,7 @@ import Registro from "./registrarse/registro.jsx";
 import Home from "./home/inicio.jsx";
 import OlvidarPw1 from "./olvidarpw/olvidarpw1.jsx";
 import OlvidarPw2 from "./olvidarpw/olvidarpw2.jsx";
+import CrearTarea from "./tareas/creartarea.jsx";
 import "./GlobalCSS1.css";
 import "./GlobalCSS2.css";
 
@@ -19,6 +20,7 @@ function App() {
          <Route path="/olvidar-password" element={<OlvidarPw1 />} />
          <Route path="/olvidar-password2" element={<OlvidarPw2 />} />
          <Route path="/home" element={<Home />} />
+         <Route path="/crear-tarea" element={<CrearTarea />} />
       </Routes>
     </div>
   );
