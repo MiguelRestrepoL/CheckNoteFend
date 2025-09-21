@@ -34,14 +34,42 @@ export default function Perfil() {
       return;
     }
 
-    // Simular datos del usuario (reemplazar con API call)
-    const userData = {
-      nombres: localStorage.getItem('userName') || "Juan",
-      apellidos: "Pérez González",
-      fechaNacimiento: "1995-03-15",
-      email: "juan.perez@email.com",
-      fechaCreacion: "2024-01-15"
-    };
+    // Cargar datos reales del localStorage
+    const storedUser = localStorage.getItem('user');
+    let userData = {};
+    
+    if (storedUser) {
+      try {
+        const parsedUser = JSON.parse(storedUser);
+        userData = {
+          nombres: parsedUser.nombres || localStorage.getItem('userName') || "",
+          apellidos: parsedUser.apellidos || "",
+          fechaNacimiento: parsedUser.fechaNacimiento || "",
+          email: parsedUser.correo || parsedUser.email || "",
+          fechaCreacion: parsedUser.createdAt ? 
+            new Date(parsedUser.createdAt).toISOString().split('T')[0] : 
+            new Date().toISOString().split('T')[0]
+        };
+      } catch (error) {
+        console.error('Error parsing user data:', error);
+        userData = {
+          nombres: localStorage.getItem('userName') || "",
+          apellidos: "",
+          fechaNacimiento: "",
+          email: "",
+          fechaCreacion: new Date().toISOString().split('T')[0]
+        };
+      }
+    } else {
+      // Si no hay datos de usuario guardados, usar valores por defecto
+      userData = {
+        nombres: localStorage.getItem('userName') || "",
+        apellidos: "",
+        fechaNacimiento: "",
+        email: "",
+        fechaCreacion: new Date().toISOString().split('T')[0]
+      };
+    }
 
     setPersonalData({
       nombres: userData.nombres,
