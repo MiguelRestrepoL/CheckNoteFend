@@ -314,11 +314,12 @@ body {
   color: black;
   border: 1px solid #ddd;
   border-radius: var(--radius-full);
-  padding: var(--spacing-md) var(--spacing-xl); /* Más padding en desktop */
-  font-size: 0.875rem; /* Más grande en desktop */
+  padding: var(--spacing-md) var(--spacing-xl);
+  font-size: 0.875rem;
   font-weight: 500;
-  min-width: 160px; /* Más ancho en desktop */
-  margin-top: var(--spacing-xl);
+  min-width: 200px; /* Más ancho para desktop */
+  margin-top: var(--spacing-lg);
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
 }
 
 .btn-google:hover {
@@ -489,9 +490,9 @@ body {
   }
 
   .btn-google {
-    font-size: 0.6875rem;
-    padding: var(--spacing-xs) var(--spacing-md);
-    min-width: 120px;
+    font-size: 0.75rem;
+    padding: var(--spacing-sm) var(--spacing-lg);
+    min-width: 140px;
   }
 
   .btn-google img {
