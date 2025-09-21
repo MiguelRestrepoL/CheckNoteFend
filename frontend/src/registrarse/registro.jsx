@@ -38,7 +38,7 @@ function Registro() {
     setLoading(true);
 
     try {
-      const res = await fetch("https://checknote-27fe.onrender.com/api/v1/users/", {
+      const res = await fetch("https://checknote-27fe.onrender.com/api/users/", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
