@@ -15,7 +15,7 @@ export default function Inicio() {
       {/* TOPBAR */}
       <header className="topbar">
         <div className="topbar-left">
-          <img src="/user-icon.png" alt="usuario" className="icon user-icon" />
+          <img src="/usuario.png" alt="usuario" className="icon user-icon" />
           <span className="username">{user.nombres || 'Invitado'}</span>
         </div>
 
