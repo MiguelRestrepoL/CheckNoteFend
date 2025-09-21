@@ -98,14 +98,12 @@ body {
   background-color: var(--card-bg);
   padding: var(--spacing-3xl);
   border-radius: var(--radius-xl);
-  width: 100%;
   text-align: center;
   color: var(--text-primary);
   min-width: 280px;
-
-  /* 🔥 centrado global */
-  margin-left: auto;
-  margin-right: auto;
+  margin: 0 auto;
+  width: 100%;
+  max-width: 600px; /* límite global */
 }
 
 .card.with-shadow {
