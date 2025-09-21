@@ -8,7 +8,8 @@ export default function CrearTarea() {
     descripcion: "", 
     fechaVencimiento: "", 
     hora: "",
-    prioridad: "media", 
+    prioridad: "media",
+    estado: "pendiente", // Nuevo campo para Kanban
     completada: false, 
   });
   const [error, setError] = useState("");
@@ -71,6 +72,7 @@ export default function CrearTarea() {
       titulo: formData.titulo.trim(),
       descripcion: formData.descripcion.trim(),
       prioridad: formData.prioridad,
+      estado: formData.estado, // Incluir estado para Kanban
       completada: formData.completada,
       fechaVencimiento: fechaCompleta,
       userId: userId
@@ -359,6 +361,49 @@ export default function CrearTarea() {
                   </option>
                   <option value="alta" style={{ background: '#111827', color: '#ffffff' }}>
                     🔴 Alta prioridad
+                  </option>
+                </select>
+              </div>
+
+              {/* Estado Kanban */}
+              <div>
+                <label htmlFor="estado" style={{ 
+                  display: 'block', 
+                  marginBottom: '6px', 
+                  fontSize: '14px',
+                  color: 'var(--text-secondary)',
+                  fontWeight: '500'
+                }}>
+                  Estado inicial de la tarea
+                </label>
+                <select
+                  id="estado"
+                  name="estado"
+                  value={formData.estado}
+                  onChange={handleChange}
+                  required
+                  style={{
+                    width: '100%',
+                    padding: '12px',
+                    borderRadius: 'var(--radius-sm)',
+                    border: '1px solid rgba(255,255,255,0.1)',
+                    background: 'rgba(255,255,255,0.05)',
+                    color: 'var(--text-primary)',
+                    fontSize: '14px',
+                    outline: 'none',
+                    transition: 'all var(--transition)',
+                    boxSizing: 'border-box',
+                    cursor: 'pointer'
+                  }}
+                >
+                  <option value="pendiente" style={{ background: '#111827', color: '#ffffff' }}>
+                    ⏰ Pendiente
+                  </option>
+                  <option value="en_progreso" style={{ background: '#111827', color: '#ffffff' }}>
+                    ⚡ En Progreso
+                  </option>
+                  <option value="terminada" style={{ background: '#111827', color: '#ffffff' }}>
+                    ✅ Terminada
                   </option>
                 </select>
               </div>
