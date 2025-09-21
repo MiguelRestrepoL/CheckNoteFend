@@ -72,13 +72,14 @@ export default function Inicio() {
         "Content-Type": "application/json"
       });
 
-      // Verificar servidor primero
-      const serverOnline = await checkServerStatus();
-      
-      if (!serverOnline) {
-        setError("El servidor no está disponible en este momento. Intenta más tarde.");
-        return;
-      }
+      // Verificar servidor primero (temporal: comentado para probar directo)
+      // const serverOnline = await checkServerStatus();
+      // 
+      // if (!serverOnline) {
+      //   setError("El servidor no está disponible en este momento. Intenta más tarde.");
+      //   return;
+      // }
+      console.log("⏭️ Saltando verificación de servidor, probando directo con /tasks");
 
       const response = await fetch("https://checknote-27fe.onrender.com/api/v1/tasks", {
         method: "GET",
