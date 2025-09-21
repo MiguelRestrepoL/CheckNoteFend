@@ -6,6 +6,7 @@ import Home from "./home/inicio.jsx";
 import OlvidarPw1 from "./olvidarpw/olvidarpw1.jsx";
 import OlvidarPw2 from "./olvidarpw/olvidarpw2.jsx";
 import CrearTarea from "./creartarea/creartarea.jsx";
+import EditarTarea from "./editartarea/editartarea.jsx";
 import "./GlobalCSS1.css";
 import "./GlobalCSS2.css";
 
@@ -21,6 +22,7 @@ function App() {
          <Route path="/olvidar-password2" element={<OlvidarPw2 />} />
          <Route path="/home" element={<Home />} />
          <Route path="/crear-tarea" element={<CrearTarea />} />
+         <Route path="/editar-tarea/:id" element={<EditarTarea />} />
       </Routes>
     </div>
   );
