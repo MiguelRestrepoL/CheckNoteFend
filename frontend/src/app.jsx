@@ -1,6 +1,6 @@
 import React from "react";
 import { Routes, Route, Navigate } from "react-router-dom";
-import "./GlobalCSS1.css"; 
+import "./Estilo/GlobalCSS1.css";
 import InicioSesion from "./inicioSesion/login.jsx";
 import Registro from "./registrarse/registro.jsx";
 import Inicio from "./home/inicio.jsx";
