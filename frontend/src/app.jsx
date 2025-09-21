@@ -5,7 +5,7 @@ import Registro from "./registrarse/registro.jsx";
 import Home from "./home/inicio.jsx";
 import OlvidarPw1 from "./olvidarpw/olvidarpw1.jsx";
 import OlvidarPw2 from "./olvidarpw/olvidarpw2.jsx";
-import CrearTarea from "./tareas/creartarea.jsx";
+import CrearTarea from "./creartarea/creartarea.jsx";
 import "./GlobalCSS1.css";
 import "./GlobalCSS2.css";
 
