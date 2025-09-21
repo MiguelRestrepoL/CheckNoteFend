@@ -1,42 +1,14 @@
-/* inicioSesion.css */
-.login-input {
-  width: 100%;
-  padding: var(--spacing-md);
-  border: none;
-  border-radius: var(--radius-lg);
-  outline: none;
-  font-size: 0.875rem;
-  background: white;
-  color: #333;
-}
+   .login-input {
+     width: 100%;
+     padding: var(--spacing-md);
+     border: none;
+     border-radius: var(--radius-lg);
+     outline: none;
+     font-size: 0.875rem;
+     background: white;
+     color: #333;
+   }
 
-.login-input::placeholder {
-  color: #999;
-}
-
-.login-google {
-  margin-top: var(--spacing-lg);
-  padding: var(--spacing-sm) var(--spacing-lg);
-  border: 1px solid #ddd;
-  background: white;
-  color: black;
-  border-radius: var(--radius-full);
-  cursor: pointer;
-  font-size: 0.75rem;
-  display: flex;
-  align-items: center;
-  gap: var(--spacing-xs);
-  font-weight: 500;
-  min-width: 140px;
-  justify-content: center;
-  transition: background var(--transition);
-}
-
-.login-google:hover {
-  background: #f5f5f5;
-}
-
-.login-google img {
-  width: var(--icon-sm);
-  height: var(--icon-sm);
-}
+   .login-input::placeholder {
+     color: #999;
+   }
