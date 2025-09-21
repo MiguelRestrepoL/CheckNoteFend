@@ -1,12 +1,13 @@
-
 import React, { useState } from "react";
 import { useNavigate, Link } from "react-router-dom";
+import "./inicioSesion.css";
 
 export default function InicioSesion() {
   const [correo, setCorreo] = useState("");
   const [contrasena, setContrasena] = useState("");
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
+  const [showPassword, setShowPassword] = useState(false);
   const navigate = useNavigate();
 
   const handleSubmit = async (e) => {
@@ -63,6 +64,8 @@ export default function InicioSesion() {
         throw new Error("Respuesta del servidor incompleta");
       }
 
+      // Verificar token (opcional - puedes comentar esto si da problemas)
+      /*
       const verifyRes = await fetch("https://checknote-27fe.onrender.com/api/v1/auth/verify", {
         method: "POST",
         headers: {
@@ -73,7 +76,8 @@ export default function InicioSesion() {
       if (!verifyRes.ok) {
         throw new Error("Token inválido del servidor");
       }
-      
+      */
+
       // Guardar datos
       localStorage.setItem('token', token);
       localStorage.setItem('user', JSON.stringify(user));
@@ -128,7 +132,7 @@ export default function InicioSesion() {
             <div className="field-input">
               <label>Contraseña</label>
               <input
-                type="password"
+                type={showPassword ? "text" : "password"}
                 className="login-input"
                 placeholder="Ingrese su contraseña"
                 value={contrasena}
@@ -136,6 +140,14 @@ export default function InicioSesion() {
                 required
               />
             </div>
+            <button
+              type="button"
+              className="password-toggle"
+              onClick={() => setShowPassword(!showPassword)}
+              aria-label={showPassword ? "Ocultar contraseña" : "Mostrar contraseña"}
+            >
+              {showPassword ? "👁️" : "👁️‍🗨️"}
+            </button>
           </div>
           
           <div className="btn-container">
