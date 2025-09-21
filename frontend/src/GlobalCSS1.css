@@ -1,5 +1,5 @@
 /* ============================================
-   GLOBAL.CSS - Sistema basado en tus estilos existentes
+   GLOBAL CSS - Corregido para coincidir con el diseño Figma
    ============================================ */
 
 /* Reset global */
@@ -17,28 +17,28 @@ body {
 }
 
 /* ============================================
-   VARIABLES CSS - Extraídas de tus estilos
+   VARIABLES CSS - Ajustadas al diseño Figma
    ============================================ */
 :root {
-  /* Colores principales - basados en tus archivos */
+  /* Colores principales */
   --primary: #10b981;
   --primary-dark: #059669;
   --primary-light: #34d399;
   
-  /* Backgrounds - de tus gradientes y fondos existentes */
-  --bg-gradient-main: linear-gradient(to bottom, #0b1220, #0f172a);
+  /* Backgrounds - Ajustados al Figma */
+  --bg-gradient-main: linear-gradient(135deg, #0f1629 0%, #1a202c 100%);
   --bg-secondary: #2c3e50;
   --card-bg: #1f2937;
-  --card-bg-2: #374151;
+  --card-bg-light: #374151;
   --field-bg: #374151;
   
-  /* Colores de texto - de tus estilos */
-  --text-primary: #e6eef6;
+  /* Colores de texto */
+  --text-primary: #ffffff;
   --text-secondary: #9ca3af;
-  --text-muted: #bdc3c7;
+  --text-muted: #6b7280;
   --text-error: #ef4444;
   
-  /* Espaciado consistente */
+  /* Espaciado más ajustado */
   --spacing-xs: 4px;
   --spacing-sm: 8px;
   --spacing-md: 12px;
@@ -46,28 +46,28 @@ body {
   --spacing-xl: 20px;
   --spacing-2xl: 24px;
   --spacing-3xl: 32px;
-  --spacing-4xl: 4rem;
+  --spacing-4xl: 48px;
   
-  /* Border radius - de tus estilos */
+  /* Border radius */
   --radius-sm: 6px;
   --radius-md: 8px;
   --radius-lg: 12px;
-  --radius-xl: 15px;
+  --radius-xl: 16px;
   --radius-2xl: 20px;
-  --radius-full: 25px;
+  --radius-full: 50px;
   
-  /* Sombras - de tus box-shadows */
-  --shadow-sm: 0 2px 4px rgba(0, 0, 0, 0.1);
-  --shadow-md: 0 4px 8px rgba(0, 0, 0, 0.15);
-  --shadow-lg: 0 8px 16px rgba(0, 0, 0, 0.2);
-  --shadow-xl: 0 18px 40px rgba(0, 0, 0, 0.25);
-  --shadow-card: 0 6px 20px rgba(0, 0, 0, 0.4);
+  /* Sombras */
+  --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.05);
+  --shadow-md: 0 4px 6px rgba(0, 0, 0, 0.1);
+  --shadow-lg: 0 10px 15px rgba(0, 0, 0, 0.1);
+  --shadow-xl: 0 20px 25px rgba(0, 0, 0, 0.15);
+  --shadow-card: 0 8px 32px rgba(0, 0, 0, 0.3);
   
   /* Transiciones */
   --transition: 0.2s ease;
   
-  /* Tamaños de iconos consistentes */
-  --icon-sm: 18px;
+  /* Tamaños de iconos */
+  --icon-sm: 16px;
   --icon-md: 20px;
   --icon-lg: 24px;
 }
@@ -76,68 +76,65 @@ body {
    CONTENEDORES PRINCIPALES
    ============================================ */
 
-/* Container principal - patrón de tus páginas */
 .main-container {
   display: flex;
   justify-content: center;
   align-items: center;
   min-height: 100vh;
-  padding: var(--spacing-lg);
+  padding: var(--spacing-xl);
 }
 
-/* Variantes de fondo */
 .main-container.gradient-bg {
   background: var(--bg-gradient-main);
 }
 
 .main-container.solid-bg {
-  background-color: var(--bg-secondary);
+  background: var(--bg-gradient-main);
 }
 
-/* Layout de dos columnas (register style) */
+/* Layout de dos columnas (register) */
 .two-column-layout {
   display: flex;
   gap: var(--spacing-4xl);
   width: 100%;
   max-width: 1200px;
+  align-items: center;
 }
 
 /* ============================================
-   TARJETAS - Basadas en tus diseños
+   TARJETAS - Basadas en el Figma
    ============================================ */
 
 .card {
-  background-color: var(--card-bg);
-  padding: var(--spacing-3xl);
+  background: var(--card-bg);
   border-radius: var(--radius-xl);
   width: 100%;
   text-align: center;
   color: var(--text-primary);
-}
-
-/* Variantes de tarjeta */
-.card.with-shadow {
-  box-shadow: var(--shadow-xl);
+  padding: var(--spacing-3xl);
 }
 
 .card.login-style {
-  max-width: 600px;
+  max-width: 420px;
   box-shadow: var(--shadow-card);
 }
 
 .card.register-style {
   max-width: 420px;
-  box-shadow: var(--shadow-xl);
+  box-shadow: var(--shadow-card);
 }
 
 .card.forgot-style {
   max-width: 420px;
-  margin: 80px auto;
-  box-shadow: var(--shadow-xl);
+  box-shadow: var(--shadow-card);
+}
+
+.card.with-shadow {
+  box-shadow: var(--shadow-card);
 }
 
 /* ============================================
-   LOGOS - Diferentes tamaños para cada contexto
+   LOGOS - Diferentes tamaños
    ============================================ */
 
 .logo {
@@ -145,50 +142,51 @@ body {
   align-items: center;
   justify-content: center;
   gap: var(--spacing-sm);
-  margin-bottom: var(--spacing-lg);
+  margin-bottom: var(--spacing-2xl);
 }
 
 .logo img {
   height: auto;
 }
 
-/* Tamaños específicos */
-.logo.size-sm img { width: 40px; }
-.logo.size-md img { width: 180px; }
-.logo.size-lg img { width: 220px; }
+.logo.size-sm img { width: 32px; }
+.logo.size-md img { width: 48px; }
+.logo.size-lg img { width: 64px; }
 .logo.size-xl img { width: 250px; }
 
 .logo h1 {
   color: var(--primary);
   font-weight: 600;
+  margin-left: var(--spacing-sm);
 }
 
-.logo.size-sm h1 { font-size: 1.2rem; }
+.logo.size-sm h1 { font-size: 1.25rem; }
 .logo.size-md h1 { font-size: 1.5rem; }
-.logo.size-lg h1 { font-size: 1.625rem; }
+.logo.size-lg h1 { font-size: 1.75rem; }
 
 /* ============================================
    TIPOGRAFÍA
    ============================================ */
 
 .title-primary {
-  font-size: 1.375rem;
+  font-size: 1.5rem;
   color: var(--text-primary);
-  margin-bottom: var(--spacing-xl);
-  font-weight: 500;
+  margin-bottom: var(--spacing-lg);
+  font-weight: 600;
 }
 
 .title-secondary {
-  font-size: 1.25rem;
+  font-size: 1.375rem;
   color: var(--text-primary);
-  margin-bottom: var(--spacing-xs);
-  font-weight: 500;
+  margin-bottom: var(--spacing-sm);
+  font-weight: 600;
 }
 
 .subtitle {
   font-size: 0.875rem;
-  color: var(--text-muted);
-  margin-bottom: var(--spacing-xl);
+  color: var(--text-secondary);
+  margin-bottom: var(--spacing-2xl);
+  line-height: 1.4;
 }
 
 .text-muted {
@@ -199,12 +197,12 @@ body {
 .text-error {
   color: var(--text-error);
   font-size: 0.875rem;
-  margin-top: calc(var(--spacing-sm) * -1);
+  margin-top: var(--spacing-sm);
   margin-bottom: var(--spacing-sm);
 }
 
 /* ============================================
-   FORMULARIOS - Basados en tus field-groups
+   FORMULARIOS - Basados en el diseño Figma
    ============================================ */
 
 .form {
@@ -213,25 +211,36 @@ body {
   width: 100%;
 }
 
-.form.compact { gap: var(--spacing-lg); }
-.form.spaced { gap: var(--spacing-xl); }
+.form.compact { 
+  gap: var(--spacing-lg); 
+}
 
-/* Field groups - tu patrón existente */
+.form.spaced { 
+  gap: var(--spacing-xl); 
+}
+
+/* Field groups - Estilo Figma con iconos dentro */
 .field-group {
   display: flex;
   align-items: center;
   background: var(--field-bg);
   border-radius: var(--radius-md);
-  padding: var(--spacing-md);
-  gap: var(--spacing-sm);
+  padding: var(--spacing-md) var(--spacing-lg);
+  gap: var(--spacing-md);
+  transition: all var(--transition);
+}
+
+.field-group:focus-within {
+  background: var(--card-bg-light);
+  box-shadow: 0 0 0 1px var(--primary);
 }
 
 /* Iconos en campos */
 .field-icon {
-  flex-shrink: 0;
-  opacity: 0.7;
   width: var(--icon-md);
   height: var(--icon-md);
+  flex-shrink: 0;
+  opacity: 0.6;
 }
 
 .field-icon.empty {
@@ -253,39 +262,31 @@ body {
   color: var(--text-secondary);
   text-transform: uppercase;
   letter-spacing: 0.5px;
+  font-weight: 500;
 }
 
 .field-input input {
-  padding: var(--spacing-sm) 0;
+  padding: var(--spacing-xs) 0;
   border: none;
   background: transparent;
   color: var(--text-primary);
-  font-size: 1rem;
+  font-size: 0.9375rem;
   outline: none;
   width: 100%;
 }
 
 .field-input input::placeholder {
-  color: var(--text-secondary);
-  opacity: 0.7;
-}
-
-/* Estilo alternativo para inputs con fondo blanco (login) */
-.field-input input.white-bg {
-  background: white;
-  color: #333;
-  padding: var(--spacing-md);
-  border-radius: var(--radius-lg);
-  width: 100%;
+  color: var(--text-muted);
+  opacity: 0.8;
 }
 
 /* ============================================
-   BOTONES - Basados en tus estilos
+   BOTONES - Basados en el Figma
    ============================================ */
 
 .btn {
   border: none;
-  border-radius: var(--radius-md);
+  border-radius: var(--radius-full);
   cursor: pointer;
   font-weight: 600;
   transition: all var(--transition);
@@ -295,51 +296,55 @@ body {
   gap: var(--spacing-sm);
   text-decoration: none;
   font-size: 1rem;
+  padding: var(--spacing-lg) var(--spacing-3xl);
+  width: 100%;
 }
 
-/* Botón principal - tu estilo gradient */
+/* Botón principal */
 .btn-primary {
-  background: linear-gradient(180deg, var(--primary), var(--primary-dark));
+  background: var(--primary);
   color: white;
-  padding: var(--spacing-md) var(--spacing-xl);
-  margin-top: var(--spacing-lg);
+  margin-top: var(--spacing-xl);
 }
 
 .btn-primary:hover:not(:disabled) {
-  opacity: 0.9;
+  background: var(--primary-dark);
+  transform: translateY(-1px);
 }
 
 .btn-primary:disabled {
   opacity: 0.6;
   cursor: not-allowed;
+  transform: none;
 }
 
-/* Botón estilo login (redondeado) */
-.btn-rounded {
-  border-radius: var(--radius-full);
-  padding: var(--spacing-lg) var(--spacing-4xl);
-}
-
-/* Botón Google - tus estilos */
+/* Botón Google - Estilo Figma */
 .btn-google {
   background: white;
-  color: black;
-  border: 1px solid #ddd;
+  color: #333;
+  border: 1px solid #dadce0;
   border-radius: var(--radius-full);
-  padding: var(--spacing-sm) var(--spacing-lg);
-  font-size: 0.75rem;
+  padding: var(--spacing-md) var(--spacing-xl);
+  font-size: 0.875rem;
   font-weight: 500;
-  min-width: 140px;
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-sm);
+  justify-content: center;
   margin-top: var(--spacing-lg);
+  transition: background var(--transition);
+  cursor: pointer;
+  width: auto;
+  min-width: 200px;
 }
 
 .btn-google:hover {
-  background: #f5f5f5;
+  background: #f8f9fa;
 }
 
 .btn-google img {
-  width: var(--icon-sm);
-  height: var(--icon-sm);
+  width: var(--icon-md);
+  height: var(--icon-md);
 }
 
 /* Container para centrar botones */
@@ -353,7 +358,7 @@ body {
    ELEMENTOS ADICIONALES
    ============================================ */
 
-/* Checkbox - tu estilo */
+/* Checkbox */
 .checkbox-group {
   display: flex;
   align-items: center;
@@ -361,6 +366,7 @@ body {
   font-size: 0.8125rem;
   text-align: left;
   color: var(--text-secondary);
+  margin: var(--spacing-lg) 0;
 }
 
 .checkbox-group input[type="checkbox"] {
@@ -384,11 +390,13 @@ body {
 
 .link.small {
   font-size: 0.8125rem;
+  margin-top: var(--spacing-lg);
+  display: block;
 }
 
 /* Secciones de enlaces */
 .links-section {
-  margin-top: var(--spacing-xl);
+  margin-top: var(--spacing-2xl);
   color: var(--text-secondary);
   font-size: 0.875rem;
 }
@@ -414,7 +422,7 @@ body {
 
 @media (max-width: 768px) {
   .main-container {
-    padding: var(--spacing-md);
+    padding: var(--spacing-lg);
   }
   
   .two-column-layout {
@@ -434,17 +442,21 @@ body {
   }
   
   .logo.size-xl img { width: 200px; }
-  .logo.size-lg img { width: 160px; }
-  .logo.size-md img { width: 140px; }
+  .logo.size-lg img { width: 56px; }
+  .logo.size-md img { width: 40px; }
   
-  .title-primary {
+  .title-primary, .title-secondary {
     font-size: 1.25rem;
+  }
+  
+  .btn {
+    padding: var(--spacing-lg) var(--spacing-2xl);
   }
 }
 
 @media (max-width: 480px) {
   .main-container {
-    padding: var(--spacing-sm);
+    padding: var(--spacing-md);
   }
   
   .card {
@@ -452,10 +464,9 @@ body {
   }
   
   .logo.size-xl img { width: 160px; }
-  .logo.size-lg img { width: 140px; }
-  .logo.size-md img { width: 120px; }
+  .logo.size-lg img { width: 48px; }
   
-  .btn-rounded {
-    padding: var(--spacing-md) var(--spacing-3xl);
+  .field-group {
+    padding: var(--spacing-sm) var(--spacing-md);
   }
 }
