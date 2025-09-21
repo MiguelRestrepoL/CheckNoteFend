@@ -237,7 +237,7 @@ export default function EditarTarea() {
         </div>
 
         <div className="topbar-right">
-          <Link to="/settings">
+          <Link to="/perfil">
             <img src="/settings.png" alt="configuración" className="icon" />
           </Link>
         </div>
