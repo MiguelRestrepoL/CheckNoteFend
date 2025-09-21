@@ -17,28 +17,24 @@ body {
 }
 
 /* ============================================
-   VARIABLES CSS - Extraídas de tus estilos
+   VARIABLES CSS
    ============================================ */
 :root {
-  /* Colores principales - basados en tus archivos */
   --primary: #10b981;
   --primary-dark: #059669;
   --primary-light: #34d399;
-  
-  /* Backgrounds - de tus gradientes y fondos existentes */
+
   --bg-gradient-main: linear-gradient(to bottom, #0b1220, #0f172a);
   --bg-secondary: #2c3e50;
   --card-bg: #1f2937;
   --card-bg-2: #374151;
   --field-bg: #374151;
-  
-  /* Colores de texto - de tus estilos */
+
   --text-primary: #e6eef6;
   --text-secondary: #9ca3af;
   --text-muted: #bdc3c7;
   --text-error: #ef4444;
-  
-  /* Espaciado consistente */
+
   --spacing-xs: 4px;
   --spacing-sm: 8px;
   --spacing-md: 12px;
@@ -47,26 +43,22 @@ body {
   --spacing-2xl: 24px;
   --spacing-3xl: 32px;
   --spacing-4xl: 4rem;
-  
-  /* Border radius - de tus estilos */
+
   --radius-sm: 6px;
   --radius-md: 8px;
   --radius-lg: 12px;
   --radius-xl: 15px;
   --radius-2xl: 20px;
   --radius-full: 25px;
-  
-  /* Sombras - de tus box-shadows */
+
   --shadow-sm: 0 2px 4px rgba(0, 0, 0, 0.1);
   --shadow-md: 0 4px 8px rgba(0, 0, 0, 0.15);
   --shadow-lg: 0 8px 16px rgba(0, 0, 0, 0.2);
   --shadow-xl: 0 18px 40px rgba(0, 0, 0, 0.25);
   --shadow-card: 0 6px 20px rgba(0, 0, 0, 0.4);
-  
-  /* Transiciones */
+
   --transition: 0.2s ease;
-  
-  /* Tamaños de iconos consistentes */
+
   --icon-sm: 18px;
   --icon-md: 20px;
   --icon-lg: 24px;
@@ -75,17 +67,15 @@ body {
 /* ============================================
    CONTENEDORES PRINCIPALES
    ============================================ */
-
-/* Container principal - patrón de tus páginas */
 .main-container {
   display: flex;
   justify-content: center;
   align-items: center;
   min-height: 100vh;
   padding: var(--spacing-lg);
+  overflow-x: hidden;
 }
 
-/* Variantes de fondo */
 .main-container.gradient-bg {
   background: var(--bg-gradient-main);
 }
@@ -94,7 +84,6 @@ body {
   background-color: var(--bg-secondary);
 }
 
-/* Layout de dos columnas (register style) */
 .two-column-layout {
   display: flex;
   gap: var(--spacing-4xl);
@@ -103,9 +92,8 @@ body {
 }
 
 /* ============================================
-   TARJETAS - Basadas en tus diseños
+   TARJETAS
    ============================================ */
-
 .card {
   background-color: var(--card-bg);
   padding: var(--spacing-3xl);
@@ -113,9 +101,9 @@ body {
   width: 100%;
   text-align: center;
   color: var(--text-primary);
+  min-width: 280px;
 }
 
-/* Variantes de tarjeta */
 .card.with-shadow {
   box-shadow: var(--shadow-xl);
 }
@@ -137,9 +125,8 @@ body {
 }
 
 /* ============================================
-   LOGOS - Diferentes tamaños para cada contexto
+   LOGOS
    ============================================ */
-
 .logo {
   display: flex;
   align-items: center;
@@ -152,7 +139,6 @@ body {
   height: auto;
 }
 
-/* Tamaños específicos */
 .logo.size-sm img { width: 40px; }
 .logo.size-md img { width: 180px; }
 .logo.size-lg img { width: 220px; }
@@ -170,7 +156,6 @@ body {
 /* ============================================
    TIPOGRAFÍA
    ============================================ */
-
 .title-primary {
   font-size: 1.375rem;
   color: var(--text-primary);
@@ -204,9 +189,8 @@ body {
 }
 
 /* ============================================
-   FORMULARIOS - Basados en tus field-groups
+   FORMULARIOS
    ============================================ */
-
 .form {
   display: flex;
   flex-direction: column;
@@ -216,7 +200,6 @@ body {
 .form.compact { gap: var(--spacing-lg); }
 .form.spaced { gap: var(--spacing-xl); }
 
-/* Field groups - tu patrón existente */
 .field-group {
   display: flex;
   align-items: center;
@@ -226,7 +209,6 @@ body {
   gap: var(--spacing-sm);
 }
 
-/* Iconos en campos */
 .field-icon {
   flex-shrink: 0;
   opacity: 0.7;
@@ -239,7 +221,6 @@ body {
   height: var(--icon-md);
 }
 
-/* Input container */
 .field-input {
   flex: 1;
   display: flex;
@@ -270,7 +251,6 @@ body {
   opacity: 0.7;
 }
 
-/* Estilo alternativo para inputs con fondo blanco (login) */
 .field-input input.white-bg {
   background: white;
   color: #333;
@@ -280,9 +260,8 @@ body {
 }
 
 /* ============================================
-   BOTONES - Basados en tus estilos
+   BOTONES
    ============================================ */
-
 .btn {
   border: none;
   border-radius: var(--radius-md);
@@ -297,7 +276,6 @@ body {
   font-size: 1rem;
 }
 
-/* Botón principal - tu estilo gradient */
 .btn-primary {
   background: linear-gradient(180deg, var(--primary), var(--primary-dark));
   color: white;
@@ -314,13 +292,11 @@ body {
   cursor: not-allowed;
 }
 
-/* Botón estilo login (redondeado) */
 .btn-rounded {
   border-radius: var(--radius-full);
   padding: var(--spacing-lg) var(--spacing-4xl);
 }
 
-/* Botón Google - tus estilos */
 .btn-google {
   background: white;
   color: black;
@@ -342,7 +318,6 @@ body {
   height: var(--icon-sm);
 }
 
-/* Container para centrar botones */
 .btn-container {
   display: flex;
   justify-content: center;
@@ -352,8 +327,6 @@ body {
 /* ============================================
    ELEMENTOS ADICIONALES
    ============================================ */
-
-/* Checkbox - tu estilo */
 .checkbox-group {
   display: flex;
   align-items: center;
@@ -370,7 +343,6 @@ body {
   height: 16px;
 }
 
-/* Enlaces */
 .link {
   color: var(--primary);
   text-decoration: none;
@@ -386,14 +358,12 @@ body {
   font-size: 0.8125rem;
 }
 
-/* Secciones de enlaces */
 .links-section {
   margin-top: var(--spacing-xl);
   color: var(--text-secondary);
   font-size: 0.875rem;
 }
 
-/* Lado izquierdo del register */
 .info-column {
   display: flex;
   flex-direction: column;
@@ -411,34 +381,60 @@ body {
 /* ============================================
    RESPONSIVE
    ============================================ */
-
 @media (max-width: 768px) {
   .main-container {
     padding: var(--spacing-md);
   }
-  
+
   .two-column-layout {
     flex-direction: column;
     gap: var(--spacing-3xl);
   }
-  
+
   .info-column {
     align-items: center;
     max-width: 100%;
     text-align: center;
   }
-  
+
   .card {
     padding: var(--spacing-2xl);
-    max-width: 100%;
+    max-width: 400px;
+    margin-left: auto;
+    margin-right: auto;
   }
-  
+
   .logo.size-xl img { width: 200px; }
   .logo.size-lg img { width: 160px; }
   .logo.size-md img { width: 140px; }
-  
+
   .title-primary {
     font-size: 1.25rem;
+  }
+
+  .field-group {
+    flex-wrap: nowrap;
+    padding: var(--spacing-sm) var(--spacing-md);
+  }
+
+  .field-input label {
+    display: none;
+  }
+
+  .field-input input {
+    padding: var(--spacing-sm) 0;
+    font-size: 0.95rem;
+  }
+
+  .btn-primary {
+    padding: var(--spacing-md) var(--spacing-lg);
+    font-size: 0.9rem;
+  }
+
+  .btn-google {
+    font-size: 0.6875rem;
+    padding: var(--spacing-xs) var(--spacing-md);
+    min-width: 120px;
   }
 }
 
@@ -446,16 +442,41 @@ body {
   .main-container {
     padding: var(--spacing-sm);
   }
-  
+
   .card {
     padding: var(--spacing-xl);
+    max-width: 95%;
   }
-  
+
   .logo.size-xl img { width: 160px; }
   .logo.size-lg img { width: 140px; }
   .logo.size-md img { width: 120px; }
-  
+
   .btn-rounded {
     padding: var(--spacing-md) var(--spacing-3xl);
+  }
+
+  .field-group {
+    padding: var(--spacing-xs) var(--spacing-sm);
+    gap: var(--spacing-xs);
+  }
+
+  .field-icon {
+    width: var(--icon-sm);
+    height: var(--icon-sm);
+  }
+
+  .field-input input {
+    font-size: 0.9rem;
+  }
+
+  .title-primary {
+    font-size: 1.125rem;
+    margin-bottom: var(--spacing-lg);
+  }
+
+  .subtitle {
+    font-size: 0.8125rem;
+    margin-bottom: var(--spacing-lg);
   }
 }
