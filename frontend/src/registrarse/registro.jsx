@@ -196,12 +196,6 @@ function Registro() {
             <button type="submit" className="btn btn-primary btn-rounded" disabled={loading}>
               {loading ? "Registrando..." : "Registrarse"}
             </button>
-
-            {/* Botón Google */}
-            <button type="button" className="btn-google">
-              <img src="/google.png" alt="Google" />
-              <span>Continuar con Google</span>
-            </button>
           </form>
 
           {/* Links */}

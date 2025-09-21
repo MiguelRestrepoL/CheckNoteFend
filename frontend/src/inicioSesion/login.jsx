@@ -132,12 +132,6 @@ export default function InicioSesion() {
           ¿Olvidó su contraseña?
         </Link>
         
-        {/* Botón Google - usa .login-google del login.css específico */}
-        <button className="login-google">
-          <img src="/google.png" alt="Google" />
-          Continuar con Google
-        </button>
-        
         {/* Enlaces finales - usa .links-section y .link del global */}
         <div className="links-section">
           ¿No tiene cuenta? <Link to="/registro" className="link">Registrarse</Link>
