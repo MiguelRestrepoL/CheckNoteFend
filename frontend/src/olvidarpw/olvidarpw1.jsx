@@ -96,7 +96,7 @@ export default function OlvidarPw1() {
 
           <div className="success-message" style={{ textAlign: 'center', padding: '20px' }}>
             <h2 className="title-secondary">¡Correo enviado!</h2>
-            <p style={{ color: '#28a745', marginBottom: '20px' }}>
+            <p style={{ color: '#c2dbc8ff', marginBottom: '20px' }}>
               Hemos enviado un enlace de recuperación a <strong>{email}</strong>
             </p>
             <p style={{ color: '#6c757d', fontSize: '14px', marginBottom: '20px' }}>
