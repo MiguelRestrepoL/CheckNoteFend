@@ -156,6 +156,11 @@ body {
 .logo.size-lg img { width: 220px; }
 .logo.size-xl img { width: 250px; }
 
+/* Logo específico para forgot password */
+.card.forgot-style .logo img { 
+  width: 120px; 
+}
+
 .logo h1 {
   color: var(--primary);
   font-weight: 600;

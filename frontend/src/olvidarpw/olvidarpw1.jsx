@@ -1,3 +1,4 @@
+
 import React, { useState } from "react";
 import { useNavigate, Link } from "react-router-dom";
 // NO importar olvidarpw1.css - usar solo el global.css
@@ -39,7 +40,7 @@ export default function OlvidarPw1() {
     <div className="main-container gradient-bg">
       <div className="card forgot-style with-shadow">
         {/* Logo */}
-        <div className="logo size-sm">
+        <div className="logo size-md">
           <img src="/logo.png" alt="Checknote" />
           <h1>Checknote</h1>
         </div>
