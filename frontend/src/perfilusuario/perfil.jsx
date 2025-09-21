@@ -22,6 +22,7 @@ export default function Perfil() {
   });
 
   const [manejoData, setManejoData] = useState({
+    currentPassword: "",
     password: "",
     confirmPassword: ""
   });
@@ -151,23 +152,42 @@ export default function Perfil() {
     setError("");
     setSuccess("");
 
+    // Validaciones
+    if (!manejoData.currentPassword) {
+      setError("Debes ingresar tu contraseña actual");
+      setLoading(false);
+      return;
+    }
+
+    if (!manejoData.password) {
+      setError("Debes ingresar una nueva contraseña");
+      setLoading(false);
+      return;
+    }
+
     if (manejoData.password !== manejoData.confirmPassword) {
       setError("Las contraseñas no coinciden");
       setLoading(false);
       return;
     }
 
-    if (manejoData.password.length < 6) {
-      setError("La contraseña debe tener al menos 6 caracteres");
+    if (manejoData.password.length < 8) {
+      setError("La contraseña debe tener al menos 8 caracteres");
+      setLoading(false);
+      return;
+    }
+
+    if (manejoData.currentPassword === manejoData.password) {
+      setError("La nueva contraseña debe ser diferente a la actual");
       setLoading(false);
       return;
     }
 
     try {
-      // TODO: Implementar API call
+      // TODO: Implementar API call con currentPassword, password
       await new Promise(resolve => setTimeout(resolve, 1000));
       setSuccess("Contraseña cambiada correctamente");
-      setManejoData({ password: "", confirmPassword: "" });
+      setManejoData({ currentPassword: "", password: "", confirmPassword: "" });
     } catch (err) {
       setError("Error al cambiar la contraseña");
     } finally {
@@ -175,27 +195,9 @@ export default function Perfil() {
     }
   };
 
-  const handleDeleteAccount = async () => {
-    const confirmacion = window.confirm(
-      "¿Estás seguro de que deseas eliminar tu cuenta? Esta acción no se puede deshacer."
-    );
-    
-    if (!confirmacion) return;
-
-    setLoading(true);
-    setError("");
-
-    try {
-      // TODO: Implementar API call para eliminar cuenta
-      await new Promise(resolve => setTimeout(resolve, 1000));
-      
-      // Limpiar localStorage y redirigir
-      localStorage.clear();
-      navigate('/login');
-    } catch (err) {
-      setError("Error al eliminar la cuenta");
-      setLoading(false);
-    }
+  const handleDeleteAccount = () => {
+    // Solo redirigir a la página de eliminar cuenta
+    navigate('/eliminar-cuenta');
   };
 
   const inputStyle = {
@@ -597,6 +599,7 @@ export default function Perfil() {
                     gap: 'var(--spacing-lg)',
                     marginBottom: 'var(--spacing-3xl)'
                   }}>
+                    {/* Contraseña actual */}
                     <div>
                       <div style={{ 
                         background: 'rgba(255,255,255,0.9)',
@@ -610,7 +613,33 @@ export default function Perfil() {
                         textTransform: 'uppercase',
                         maxWidth: '300px'
                       }}>
-                        CONTRASEÑA
+                        CONTRASEÑA ACTUAL
+                      </div>
+                      <input
+                        type="password"
+                        name="currentPassword"
+                        value={manejoData.currentPassword}
+                        onChange={handleManejoChange}
+                        placeholder="Tu contraseña actual"
+                        style={{ ...inputStyle, maxWidth: '300px' }}
+                      />
+                    </div>
+
+                    {/* Nueva contraseña */}
+                    <div>
+                      <div style={{ 
+                        background: 'rgba(255,255,255,0.9)',
+                        color: 'var(--text-dark)',
+                        padding: '8px 12px',
+                        borderRadius: '4px',
+                        fontSize: '12px',
+                        fontWeight: 'bold',
+                        marginBottom: 'var(--spacing-sm)',
+                        textAlign: 'center',
+                        textTransform: 'uppercase',
+                        maxWidth: '300px'
+                      }}>
+                        NUEVA CONTRASEÑA
                       </div>
                       <input
                         type="password"
