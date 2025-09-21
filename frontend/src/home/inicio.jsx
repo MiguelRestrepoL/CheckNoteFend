@@ -11,8 +11,57 @@ export default function Inicio() {
   const storedUser = localStorage.getItem('user');
   const user = storedUser ? JSON.parse(storedUser) : { nombres: 'Usuario' };
 
+  // Estado para manejar las tareas (puedes conectar esto con tu backend más tarde)
+  const [tareas] = useState({
+    pendientes: [
+      { id: 1, titulo: "Sacar al perro", prioridad: "ALTA" },
+      { id: 2, titulo: "Comprar víveres", prioridad: "MEDIA" }
+    ],
+    proceso: [
+      { id: 3, titulo: "Hacer trabajo DS2", prioridad: "BAJA" },
+      { id: 4, titulo: "Estudiar React", prioridad: "ALTA" }
+    ],
+    completadas: [
+      { id: 5, titulo: "P.Integrador", prioridad: "MEDIA" },
+      { id: 6, titulo: "Ejercicio matutino", prioridad: "BAJA" }
+    ]
+  });
+
+  // Calcular progreso basado en tareas completadas
+  const totalTareas = tareas.pendientes.length + tareas.proceso.length + tareas.completadas.length;
+  const tareasCompletadas = tareas.completadas.length;
+  const porcentajeProgreso = totalTareas > 0 ? Math.round((tareasCompletadas / totalTareas) * 100) : 0;
+
   const toggleMenu = () => {
     setMenuOpen(!menuOpen);
+  };
+
+  const getPriorityClass = (prioridad) => {
+    switch(prioridad.toLowerCase()) {
+      case 'alta': return 'priority-alta';
+      case 'media': return 'priority-media';
+      case 'baja': return 'priority-baja';
+      default: return 'priority-media';
+    }
+  };
+
+  const renderTareas = (listaTareas) => {
+    if (listaTareas.length === 0) {
+      return (
+        <div className="kanban-task" style={{ opacity: 0.5, fontStyle: 'italic' }}>
+          <div className="kanban-task-title">No hay tareas</div>
+        </div>
+      );
+    }
+
+    return listaTareas.map(tarea => (
+      <div key={tarea.id} className="kanban-task">
+        <div className="kanban-task-title">{tarea.titulo}</div>
+        <span className={`kanban-task-priority ${getPriorityClass(tarea.prioridad)}`}>
+          {tarea.prioridad}
+        </span>
+      </div>
+    ));
   };
 
   return (
@@ -20,7 +69,7 @@ export default function Inicio() {
       {/* TOPBAR */}
       <header className="topbar">
         <div className="topbar-left">
-          <img src="/usuario.png" alt="usuario" className="icon" />
+          <img src="/usuario.png" alt="usuario" className="icon user-icon" />
           <span className="username">{user.nombres || 'Invitado'}</span>
         </div>
 
@@ -48,18 +97,18 @@ export default function Inicio() {
 
           {/* Tarjeta de progreso */}
           <section className="task-card">
-            <h3 className="task-title">{nombre_tarea}</h3>
-            <p className="task-sub">Progreso de la tarea</p>
+            <h3 className="task-title">Panel de Tareas</h3>
+            <p className="task-sub">Progreso general de tus tareas</p>
 
             <div className="progress-wrap">
               <div className="progress-bar">
-                <div className="progress" style={{ width: "48%" }} />
+                <div className="progress" style={{ width: `${porcentajeProgreso}%` }} />
               </div>
             </div>
 
             <div className="progress-info">
-              <span>48% completado</span>
-              <span>Prioridad ✏️</span>
+              <span>{porcentajeProgreso}% completado</span>
+              <span>{tareasCompletadas} de {totalTareas} tareas ✅</span>
             </div>
           </section>
 
@@ -76,13 +125,10 @@ export default function Inicio() {
             <div className="kanban-column">
               <div className="kanban-header">
                 <span className="kanban-icon">⏰</span>
-                <h4 className="kanban-title">Tareas pendientes</h4>
+                <h4 className="kanban-title">Pendientes ({tareas.pendientes.length})</h4>
               </div>
               <div className="kanban-tasks">
-                <div className="kanban-task">
-                  <div className="kanban-task-title">Sacar al perro</div>
-                  <span className="kanban-task-priority priority-alta">ALTA</span>
-                </div>
+                {renderTareas(tareas.pendientes)}
               </div>
             </div>
 
@@ -90,13 +136,10 @@ export default function Inicio() {
             <div className="kanban-column">
               <div className="kanban-header">
                 <span className="kanban-icon">⚡</span>
-                <h4 className="kanban-title">Tareas en proceso</h4>
+                <h4 className="kanban-title">En Proceso ({tareas.proceso.length})</h4>
               </div>
               <div className="kanban-tasks">
-                <div className="kanban-task">
-                  <div className="kanban-task-title">Hacer trabajo DS2</div>
-                  <span className="kanban-task-priority priority-baja">BAJA</span>
-                </div>
+                {renderTareas(tareas.proceso)}
               </div>
             </div>
 
@@ -104,13 +147,10 @@ export default function Inicio() {
             <div className="kanban-column">
               <div className="kanban-header">
                 <span className="kanban-icon">✅</span>
-                <h4 className="kanban-title">Tareas completadas</h4>
+                <h4 className="kanban-title">Completadas ({tareas.completadas.length})</h4>
               </div>
               <div className="kanban-tasks">
-                <div className="kanban-task">
-                  <div className="kanban-task-title">P.Integrador</div>
-                  <span className="kanban-task-priority priority-media">MEDIA</span>
-                </div>
+                {renderTareas(tareas.completadas)}
               </div>
             </div>
           </div>
@@ -119,13 +159,20 @@ export default function Inicio() {
           <div className="add-wrap">
             <div className="floating-menu">
               <div className={`floating-options ${menuOpen ? 'active' : ''}`}>
-                <Link to="/crear-tarea" className="floating-option create">📝</Link>
-                <Link to="/editar-tarea" className="floating-option edit">✏️</Link>
-                <Link to="/eliminar-tarea" className="floating-option delete">🗑️</Link>
+                <Link to="/crear-tarea" className="floating-option create" title="Crear tarea">
+                  📝
+                </Link>
+                <Link to="/editar-tarea" className="floating-option edit" title="Editar tarea">
+                  ✏️
+                </Link>
+                <Link to="/eliminar-tarea" className="floating-option delete" title="Eliminar tarea">
+                  🗑️
+                </Link>
               </div>
               <button 
                 className={`add-btn ${menuOpen ? 'active' : ''}`}
                 onClick={toggleMenu}
+                aria-label={menuOpen ? 'Cerrar menú' : 'Abrir menú'}
               >
                 +
               </button>
