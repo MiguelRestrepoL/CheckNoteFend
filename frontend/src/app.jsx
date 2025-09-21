@@ -1,6 +1,7 @@
 import React from "react";
 import { Routes, Route, Navigate } from "react-router-dom";
 import InicioSesion from "./inicioSesion/login.jsx";
+import "./GlobalCSS1.css";
 
 
 function App() {
