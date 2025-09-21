@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { useNavigate, Link } from "react-router-dom";
-import "./InicioSesion.css"; // Solo importa el CSS específico (25 líneas)
+import "./inicioSesion.css"; // Solo importa el CSS específico (25 líneas)
 
 export default function InicioSesion() {
   const [correo, setCorreo] = useState("");
