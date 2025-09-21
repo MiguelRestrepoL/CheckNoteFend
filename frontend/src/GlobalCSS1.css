@@ -102,6 +102,10 @@ body {
   text-align: center;
   color: var(--text-primary);
   min-width: 280px;
+
+  /* 🔥 centrado global */
+  margin-left: auto;
+  margin-right: auto;
 }
 
 .card.with-shadow {
