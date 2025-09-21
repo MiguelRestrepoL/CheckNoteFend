@@ -296,6 +296,23 @@ export default function Perfil() {
                 >
                   MANEJO
                 </button>
+
+                {/* Botón cerrar sesión */}
+                <button
+                  onClick={() => {
+                    localStorage.clear();
+                    navigate('/login');
+                  }}
+                  style={{
+                    ...buttonStyle,
+                    background: 'linear-gradient(135deg, #ef4444, #dc2626)',
+                    color: 'white',
+                    marginTop: 'var(--spacing-lg)',
+                    textAlign: 'center'
+                  }}
+                >
+                  CERRAR SESIÓN
+                </button>
               </div>
             </div>
 
@@ -590,7 +607,7 @@ export default function Perfil() {
                         textTransform: 'uppercase',
                         maxWidth: '300px'
                       }}>
-                        CONFIRMAR CONTRA
+                        CONFIRMAR CONTRASEÑA
                       </div>
                       <input
                         type="password"
@@ -615,7 +632,7 @@ export default function Perfil() {
                         minWidth: '200px'
                       }}
                     >
-                      {loading ? "Cambiando..." : "CAMBIAR CONTRA"}
+                      {loading ? "Cambiando..." : "CAMBIAR CONTRASEÑA"}
                     </button>
                   </form>
 

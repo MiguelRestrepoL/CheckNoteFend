@@ -20,7 +20,7 @@ export default function OlvidarPw2() {
     setError("");
 
     try {
-      const response = await fetch("https://checknote-27fe.onrender.com/api/v1/auth/reset-password", {
+      const response = await fetch("https://checknote-27fe.onrender.com/api/v1/users/reset-password", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ password /* , token u otro identificador */ }),
