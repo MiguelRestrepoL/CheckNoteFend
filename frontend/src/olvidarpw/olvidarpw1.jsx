@@ -1,7 +1,5 @@
-
 import React, { useState } from "react";
 import { useNavigate, Link } from "react-router-dom";
-// NO importar olvidarpw1.css - usar solo el global.css
 
 export default function OlvidarPw1() {
   const [email, setEmail] = useState("");
@@ -15,7 +13,8 @@ export default function OlvidarPw1() {
     setError("");
 
     try {
-      const res = await fetch("https://checknote-27fe.onrender.com/api/v1/users/request-password-reset", {
+      // RUTA CORREGIDA: /api/v1/auth/ en lugar de /api/v1/users/
+      const res = await fetch("https://checknote-27fe.onrender.com/api/v1/auth/request-password-reset", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ email }),
@@ -24,7 +23,7 @@ export default function OlvidarPw1() {
       const data = await res.json();
 
       if (res.ok) {
-        // ✅ Redirigir a la siguiente pantalla
+        // Redirigir a la siguiente pantalla
         navigate("/olvidar-password2");
       } else {
         setError(data.message || "Error al procesar la solicitud");
@@ -68,7 +67,7 @@ export default function OlvidarPw1() {
           {error && <p className="text-error">{error}</p>}
 
           {/* Botón */}
-          <button type="submit" className="btn btn-primary btn-rounded" disabled={loading}>
+          <button type="submit" className="btn btn-primary" disabled={loading}>
             {loading ? "Procesando..." : "Confirmar correo"}
           </button>
         </form>
