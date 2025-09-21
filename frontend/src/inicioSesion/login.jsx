@@ -1,6 +1,6 @@
+
 import React, { useState } from "react";
 import { useNavigate, Link } from "react-router-dom";
-//import "./inicioSesion.css"; // Solo importa el CSS específico (25 líneas)
 
 export default function InicioSesion() {
   const [correo, setCorreo] = useState("");
@@ -14,49 +14,79 @@ export default function InicioSesion() {
     setLoading(true);
     setError("");
 
+    // DEBUGGING: Mostrar datos que se envían
+    console.log("Datos de login:", { 
+      correo: correo.trim().toLowerCase(), 
+      contrasena: contrasena.length + " caracteres" 
+    });
+
     try {
-      // Paso 1: Login
       const loginRes = await fetch("https://checknote-27fe.onrender.com/api/v1/auth/login", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
         },
-        body: JSON.stringify({ correo, contrasena }),
+        // Normalizar email como hace tu modelo
+        body: JSON.stringify({ 
+          correo: correo.trim().toLowerCase(), 
+          contrasena 
+        }),
       });
+
+      // DEBUGGING: Mostrar response completa
+      console.log("Response Status:", loginRes.status);
+      console.log("Response Headers:", Object.fromEntries(loginRes.headers.entries()));
 
       if (!loginRes.ok) {
         const errorData = await loginRes.json();
-        throw new Error(errorData.message || "Credenciales incorrectas. Inténtalo de nuevo.");
+        console.log("Error Response:", errorData); // Ver qué dice exactamente el backend
+        
+        // Mensajes específicos según el error
+        if (loginRes.status === 401) {
+          throw new Error(errorData.message || "Email o contraseña incorrectos");
+        } else if (loginRes.status === 423) {
+          throw new Error("Cuenta temporalmente bloqueada por seguridad. Intenta en unos minutos.");
+        } else if (loginRes.status === 429) {
+          throw new Error("Demasiados intentos. Espera un momento antes de intentar nuevamente.");
+        } else {
+          throw new Error(errorData.message || "Error en el servidor");
+        }
       }
 
       const loginData = await loginRes.json();
-      const token = loginData.token;
-      const user = loginData.user;
+      const token = loginData.data?.token || loginData.token; // Puede estar en data o directamente
+      const user = loginData.data?.usuario || loginData.data?.user || loginData.user;
 
-      // Paso 2: Verificar token (CORREGIDO)
+      console.log("Login exitoso:", { token: token?.substring(0, 20) + "...", user: user?.correo });
+
+      if (!token || !user) {
+        throw new Error("Respuesta del servidor incompleta");
+      }
+
       const verifyRes = await fetch("https://checknote-27fe.onrender.com/api/v1/auth/verify", {
         method: "POST",
         headers: {
           "Authorization": `Bearer ${token}`
         },
-        // Sin Content-Type y sin body porque solo enviamos el token en el header
       });
 
       if (!verifyRes.ok) {
-        throw new Error("La sesión no es válida. Por favor, inicia sesión de nuevo.");
+        throw new Error("Token inválido del servidor");
       }
-
-      // Paso 3: Guardar datos si todo es exitoso
+      
+      // Guardar datos
       localStorage.setItem('token', token);
       localStorage.setItem('user', JSON.stringify(user));
-      localStorage.setItem('userId', user._id); 
+      localStorage.setItem('userId', user._id || user.id); 
       localStorage.setItem('userName', user.nombres); 
 
-      // Paso 4: Redirigir
+      // Redirigir
       navigate("/home", { state: { success: "¡Inicio de sesión exitoso!" } });
 
     } catch (err) {
+      console.error("Error completo:", err);
       setError(err.message);
+      
       // Limpiar localStorage en caso de error
       localStorage.removeItem('token');
       localStorage.removeItem('user');
@@ -68,23 +98,16 @@ export default function InicioSesion() {
   };
 
   return (
-    // ⬇️ ESTAS CLASES VIENEN DEL GlobalCSS1.css
     <div className="main-container solid-bg">
       <div className="card login-style with-shadow">
-        
-        {/* Logo - usa .logo .size-lg del global */}
         <div className="logo size-lg">
           <img src="/logo.png" alt="Checknote logo" />
         </div>
 
-        {/* Títulos - usan .title-secondary y .subtitle del global */}
         <h2 className="title-secondary">¡Bienvenido nuevamente!</h2>
         <p className="subtitle">Ingrese su correo y contraseña para acceder</p>
         
-        {/* Formulario - usa .form .spaced del global */}
         <form className="form spaced" onSubmit={handleSubmit}>
-          
-          {/* Campo email - usa .field-group, .field-icon, .field-input del global */}
           <div className="field-group">
             <img src="/correo.png" alt="Email" className="field-icon" />
             <div className="field-input">
@@ -100,7 +123,6 @@ export default function InicioSesion() {
             </div>
           </div>
           
-          {/* Campo contraseña */}
           <div className="field-group">
             <img src="/clave.png" alt="Contraseña" className="field-icon" />
             <div className="field-input">
@@ -116,23 +138,19 @@ export default function InicioSesion() {
             </div>
           </div>
           
-          {/* Botón submit - usa .btn-container, .btn, .btn-primary, .btn-rounded del global */}
           <div className="btn-container">
-            <button type="submit" className="btn btn-primary btn-rounded" disabled={loading}>
+            <button type="submit" className="btn btn-primary" disabled={loading}>
               {loading ? "Iniciando..." : "Iniciar sesión"}
             </button>
           </div>
         </form>
 
-        {/* Error - usa .text-error del global */}
         {error && <p className="text-error">{error}</p>}
         
-        {/* Link olvidar contraseña - usa .link .small del global */}
         <Link to="/olvidar-password" className="link small">
           ¿Olvidó su contraseña?
         </Link>
         
-        {/* Enlaces finales - usa .links-section y .link del global */}
         <div className="links-section">
           ¿No tiene cuenta? <Link to="/registro" className="link">Registrarse</Link>
         </div>

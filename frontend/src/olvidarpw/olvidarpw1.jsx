@@ -14,7 +14,7 @@ export default function OlvidarPw1() {
 
     try {
       // RUTA CORREGIDA: /api/v1/auth/ en lugar de /api/v1/users/
-      const res = await fetch("https://checknote-27fe.onrender.com/auth/request-password-reset", {
+      const res = await fetch("https://checknote-27fe.onrender.com/api/v1/auth/request-password-reset", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ email }),
