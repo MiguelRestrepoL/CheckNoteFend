@@ -38,7 +38,7 @@ function Registro() {
     setLoading(true);
 
     try {
-      const res = await fetch("https://checknote-27fe.onrender.com/api/users/", {
+      const res = await fetch("https://checknote-27fe.onrender.com/api/v1/users/", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -207,6 +207,11 @@ function Registro() {
           {/* Links */}
           <div className="links-section">
             <Link to="#" className="link small">Condiciones de uso</Link> | <Link to="#" className="link small">Términos y servicios</Link>
+          </div>
+
+          {/* Link para ir al login */}
+          <div className="links-section">
+            ¿Ya tiene cuenta? <Link to="/login" className="link">Inicie sesión</Link>
           </div>
         </div>
       </div>
