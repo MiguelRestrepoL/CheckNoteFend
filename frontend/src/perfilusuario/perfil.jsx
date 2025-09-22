@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { useNavigate, Link } from "react-router-dom";
-import "../GlobalCSS3.css";
+import "./GlobalCSS3.css";
 
 export default function Perfil() {
   const [activeSection, setActiveSection] = useState("personal");
@@ -14,7 +14,7 @@ export default function Perfil() {
   const [personalData, setPersonalData] = useState({
     nombres: "",
     apellidos: "",
-    fechaNacimiento: ""
+    edad: "" // Cambiar fechaNacimiento por edad según el modelo
   });
 
   const [cuentaData, setCuentaData] = useState({
@@ -72,9 +72,7 @@ export default function Perfil() {
         throw new Error("Error procesando datos del servidor");
       }
 
-      // Formatear fechas
-      const fechaNacimiento = userData.fechaNacimiento ? 
-        new Date(userData.fechaNacimiento).toISOString().split('T')[0] : "";
+      // Formatear fechas - NOTA: El modelo tiene edad, no fechaNacimiento
       const fechaCreacion = userData.createdAt ? 
         new Date(userData.createdAt).toISOString().split('T')[0] : 
         new Date().toISOString().split('T')[0];
@@ -82,12 +80,24 @@ export default function Perfil() {
       setPersonalData({
         nombres: userData.nombres || "",
         apellidos: userData.apellidos || "",
-        fechaNacimiento
+        edad: userData.edad || "" // Usar edad del modelo
       });
 
       setCuentaData({
-        email: userData.correo || userData.email || "",
+        email: userData.correo || "",
         fechaCreacion
+      });
+
+      console.log("Final state data:", {
+        personalData: {
+          nombres: userData.nombres || "",
+          apellidos: userData.apellidos || "",
+          edad: userData.edad || ""
+        },
+        cuentaData: {
+          email: userData.correo || "",
+          fechaCreacion
+        }
       });
 
       // Actualizar localStorage
@@ -106,11 +116,10 @@ export default function Perfil() {
           setPersonalData({
             nombres: parsedUser.nombres || localStorage.getItem('userName') || "",
             apellidos: parsedUser.apellidos || "",
-            fechaNacimiento: parsedUser.fechaNacimiento ? 
-              new Date(parsedUser.fechaNacimiento).toISOString().split('T')[0] : ""
+            edad: parsedUser.edad || ""
           });
           setCuentaData({
-            email: parsedUser.correo || parsedUser.email || "",
+            email: parsedUser.correo || "",
             fechaCreacion: parsedUser.createdAt ? 
               new Date(parsedUser.createdAt).toISOString().split('T')[0] : 
               new Date().toISOString().split('T')[0]
@@ -191,9 +200,10 @@ export default function Perfil() {
       const updateData = {
         nombres: personalData.nombres.trim(),
         apellidos: personalData.apellidos.trim(),
-        ...(personalData.fechaNacimiento && { fechaNacimiento: personalData.fechaNacimiento })
+        ...(personalData.edad && { edad: parseInt(personalData.edad) })
       };
 
+      console.log("Personal update data:", updateData);
       await makeRequest('/users/me', updateData);
       localStorage.setItem('userName', personalData.nombres);
       await cargarDatosUsuario();
@@ -390,12 +400,15 @@ export default function Perfil() {
                       </div>
 
                       <div className="form-field">
-                        <div className="form-label">FECHA NACIMIENTO ✏️</div>
+                        <div className="form-label">EDAD ✏️</div>
                         <input
-                          type="date"
-                          name="fechaNacimiento"
-                          value={personalData.fechaNacimiento}
+                          type="number"
+                          name="edad"
+                          value={personalData.edad}
                           onChange={handlePersonalChange}
+                          placeholder="Tu edad"
+                          min="13"
+                          max="120"
                           className="form-input width-sm"
                         />
                       </div>
