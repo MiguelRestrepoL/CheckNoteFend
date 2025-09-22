@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect } from "react";
 import { useLocation, Link, useNavigate } from "react-router-dom";
 
@@ -10,7 +11,6 @@ export default function Inicio() {
   });
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
-  const [serverStatus, setServerStatus] = useState("checking");
   
   const location = useLocation();
   const navigate = useNavigate();
@@ -20,7 +20,7 @@ export default function Inicio() {
   const storedUser = localStorage.getItem('user');
   const user = storedUser ? JSON.parse(storedUser) : { nombres: 'Usuario' };
 
-  // Cargar tareas del usuario - CON VERIFY INTEGRADO
+  // Función simplificada para cargar tareas
   const cargarTareas = async () => {
     const token = localStorage.getItem('token');
     
@@ -36,135 +36,60 @@ export default function Inicio() {
       setLoading(true);
       setError("");
 
-      console.log("=== CARGANDO TAREAS CON VERIFY ===");
-      console.log("1. Token encontrado:", token ? "✅" : "❌");
+      console.log("Cargando tareas...");
       
-      // PASO 1: Verificar token antes de usar
-      console.log("2. Verificando token...");
-      const verifyRes = await fetch("https://checknote-27fe.onrender.com/api/v1/auth/verify", {
-        method: "POST",
-        headers: {
-          "Authorization": `Bearer ${token}`
-        }
-      });
-
-      console.log("3. Verify status:", verifyRes.status);
-
-      if (!verifyRes.ok) {
-        const verifyError = await verifyRes.json();
-        console.log("❌ Token inválido en verify:", verifyError);
-        
-        // Limpiar localStorage y redirigir
-        localStorage.removeItem('token');
-        localStorage.removeItem('user');
-        localStorage.removeItem('userId');
-        localStorage.removeItem('userName');
-        
-        setError("Tu sesión ha expirado. Redirigiendo al login...");
-        setTimeout(() => {
-          navigate('/login');
-        }, 2000);
-        return;
-      }
-
-      console.log("4. Token verificado correctamente ✅");
-      
-      // PASO 2.5: Extraer usuario del verify para renovar token si es necesario
-      const verifyData = await verifyRes.json();
-      console.log("4.1 Datos del verify:", verifyData);
-      
-      // Si el verify incluye un token renovado, usarlo
-      const tokenToUse = verifyData.data?.token || token;
-      if (verifyData.data?.token && verifyData.data.token !== token) {
-        console.log("4.2 Token renovado encontrado, actualizando localStorage");
-        localStorage.setItem('token', verifyData.data.token);
-      }
-
-      // PASO 3: Usar el token (original o renovado)
-      console.log("5. Cargando tareas con token:", tokenToUse === token ? "original" : "renovado");
       const response = await fetch("https://checknote-27fe.onrender.com/api/v1/tasks", {
         method: "GET",
         headers: {
-          "Authorization": `Bearer ${tokenToUse}`,
+          "Authorization": `Bearer ${token}`,
+          "Content-Type": "application/json",
         },
       });
 
-      console.log("6. Status respuesta tasks:", response.status);
-      console.log("7. Headers respuesta:", Object.fromEntries(response.headers.entries()));
+      console.log("Status respuesta:", response.status);
 
       if (!response.ok) {
         if (response.status === 401) {
-          console.log("❌ Error 401 DESPUÉS del verify exitoso - Problema del servidor");
+          // Token expirado o inválido
+          localStorage.removeItem('token');
+          localStorage.removeItem('user');
+          localStorage.removeItem('userId');
+          localStorage.removeItem('userName');
           
-          // Intentar una vez más con el token recién verificado
-          console.log("8. Reintentando una vez más...");
-          const retryResponse = await fetch("https://checknote-27fe.onrender.com/api/v1/tasks", {
-            method: "GET",
-            headers: {
-              "Authorization": `Bearer ${token}`,
-            },
-          });
-
-          if (!retryResponse.ok) {
-            console.log("❌ Reintento también falló - Token definitivamente inválido");
-            localStorage.removeItem('token');
-            localStorage.removeItem('user');
-            localStorage.removeItem('userId');
-            localStorage.removeItem('userName');
-            setError("Tu sesión ha expirado. Redirigiendo al login...");
-            setTimeout(() => {
-              navigate('/login');
-            }, 2000);
-            return;
-          }
-          
-          console.log("✅ Reintento exitoso");
-          // Usar la respuesta del reintento
-          const responseText = await retryResponse.text();
-          console.log("9. Respuesta del reintento:", responseText);
-          
-          // Procesar respuesta (código igual que antes)
-          let tareasData = [];
-          try {
-            const responseData = responseText ? JSON.parse(responseText) : {};
-            tareasData = responseData.tasks || responseData.data || responseData;
-            if (!Array.isArray(tareasData)) tareasData = [];
-          } catch (parseError) {
-            console.error("Error parseando JSON:", parseError);
-          }
-          
-          const tareasOrganizadas = {
-            pendiente: tareasData.filter(tarea => tarea.estado === 'pendiente'),
-            en_progreso: tareasData.filter(tarea => tarea.estado === 'en_progreso'),
-            terminada: tareasData.filter(tarea => tarea.estado === 'terminada')
-          };
-          
-          setTareas(tareasOrganizadas);
+          setError("Tu sesión ha expirado. Redirigiendo al login...");
+          setTimeout(() => {
+            navigate('/login');
+          }, 2000);
           return;
         }
+        
         throw new Error(`Error ${response.status}: ${response.statusText}`);
       }
 
-      // Proceso normal si la primera petición fue exitosa
       const responseText = await response.text();
-      console.log("8. Respuesta exitosa:", responseText);
+      console.log("Respuesta del servidor:", responseText);
 
       let tareasData = [];
       try {
         const responseData = responseText ? JSON.parse(responseText) : {};
+        // Manejar diferentes estructuras de respuesta
         tareasData = responseData.tasks || responseData.data || responseData;
-        if (!Array.isArray(tareasData)) tareasData = [];
+        if (!Array.isArray(tareasData)) {
+          tareasData = [];
+        }
       } catch (parseError) {
         console.error("Error parseando JSON:", parseError);
+        tareasData = [];
       }
       
+      // Organizar tareas por estado
       const tareasOrganizadas = {
         pendiente: tareasData.filter(tarea => tarea.estado === 'pendiente'),
         en_progreso: tareasData.filter(tarea => tarea.estado === 'en_progreso'),
         terminada: tareasData.filter(tarea => tarea.estado === 'terminada')
       };
 
-      console.log("9. Tareas organizadas:", {
+      console.log("Tareas organizadas:", {
         pendiente: tareasOrganizadas.pendiente.length,
         en_progreso: tareasOrganizadas.en_progreso.length,
         terminada: tareasOrganizadas.terminada.length
@@ -173,7 +98,7 @@ export default function Inicio() {
       setTareas(tareasOrganizadas);
 
     } catch (err) {
-      console.error("❌ Error completo:", err);
+      console.error("Error cargando tareas:", err);
       setError("Error al cargar las tareas: " + err.message);
     } finally {
       setLoading(false);
@@ -236,23 +161,6 @@ export default function Inicio() {
         <div className="topbar-left">
           <img src="/usuario.png" alt="usuario" className="icon user-icon" />
           <span className="username">{user.nombres || 'Invitado'}</span>
-          
-          {/* Indicador de estado del servidor */}
-          <span 
-            className="server-status"
-            style={{
-              marginLeft: '10px',
-              fontSize: '12px',
-              padding: '2px 6px',
-              borderRadius: '4px',
-              backgroundColor: serverStatus === 'online' ? '#22c55e' : 
-                              serverStatus === 'offline' ? '#ef4444' : '#f59e0b',
-              color: 'white'
-            }}
-          >
-            {serverStatus === 'online' ? '🟢 Online' : 
-             serverStatus === 'offline' ? '🔴 Offline' : '🟡 Checking'}
-          </span>
         </div>
 
         <div className="topbar-center">
@@ -312,7 +220,7 @@ export default function Inicio() {
             </div>
           )}
 
-          {/* Debug info */}
+          {/* Debug info (solo en desarrollo) */}
           {process.env.NODE_ENV === 'development' && (
             <div style={{ 
               background: '#2d3748', 
@@ -324,7 +232,6 @@ export default function Inicio() {
             }}>
               <strong>DEBUG INFO:</strong><br />
               Token: {localStorage.getItem('token') ? '✅ Presente' : '❌ Ausente'}<br />
-              Servidor: {serverStatus}<br />
               Total tareas: {totalTareas}
             </div>
           )}
