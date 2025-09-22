@@ -19,13 +19,12 @@ export default function Inicio() {
   const storedUser = localStorage.getItem('user');
   const user = storedUser ? JSON.parse(storedUser) : { nombres: 'Usuario' };
 
-  // Función para cargar tareas con mejor debugging
+  // Función SUPER SIMPLE para cargar tareas - SIN VERIFY
   const cargarTareas = async () => {
     const token = localStorage.getItem('token');
     
-    console.log("=== INICIANDO CARGA DE TAREAS ===");
+    console.log("=== CARGA SIMPLE DE TAREAS ===");
     console.log("Token presente:", token ? "✅ SÍ" : "❌ NO");
-    console.log("Token preview:", token ? token.substring(0, 20) + "..." : "N/A");
     
     if (!token) {
       setError("No hay sesión activa. Redirigiendo al login...");
@@ -39,37 +38,7 @@ export default function Inicio() {
       setLoading(true);
       setError("");
 
-      // PASO 1: Verificar que el token sigue siendo válido
-      console.log("PASO 1: Verificando token antes de cargar tareas...");
-      const verifyResponse = await fetch("https://checknote-27fe.onrender.com/api/v1/auth/verify", {
-        method: "POST",
-        headers: {
-          "Authorization": `Bearer ${token}`,
-          "Content-Type": "application/json",
-        },
-      });
-
-      console.log("Verify status:", verifyResponse.status);
-      
-      if (!verifyResponse.ok) {
-        console.log("❌ Token inválido en verify");
-        localStorage.removeItem('token');
-        localStorage.removeItem('user');
-        localStorage.removeItem('userId');
-        localStorage.removeItem('userName');
-        
-        setError("Tu sesión ha expirado. Redirigiendo al login...");
-        setTimeout(() => {
-          navigate('/login');
-        }, 2000);
-        return;
-      }
-
-      const verifyData = await verifyResponse.json();
-      console.log("✅ Token verificado correctamente");
-      
-      // PASO 2: Usar el token verificado para cargar tareas
-      console.log("PASO 2: Cargando tareas con token verificado...");
+      console.log("Cargando tareas directamente (SIN verify)...");
       
       const response = await fetch("https://checknote-27fe.onrender.com/api/v1/tasks", {
         method: "GET",
@@ -84,9 +53,9 @@ export default function Inicio() {
 
       if (!response.ok) {
         if (response.status === 401) {
-          console.log("❌ 401 en /tasks después de verify exitoso");
+          console.log("❌ 401 en /tasks - Token inválido o expirado");
           
-          // Limpiar sesión
+          // Limpiar sesión solo si realmente falló
           localStorage.removeItem('token');
           localStorage.removeItem('user');
           localStorage.removeItem('userId');
@@ -101,11 +70,12 @@ export default function Inicio() {
         
         const errorText = await response.text();
         console.log("Error response body:", errorText);
-        throw new Error(`Error ${response.status}: ${response.statusText}`);
+        throw new Error(`Error ${response.status}: ${errorText || response.statusText}`);
       }
 
+      // Procesar respuesta exitosa
       const responseText = await response.text();
-      console.log("Respuesta del servidor:", responseText);
+      console.log("✅ Respuesta exitosa:", responseText);
 
       let tareasData = [];
       try {
