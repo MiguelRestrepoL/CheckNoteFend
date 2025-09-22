@@ -39,6 +39,9 @@ export default function Inicio() {
       setError("");
 
       console.log("Cargando tareas directamente (SIN verify)...");
+      console.log("Token completo que se está enviando:", token);
+      console.log("Longitud del token:", token.length);
+      console.log("¿Empieza con 'Bearer'?", token.startsWith('Bearer'));
       
       const response = await fetch("https://checknote-27fe.onrender.com/api/v1/tasks", {
         method: "GET",
@@ -52,10 +55,35 @@ export default function Inicio() {
       console.log("Tasks response headers:", Object.fromEntries(response.headers.entries()));
 
       if (!response.ok) {
+        const errorText = await response.text();
+        console.log("❌ Error response body completo:", errorText);
+        
         if (response.status === 401) {
           console.log("❌ 401 en /tasks - Token inválido o expirado");
           
-          // Limpiar sesión solo si realmente falló
+          // ANTES de limpiar, vamos a intentar hacer verify nuevamente para comparar
+          console.log("🔍 Haciendo verify nuevamente para comparar...");
+          try {
+            const testVerify = await fetch("https://checknote-27fe.onrender.com/api/v1/auth/verify", {
+              method: "POST",
+              headers: {
+                "Authorization": `Bearer ${token}`,
+                "Content-Type": "application/json",
+              },
+            });
+            console.log("🔍 Test verify status:", testVerify.status);
+            if (testVerify.ok) {
+              const testVerifyData = await testVerify.json();
+              console.log("🔍 Test verify data:", testVerifyData);
+            } else {
+              const testVerifyError = await testVerify.text();
+              console.log("🔍 Test verify error:", testVerifyError);
+            }
+          } catch (verifyErr) {
+            console.log("🔍 Error en test verify:", verifyErr);
+          }
+          
+          // Limpiar sesión solo después de la investigación
           localStorage.removeItem('token');
           localStorage.removeItem('user');
           localStorage.removeItem('userId');
@@ -68,7 +96,6 @@ export default function Inicio() {
           return;
         }
         
-        const errorText = await response.text();
         console.log("Error response body:", errorText);
         throw new Error(`Error ${response.status}: ${errorText || response.statusText}`);
       }
