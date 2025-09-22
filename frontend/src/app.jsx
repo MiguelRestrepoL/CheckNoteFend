@@ -23,7 +23,7 @@ function App() {
          <Route path="/olvidar-password2" element={<OlvidarPw2 />} />
          <Route path="/home" element={<Home />} />
          <Route path="/crear-tarea" element={<CrearTarea />} />
-         <Route path="/editar-tarea/:id" element={<EditarTarea />} />
+         <Route path="/editar-tarea" element={<EditarTarea />} />
          <Route path="/perfil" element={<Perfil />} />
       </Routes>
     </div>
