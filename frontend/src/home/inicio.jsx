@@ -1,3 +1,4 @@
+import React, { useState, useEffect } from "react";
 import { useLocation, Link, useNavigate } from "react-router-dom";
 
 export default function Inicio() {
@@ -391,3 +392,4 @@ export default function Inicio() {
       </footer>
     </div>
   );
+}
