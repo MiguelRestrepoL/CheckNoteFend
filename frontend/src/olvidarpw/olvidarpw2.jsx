@@ -249,7 +249,7 @@ export default function OlvidarPw2() {
             padding: '10px',
             background: '#f8f9fa',
             borderRadius: '5px',
-            color: '#495057'
+
           }}>
             <strong>Requisitos de contraseña:</strong>
             <ul style={{ marginTop: '5px', paddingLeft: '15px' }}>

@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { useNavigate, Link } from "react-router-dom";
-import "./GlobalCSS3.css";
+import "../GlobalCSS3.css";
 
 export default function Perfil() {
   const [activeSection, setActiveSection] = useState("personal");
