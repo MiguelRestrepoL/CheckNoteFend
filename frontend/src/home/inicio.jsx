@@ -10,7 +10,7 @@ export default function Inicio() {
   });
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
-  const [serverStatus, setServerStatus] = useState("checking"); // checking, online, offline
+  const [serverStatus, setServerStatus] = useState("checking");
   
   const location = useLocation();
   const navigate = useNavigate();
@@ -20,12 +20,63 @@ export default function Inicio() {
   const storedUser = localStorage.getItem('user');
   const user = storedUser ? JSON.parse(storedUser) : { nombres: 'Usuario' };
 
+  // NUEVA FUNCIÓN: Verificar token antes de usar
+  const verificarToken = async () => {
+    const token = localStorage.getItem('token');
+    
+    if (!token) {
+      console.log("❌ No hay token en localStorage");
+      return false;
+    }
+
+    try {
+      console.log("🔐 Verificando token antes de cargar tareas...");
+      
+      const verifyRes = await fetch("https://checknote-27fe.onrender.com/api/v1/auth/verify", {
+        method: "POST",
+        headers: {
+          "Authorization": `Bearer ${token}`,
+          "Content-Type": "application/json"
+        }
+      });
+
+      console.log("Verify response status:", verifyRes.status);
+
+      if (verifyRes.ok) {
+        const verifyData = await verifyRes.json();
+        console.log("✅ Token válido:", verifyData);
+        return true;
+      } else {
+        const errorData = await verifyRes.json();
+        console.log("❌ Token inválido:", errorData);
+        
+        // Limpiar localStorage si el token es inválido
+        localStorage.removeItem('token');
+        localStorage.removeItem('user');
+        localStorage.removeItem('userId');
+        localStorage.removeItem('userName');
+        
+        return false;
+      }
+    } catch (error) {
+      console.error("❌ Error verificando token:", error);
+      
+      // Limpiar localStorage en caso de error de red
+      localStorage.removeItem('token');
+      localStorage.removeItem('user');
+      localStorage.removeItem('userId');
+      localStorage.removeItem('userName');
+      
+      return false;
+    }
+  };
+
   // Verificar estado del servidor
   const checkServerStatus = async () => {
     try {
       console.log("🔍 Verificando estado del servidor...");
       
-      const response = await fetch("https://checknote-27fe.onrender.com/api/v1/health", {
+      const response = await fetch("https://checknote-27fe.onrender.com/health", {
         method: "GET",
         headers: {
           "Content-Type": "application/json"
@@ -48,40 +99,32 @@ export default function Inicio() {
     }
   };
 
-  // Cargar tareas del usuario
+  // Cargar tareas del usuario - CORREGIDO
   const cargarTareas = async () => {
-    const token = localStorage.getItem('token');
-    
-    if (!token) {
-      setError("No hay sesión activa. Redirigiendo al login...");
-      setTimeout(() => {
-        navigate('/login');
-      }, 2000);
-      return;
-    }
-
     try {
       setLoading(true);
       setError("");
 
       console.log("=== CARGANDO TAREAS ===");
-      console.log("1. Token presente:", token ? "✅" : "❌");
+
+      // PASO 1: Verificar que el token sea válido
+      const tokenValido = await verificarToken();
+      
+      if (!tokenValido) {
+        setError("Tu sesión ha expirado. Redirigiendo al login...");
+        setTimeout(() => {
+          navigate('/login');
+        }, 2000);
+        return;
+      }
+
+      // PASO 2: Obtener token ya validado
+      const token = localStorage.getItem('token');
+      
+      console.log("1. Token validado exitosamente ✅");
       console.log("2. URL:", "https://checknote-27fe.onrender.com/api/v1/tasks");
-      console.log("3. Headers:", {
-        "Authorization": `Bearer ${token.substring(0, 20)}...`,
-        "Content-Type": "application/json"
-      });
 
-      // Verificar servidor primero (temporal: comentado para probar directo)
-      // const serverOnline = await checkServerStatus();
-      // 
-      // if (!serverOnline) {
-      //   setError("El servidor no está disponible en este momento. Intenta más tarde.");
-      //   return;
-      // }
-      console.log("⏭️ Saltando verificación de servidor, probando directo con /tasks");
-
-      // Ya no necesitamos proxy CORS - el problema era el token
+      // PASO 3: Cargar tareas con token válido
       const response = await fetch("https://checknote-27fe.onrender.com/api/v1/tasks", {
         method: "GET",
         headers: {
@@ -91,17 +134,18 @@ export default function Inicio() {
         },
       });
 
-      console.log("4. Status respuesta:", response.status);
-      console.log("5. Status text:", response.statusText);
-      console.log("6. Headers respuesta:", Object.fromEntries(response.headers.entries()));
+      console.log("3. Status respuesta tasks:", response.status);
+      console.log("4. Status text:", response.statusText);
 
       if (!response.ok) {
         if (response.status === 401) {
-          console.log("❌ Token expirado o inválido");
+          console.log("❌ Token expirado durante la petición de tareas");
+          // Limpiar y redirigir
           localStorage.removeItem('token');
           localStorage.removeItem('user');
           localStorage.removeItem('userId');
           localStorage.removeItem('userName');
+          
           setError("Tu sesión ha expirado. Redirigiendo al login...");
           setTimeout(() => {
             navigate('/login');
@@ -111,10 +155,10 @@ export default function Inicio() {
           setError("No tienes permisos para acceder a las tareas.");
           return;
         } else if (response.status === 404) {
-          setError("Endpoint de tareas no encontrado. Verifica la configuración del servidor.");
+          setError("Endpoint de tareas no encontrado.");
           return;
         } else if (response.status === 500) {
-          setError("Error interno del servidor. El equipo técnico ha sido notificado.");
+          setError("Error interno del servidor.");
           return;
         }
         
@@ -122,20 +166,26 @@ export default function Inicio() {
       }
 
       const responseText = await response.text();
-      console.log("7. Respuesta raw:", responseText);
+      console.log("5. Respuesta raw:", responseText);
 
-      let tareasData;
+      let responseData;
       try {
-        tareasData = responseText ? JSON.parse(responseText) : [];
-        console.log("8. Tareas parseadas:", tareasData);
+        responseData = responseText ? JSON.parse(responseText) : {};
+        console.log("6. Respuesta parseada:", responseData);
       } catch (parseError) {
         console.error("Error parseando JSON:", parseError);
         throw new Error("Respuesta del servidor no válida");
       }
 
-      // Validar que tareasData es un array
+      // CORREGIDO: Extraer tareas de la respuesta correcta
+      const tareasData = responseData.tasks || responseData.data || responseData || [];
+      
+      console.log("7. Tareas extraídas:", tareasData);
+      console.log("8. Es array?", Array.isArray(tareasData));
+
       if (!Array.isArray(tareasData)) {
-        console.error("Respuesta no es un array:", typeof tareasData);
+        console.error("Las tareas no son un array:", typeof tareasData);
+        console.log("Estructura de respuesta:", responseData);
         setError("Formato de respuesta inesperado del servidor.");
         return;
       }
@@ -154,16 +204,16 @@ export default function Inicio() {
       });
 
       setTareas(tareasOrganizadas);
+      setServerStatus("online");
 
     } catch (err) {
       console.error("❌ Error completo:", err);
       console.error("Stack:", err.stack);
       
-      // Manejo específico de errores de red
+      // Manejo específico de errores
       if (err.name === 'TypeError' && err.message.includes('fetch')) {
-        setError("Error de conexión. Verifica tu internet o que el servidor esté funcionando.");
-      } else if (err.message.includes('CORS')) {
-        setError("Error de configuración del servidor (CORS). Contacta al administrador.");
+        setError("Error de conexión. Verifica tu internet.");
+        setServerStatus("offline");
       } else if (err.message.includes('JSON')) {
         setError("Error procesando respuesta del servidor.");
       } else {
@@ -271,45 +321,42 @@ export default function Inicio() {
             <div className="success-message">{successMessage}</div>
           )}
 
-          {/* Mensaje de error mejorado */}
+          {/* Mensaje de error */}
           {error && (
             <div style={{
               padding: '16px',
-              borderRadius: 'var(--radius-sm)',
+              borderRadius: '8px',
               background: 'linear-gradient(135deg, #ef4444, #dc2626)',
               color: 'white',
               fontSize: '14px',
               textAlign: 'center',
               fontWeight: '500',
-              marginBottom: 'var(--spacing-lg)',
-              position: 'relative'
+              marginBottom: '20px'
             }}>
               <div style={{ fontWeight: 'bold', marginBottom: '8px' }}>
                 ⚠️ Error de Conexión
               </div>
               <div>{error}</div>
               
-              {serverStatus === 'offline' && (
-                <button
-                  onClick={cargarTareas}
-                  style={{
-                    marginTop: '12px',
-                    padding: '8px 16px',
-                    backgroundColor: 'rgba(255,255,255,0.2)',
-                    border: '1px solid rgba(255,255,255,0.3)',
-                    borderRadius: '4px',
-                    color: 'white',
-                    cursor: 'pointer',
-                    fontSize: '12px'
-                  }}
-                >
-                  🔄 Reintentar
-                </button>
-              )}
+              <button
+                onClick={cargarTareas}
+                style={{
+                  marginTop: '12px',
+                  padding: '8px 16px',
+                  backgroundColor: 'rgba(255,255,255,0.2)',
+                  border: '1px solid rgba(255,255,255,0.3)',
+                  borderRadius: '4px',
+                  color: 'white',
+                  cursor: 'pointer',
+                  fontSize: '12px'
+                }}
+              >
+                🔄 Reintentar
+              </button>
             </div>
           )}
 
-          {/* Debug info en desarrollo */}
+          {/* Debug info */}
           {process.env.NODE_ENV === 'development' && (
             <div style={{ 
               background: '#2d3748', 
@@ -322,8 +369,7 @@ export default function Inicio() {
               <strong>DEBUG INFO:</strong><br />
               Token: {localStorage.getItem('token') ? '✅ Presente' : '❌ Ausente'}<br />
               Servidor: {serverStatus}<br />
-              Total tareas: {totalTareas}<br />
-              URL: https://checknote-27fe.onrender.com/api/v1/tasks
+              Total tareas: {totalTareas}
             </div>
           )}
 
@@ -391,24 +437,17 @@ export default function Inicio() {
             </div>
           </div>
 
-          {/* Botón flotante expandible */}
+          {/* Botón flotante */}
           <div className="add-wrap">
             <div className="floating-menu">
               <div className={`floating-options ${menuOpen ? 'active' : ''}`}>
-                <Link to="/crear-tarea" className="floating-option create" title="Crear tarea">
-                  📝
-                </Link>
-                <Link to="/editar-tarea" className="floating-option edit" title="Editar tarea">
-                  ✏️
-                </Link>
-                <Link to="/eliminar-tarea" className="floating-option delete" title="Eliminar tarea">
-                  🗑️
-                </Link>
+                <Link to="/crear-tarea" className="floating-option create">📝</Link>
+                <Link to="/editar-tarea" className="floating-option edit">✏️</Link>
+                <Link to="/eliminar-tarea" className="floating-option delete">🗑️</Link>
               </div>
               <button 
                 className={`add-btn ${menuOpen ? 'active' : ''}`}
                 onClick={toggleMenu}
-                aria-label={menuOpen ? 'Cerrar menú' : 'Abrir menú'}
               >
                 +
               </button>
