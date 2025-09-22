@@ -68,13 +68,24 @@ export default function Inicio() {
       }
 
       console.log("4. Token verificado correctamente ✅");
+      
+      // PASO 2.5: Extraer usuario del verify para renovar token si es necesario
+      const verifyData = await verifyRes.json();
+      console.log("4.1 Datos del verify:", verifyData);
+      
+      // Si el verify incluye un token renovado, usarlo
+      const tokenToUse = verifyData.data?.token || token;
+      if (verifyData.data?.token && verifyData.data.token !== token) {
+        console.log("4.2 Token renovado encontrado, actualizando localStorage");
+        localStorage.setItem('token', verifyData.data.token);
+      }
 
-      // PASO 2: Usar el mismo token que acabamos de verificar
-      console.log("5. Cargando tareas con token verificado...");
+      // PASO 3: Usar el token (original o renovado)
+      console.log("5. Cargando tareas con token:", tokenToUse === token ? "original" : "renovado");
       const response = await fetch("https://checknote-27fe.onrender.com/api/v1/tasks", {
         method: "GET",
         headers: {
-          "Authorization": `Bearer ${token}`,
+          "Authorization": `Bearer ${tokenToUse}`,
         },
       });
 
