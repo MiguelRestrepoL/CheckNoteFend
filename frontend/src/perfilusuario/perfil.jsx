@@ -61,13 +61,20 @@ export default function Perfil() {
       const responseData = await response.json();
       console.log("Response from /users/me:", responseData);
       
-      // Extraer datos del usuario - ajustar según la estructura de respuesta
-      const userData = responseData.data || responseData.user || responseData;
+      // Extraer datos del usuario - los datos están en responseData.data.usuario
+      let userData = responseData.data?.usuario || responseData.user || responseData.usuario || responseData;
+      
+      // Si aún no encontramos datos, revisar en responseData.data
+      if (!userData.nombres && responseData.data) {
+        userData = responseData.data;
+      }
+      
       console.log("USER data extracted:", userData);
+      console.log("Available fields in userData:", Object.keys(userData || {}));
 
       // Formatear fechas
-      const fechaCreacion = userData.createdAt ? 
-        new Date(userData.createdAt).toISOString().split('T')[0] : 
+      const fechaCreacion = userData.createdAt || userData.fechaRegistro ? 
+        new Date(userData.createdAt || userData.fechaRegistro).toISOString().split('T')[0] : 
         new Date().toISOString().split('T')[0];
 
       setPersonalData({
@@ -321,15 +328,17 @@ export default function Perfil() {
         throw new Error("La nueva contraseña debe ser diferente a la actual");
       }
 
-      // Preparar datos para cambio de contraseña
+      // Preparar datos para cambio de contraseña - basado en el error del servidor
       const updateData = {
         contrasenaActual: manejoData.currentPassword,
-        contrasenaNueva: manejoData.password
+        contrasenaNueva: manejoData.password,
+        confirmacion: manejoData.confirmPassword
       };
 
       console.log("Password change data:", { 
         hasCurrentPassword: !!updateData.contrasenaActual,
         hasNewPassword: !!updateData.contrasenaNueva,
+        hasConfirmation: !!updateData.confirmacion,
         endpoint: '/users/me'
       });
 
