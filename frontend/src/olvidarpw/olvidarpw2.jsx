@@ -11,10 +11,10 @@ export default function OlvidarPw2() {
   const [success, setSuccess] = useState("");
   const [resetToken, setResetToken] = useState("");
   const [tokenValidated, setTokenValidated] = useState(false);
-  const [validatingToken, setValidatingToken] = useState(true);
+  const [validatingToken, setValidatingToken] = useState(false);
   const navigate = useNavigate();
 
-  // Validar token al montar el componente
+  // Obtener token al montar el componente
   useEffect(() => {
     let currentToken = token;
     
@@ -24,7 +24,7 @@ export default function OlvidarPw2() {
       currentToken = urlParams.get('token');
     }
     
-    console.log("=== OBTENIENDO Y VALIDANDO TOKEN ===");
+    console.log("=== OBTENIENDO TOKEN ===");
     console.log("Token desde params:", token);
     console.log("Token desde query:", new URLSearchParams(location.search).get('token'));
     console.log("Token final:", currentToken);
@@ -42,45 +42,12 @@ export default function OlvidarPw2() {
       return;
     }
 
-    // Guardar el token y validarlo
+    // Solo guardar el token - sin validación de servidor
+    console.log("✅ Token con formato válido, mostrando formulario");
     setResetToken(currentToken);
-    validateTokenWithServer(currentToken);
+    setTokenValidated(true);
+    setValidatingToken(false);
   }, [token, location]);
-
-  // Función para validar el token con el servidor
-  const validateTokenWithServer = async (tokenToValidate) => {
-    try {
-      setValidatingToken(true);
-      
-      const response = await fetch("https://checknote-27fe.onrender.com/api/v1/auth/validate-reset-token", {
-        method: "POST",
-        headers: { 
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({ token: tokenToValidate }),
-      });
-
-      console.log("Status validación token:", response.status);
-
-      if (response.ok) {
-        const data = await response.json();
-        console.log("✅ Token válido para email:", data.email);
-        setTokenValidated(true);
-        setError("");
-      } else {
-        const errorData = await response.json();
-        console.log("❌ Token inválido:", errorData.message);
-        setError("Token inválido, expirado o ya utilizado. Solicite un nuevo enlace de recuperación.");
-        setTokenValidated(false);
-      }
-    } catch (err) {
-      console.error("Error validando token:", err);
-      setError("Error de conexión al validar el token. Inténtelo más tarde.");
-      setTokenValidated(false);
-    } finally {
-      setValidatingToken(false);
-    }
-  };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -118,17 +85,15 @@ export default function OlvidarPw2() {
     console.log("Token a usar:", resetToken.substring(0, 20) + "...");
 
     try {
-      // Payload que coincida exactamente con lo que espera el backend
+      // Payload simplificado - solo lo esencial
       const payload = { 
         token: resetToken,
-        nuevaContrasena: password,
-        confirmarContrasena: confirmPassword // Agregar confirmación también
+        nuevaContrasena: password
       };
 
       console.log("Payload enviado:", { 
         token: resetToken.substring(0, 20) + "...", 
-        nuevaContrasena: "[OCULTA]",
-        confirmarContrasena: "[OCULTA]"
+        nuevaContrasena: "[OCULTA]"
       });
 
       const response = await fetch("https://checknote-27fe.onrender.com/api/v1/auth/reset-password", {
@@ -175,11 +140,38 @@ export default function OlvidarPw2() {
         
         let errorMessage;
         if (response.status === 400) {
-          errorMessage = data.message || "Datos inválidos o token expirado";
+          errorMessage = data.message || "Token inválido o datos incorrectos";
+          // Si es error de token, redirigir a solicitar nuevo
+          if (data.message && data.message.toLowerCase().includes('token')) {
+            setTimeout(() => {
+              navigate("/olvidar-password", { 
+                state: { 
+                  message: "Token inválido o expirado. Solicite un nuevo enlace.",
+                  type: "warning"
+                }
+              });
+            }, 3000);
+          }
         } else if (response.status === 401) {
-          errorMessage = "Token expirado o inválido. Solicita un nuevo enlace de recuperación.";
+          errorMessage = "Token expirado o inválido. Será redirigido para solicitar un nuevo enlace.";
+          setTimeout(() => {
+            navigate("/olvidar-password", { 
+              state: { 
+                message: "Token expirado. Solicite un nuevo enlace de recuperación.",
+                type: "warning"
+              }
+            });
+          }, 3000);
         } else if (response.status === 404) {
-          errorMessage = "Token no encontrado. Solicita un nuevo enlace de recuperación.";
+          errorMessage = "Token no encontrado. Será redirigido para solicitar un nuevo enlace.";
+          setTimeout(() => {
+            navigate("/olvidar-password", { 
+              state: { 
+                message: "Token no encontrado. Solicite un nuevo enlace de recuperación.",
+                type: "warning"
+              }
+            });
+          }, 3000);
         } else {
           errorMessage = data.message || "Error al restablecer la contraseña";
         }
@@ -300,19 +292,17 @@ export default function OlvidarPw2() {
           </div>
           
           <div style={{ textAlign: 'center', padding: '40px 20px' }}>
-            <h2 className="title-secondary">Validando token...</h2>
-            <p style={{ color: '#6c757d' }}>Por favor espere mientras validamos su token de recuperación</p>
-            <div style={{ margin: '20px 0' }}>
-              <div className="spinner" style={{ 
-                border: '4px solid #f3f3f3',
-                borderTop: '4px solid #007bff',
-                borderRadius: '50%',
-                width: '40px',
-                height: '40px',
-                animation: 'spin 1s linear infinite',
-                margin: '0 auto'
-              }}></div>
-            </div>
+            <div style={{
+              width: '60px',
+              height: '60px',
+              border: '4px solid #f3f3f3',
+              borderTop: '4px solid #28a745',
+              borderRadius: '50%',
+              animation: 'spin 1s linear infinite',
+              margin: '0 auto 20px auto'
+            }}></div>
+            <h2 className="title-secondary">Validando enlace...</h2>
+            <p style={{ color: '#6c757d' }}>Verificando que su enlace de recuperación sea válido</p>
           </div>
         </div>
       </div>
