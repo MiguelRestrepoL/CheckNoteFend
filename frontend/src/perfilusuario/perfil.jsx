@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { useNavigate, Link } from "react-router-dom";
-import "../GlobalCSS3.css";
+import "./GlobalCSS3.css";
 
 export default function Perfil() {
   const [activeSection, setActiveSection] = useState("personal");
@@ -59,11 +59,15 @@ export default function Perfil() {
       }
 
       const responseText = await response.text();
+      console.log("RAW response from /users/me:", responseText);
+      
       let userData = {};
       
       try {
         const responseData = responseText ? JSON.parse(responseText) : {};
+        console.log("PARSED response:", responseData);
         userData = responseData.user || responseData.data || responseData;
+        console.log("USER data extracted:", userData);
       } catch (parseError) {
         throw new Error("Error procesando datos del servidor");
       }
@@ -209,6 +213,8 @@ export default function Perfil() {
 
     try {
       const updateData = { correo: cuentaData.email.trim().toLowerCase() };
+      console.log("Email update data:", updateData);
+      
       await makeRequest('/users/me', updateData);
       await cargarDatosUsuario();
       setSuccess("Información de cuenta actualizada correctamente");
@@ -254,9 +260,14 @@ export default function Perfil() {
 
     try {
       const updateData = {
-        currentPassword: manejoData.currentPassword,
-        newPassword: manejoData.password
+        contrasena: manejoData.password,
+        currentPassword: manejoData.currentPassword
       };
+
+      console.log("Password change data:", { 
+        hasCurrentPassword: !!updateData.currentPassword,
+        hasNewPassword: !!updateData.contrasena 
+      });
 
       await makeRequest('/users/me', updateData);
       setSuccess("Contraseña cambiada correctamente");
@@ -361,7 +372,7 @@ export default function Perfil() {
                             name="nombres"
                             value={personalData.nombres}
                             onChange={handlePersonalChange}
-                            placeholder="Tu nombre"
+                            placeholder={personalData.nombres || "Tu nombre (cargando...)"}
                             className="form-input"
                           />
                         </div>
@@ -372,7 +383,7 @@ export default function Perfil() {
                             name="apellidos"
                             value={personalData.apellidos}
                             onChange={handlePersonalChange}
-                            placeholder="Tus apellidos"
+                            placeholder={personalData.apellidos || "Tus apellidos (cargando...)"}
                             className="form-input"
                           />
                         </div>
