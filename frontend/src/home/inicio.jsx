@@ -35,8 +35,8 @@ export default function Inicio() {
       const verifyRes = await fetch("https://checknote-27fe.onrender.com/api/v1/auth/verify", {
         method: "POST",
         headers: {
-          "Authorization": `Bearer ${token}`,
-          "Content-Type": "application/json"
+          "Authorization": `Bearer ${token}`
+          // Quitar Content-Type porque no enviamos body JSON
         }
       });
 
