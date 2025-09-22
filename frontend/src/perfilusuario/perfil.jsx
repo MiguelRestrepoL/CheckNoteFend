@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { useNavigate, Link } from "react-router-dom";
-import "./GlobalCSS3.css";
+import "../GlobalCSS3.css";
 
 export default function Perfil() {
   const [activeSection, setActiveSection] = useState("personal");
@@ -14,7 +14,7 @@ export default function Perfil() {
   const [personalData, setPersonalData] = useState({
     nombres: "",
     apellidos: "",
-    edad: "" // Cambiar fechaNacimiento por edad según el modelo
+    edad: ""
   });
 
   const [cuentaData, setCuentaData] = useState({
@@ -58,21 +58,14 @@ export default function Perfil() {
         throw new Error(`Error ${response.status}: ${response.statusText}`);
       }
 
-      const responseText = await response.text();
-      console.log("RAW response from /users/me:", responseText);
+      const responseData = await response.json();
+      console.log("Response from /users/me:", responseData);
       
-      let userData = {};
-      
-      try {
-        const responseData = responseText ? JSON.parse(responseText) : {};
-        console.log("PARSED response:", responseData);
-        userData = responseData.user || responseData.data || responseData;
-        console.log("USER data extracted:", userData);
-      } catch (parseError) {
-        throw new Error("Error procesando datos del servidor");
-      }
+      // Extraer datos del usuario - ajustar según la estructura de respuesta
+      const userData = responseData.data || responseData.user || responseData;
+      console.log("USER data extracted:", userData);
 
-      // Formatear fechas - NOTA: El modelo tiene edad, no fechaNacimiento
+      // Formatear fechas
       const fechaCreacion = userData.createdAt ? 
         new Date(userData.createdAt).toISOString().split('T')[0] : 
         new Date().toISOString().split('T')[0];
@@ -80,11 +73,11 @@ export default function Perfil() {
       setPersonalData({
         nombres: userData.nombres || "",
         apellidos: userData.apellidos || "",
-        edad: userData.edad || "" // Usar edad del modelo
+        edad: userData.edad ? userData.edad.toString() : ""
       });
 
       setCuentaData({
-        email: userData.correo || "",
+        email: userData.correo || userData.email || "",
         fechaCreacion
       });
 
@@ -95,7 +88,7 @@ export default function Perfil() {
           edad: userData.edad || ""
         },
         cuentaData: {
-          email: userData.correo || "",
+          email: userData.correo || userData.email || "",
           fechaCreacion
         }
       });
@@ -116,10 +109,10 @@ export default function Perfil() {
           setPersonalData({
             nombres: parsedUser.nombres || localStorage.getItem('userName') || "",
             apellidos: parsedUser.apellidos || "",
-            edad: parsedUser.edad || ""
+            edad: parsedUser.edad ? parsedUser.edad.toString() : ""
           });
           setCuentaData({
-            email: parsedUser.correo || "",
+            email: parsedUser.correo || parsedUser.email || "",
             fechaCreacion: parsedUser.createdAt ? 
               new Date(parsedUser.createdAt).toISOString().split('T')[0] : 
               new Date().toISOString().split('T')[0]
@@ -152,13 +145,16 @@ export default function Perfil() {
     setManejoData(prev => ({ ...prev, [name]: value }));
   };
 
-  const makeRequest = async (endpoint, data) => {
+  const makeRequest = async (endpoint, data, isPasswordChange = false) => {
     const token = localStorage.getItem('token');
     if (!token) {
       setError("No se encontró token de autenticación");
       navigate('/login');
       return null;
     }
+
+    console.log(`Making ${isPasswordChange ? 'password change' : 'update'} request to:`, endpoint);
+    console.log('Request data:', data);
 
     const response = await fetch(`https://checknote-27fe.onrender.com/api/v1${endpoint}`, {
       method: "PUT",
@@ -169,25 +165,51 @@ export default function Perfil() {
       body: JSON.stringify(data),
     });
 
+    console.log('Response status:', response.status);
+    
     if (!response.ok) {
-      if (response.status === 401) {
-        const errorText = await response.text();
-        try {
-          const errorData = JSON.parse(errorText);
-          if (errorData.message && errorData.message.includes("actual")) {
+      const errorText = await response.text();
+      console.log('Error response:', errorText);
+      
+      try {
+        const errorData = JSON.parse(errorText);
+        console.log('Parsed error:', errorData);
+        
+        if (response.status === 401) {
+          if (errorData.message && errorData.message.toLowerCase().includes("contraseña")) {
             throw new Error("La contraseña actual es incorrecta");
           }
-        } catch {}
-        localStorage.clear();
-        setError("Tu sesión ha expirado. Redirigiendo al login...");
-        setTimeout(() => navigate('/login'), 2000);
-        return null;
+          localStorage.clear();
+          setError("Tu sesión ha expirado. Redirigiendo al login...");
+          setTimeout(() => navigate('/login'), 2000);
+          return null;
+        }
+        
+        if (response.status === 400) {
+          if (errorData.message) {
+            throw new Error(errorData.message);
+          }
+          if (errorData.error) {
+            throw new Error(errorData.error);
+          }
+        }
+        
+        throw new Error(errorData.message || errorData.error || `Error ${response.status}`);
+      } catch (parseError) {
+        if (parseError.message && parseError.message !== `Unexpected token '<'`) {
+          throw parseError;
+        }
+        throw new Error(`Error ${response.status}: ${errorText || response.statusText}`);
       }
-      const errorText = await response.text();
-      throw new Error(`Error ${response.status}: ${errorText || response.statusText}`);
     }
 
-    return await response.json();
+    try {
+      const responseText = await response.text();
+      return responseText ? JSON.parse(responseText) : {};
+    } catch (parseError) {
+      console.log('Could not parse response as JSON, assuming success');
+      return { success: true };
+    }
   };
 
   const handleUpdatePersonal = async (e) => {
@@ -197,18 +219,41 @@ export default function Perfil() {
     setSuccess("");
 
     try {
+      // Validaciones básicas
+      if (!personalData.nombres.trim()) {
+        throw new Error("El nombre es requerido");
+      }
+      if (!personalData.apellidos.trim()) {
+        throw new Error("Los apellidos son requeridos");
+      }
+
       const updateData = {
         nombres: personalData.nombres.trim(),
-        apellidos: personalData.apellidos.trim(),
-        ...(personalData.edad && { edad: parseInt(personalData.edad) })
+        apellidos: personalData.apellidos.trim()
       };
 
+      // Solo agregar edad si se proporcionó
+      if (personalData.edad && personalData.edad.trim()) {
+        const edad = parseInt(personalData.edad);
+        if (isNaN(edad) || edad < 13 || edad > 120) {
+          throw new Error("La edad debe ser un número válido entre 13 y 120");
+        }
+        updateData.edad = edad;
+      }
+
       console.log("Personal update data:", updateData);
+      
       await makeRequest('/users/me', updateData);
+      
+      // Actualizar localStorage
       localStorage.setItem('userName', personalData.nombres);
+      
+      // Recargar datos para confirmar cambios
       await cargarDatosUsuario();
+      
       setSuccess("Información personal actualizada correctamente");
     } catch (err) {
+      console.error("Error updating personal data:", err);
       setError("Error al actualizar la información personal: " + err.message);
     } finally {
       setLoading(false);
@@ -222,13 +267,30 @@ export default function Perfil() {
     setSuccess("");
 
     try {
-      const updateData = { correo: cuentaData.email.trim().toLowerCase() };
+      if (!cuentaData.email.trim()) {
+        throw new Error("El correo electrónico es requerido");
+      }
+
+      // Validación básica de email
+      const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+      if (!emailRegex.test(cuentaData.email.trim())) {
+        throw new Error("Por favor ingresa un correo electrónico válido");
+      }
+
+      const updateData = { 
+        correo: cuentaData.email.trim().toLowerCase() 
+      };
+      
       console.log("Email update data:", updateData);
       
       await makeRequest('/users/me', updateData);
+      
+      // Recargar datos para confirmar cambios
       await cargarDatosUsuario();
+      
       setSuccess("Información de cuenta actualizada correctamente");
     } catch (err) {
+      console.error("Error updating account data:", err);
       setError("Error al actualizar la información de cuenta: " + err.message);
     } finally {
       setLoading(false);
@@ -241,48 +303,42 @@ export default function Perfil() {
     setError("");
     setSuccess("");
 
-    // Validaciones
-    if (!manejoData.currentPassword) {
-      setError("Debes ingresar tu contraseña actual");
-      setLoading(false);
-      return;
-    }
-    if (!manejoData.password) {
-      setError("Debes ingresar una nueva contraseña");
-      setLoading(false);
-      return;
-    }
-    if (manejoData.password !== manejoData.confirmPassword) {
-      setError("Las contraseñas no coinciden");
-      setLoading(false);
-      return;
-    }
-    if (manejoData.password.length < 8) {
-      setError("La contraseña debe tener al menos 8 caracteres");
-      setLoading(false);
-      return;
-    }
-    if (manejoData.currentPassword === manejoData.password) {
-      setError("La nueva contraseña debe ser diferente a la actual");
-      setLoading(false);
-      return;
-    }
-
     try {
+      // Validaciones
+      if (!manejoData.currentPassword) {
+        throw new Error("Debes ingresar tu contraseña actual");
+      }
+      if (!manejoData.password) {
+        throw new Error("Debes ingresar una nueva contraseña");
+      }
+      if (manejoData.password !== manejoData.confirmPassword) {
+        throw new Error("Las contraseñas no coinciden");
+      }
+      if (manejoData.password.length < 8) {
+        throw new Error("La contraseña debe tener al menos 8 caracteres");
+      }
+      if (manejoData.currentPassword === manejoData.password) {
+        throw new Error("La nueva contraseña debe ser diferente a la actual");
+      }
+
+      // Preparar datos para cambio de contraseña
       const updateData = {
-        contrasena: manejoData.password,
-        currentPassword: manejoData.currentPassword
+        contrasenaActual: manejoData.currentPassword,
+        contrasenaNueva: manejoData.password
       };
 
       console.log("Password change data:", { 
-        hasCurrentPassword: !!updateData.currentPassword,
-        hasNewPassword: !!updateData.contrasena 
+        hasCurrentPassword: !!updateData.contrasenaActual,
+        hasNewPassword: !!updateData.contrasenaNueva,
+        endpoint: '/users/me'
       });
 
-      await makeRequest('/users/me', updateData);
+      await makeRequest('/users/me', updateData, true);
+      
       setSuccess("Contraseña cambiada correctamente");
       setManejoData({ currentPassword: "", password: "", confirmPassword: "" });
     } catch (err) {
+      console.error("Error changing password:", err);
       setError("Error al cambiar la contraseña: " + err.message);
     } finally {
       setLoading(false);
@@ -382,8 +438,9 @@ export default function Perfil() {
                             name="nombres"
                             value={personalData.nombres}
                             onChange={handlePersonalChange}
-                            placeholder={personalData.nombres || "Tu nombre (cargando...)"}
+                            placeholder="Tu nombre"
                             className="form-input"
+                            required
                           />
                         </div>
                         <div className="form-field">
@@ -393,8 +450,9 @@ export default function Perfil() {
                             name="apellidos"
                             value={personalData.apellidos}
                             onChange={handlePersonalChange}
-                            placeholder={personalData.apellidos || "Tus apellidos (cargando...)"}
+                            placeholder="Tus apellidos"
                             className="form-input"
+                            required
                           />
                         </div>
                       </div>
@@ -442,6 +500,7 @@ export default function Perfil() {
                           onChange={handleCuentaChange}
                           placeholder="tu@email.com"
                           className="form-input width-md"
+                          required
                         />
                       </div>
 
@@ -484,6 +543,7 @@ export default function Perfil() {
                           onChange={handleManejoChange}
                           placeholder="Tu contraseña actual"
                           className="form-input width-sm"
+                          required
                         />
                       </div>
 
@@ -494,8 +554,10 @@ export default function Perfil() {
                           name="password"
                           value={manejoData.password}
                           onChange={handleManejoChange}
-                          placeholder="Nueva contraseña"
+                          placeholder="Nueva contraseña (mín. 8 caracteres)"
                           className="form-input width-sm"
+                          required
+                          minLength={8}
                         />
                       </div>
 
@@ -508,6 +570,7 @@ export default function Perfil() {
                           onChange={handleManejoChange}
                           placeholder="Confirmar nueva contraseña"
                           className="form-input width-sm"
+                          required
                         />
                       </div>
 
