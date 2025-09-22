@@ -1,10 +1,9 @@
 import React, { useState, useEffect } from "react";
 import { useNavigate, Link } from "react-router-dom";
-// NO importar CSS personalizado - usar solo globalcss2.css
 
 export default function EditarTarea() {
-  const [tareas, setTareas] = useState([]); // Lista de todas las tareas del usuario
-  const [tareaSeleccionada, setTareaSeleccionada] = useState(""); // ID de la tarea seleccionada
+  const [tareas, setTareas] = useState([]);
+  const [tareaSeleccionada, setTareaSeleccionada] = useState("");
   const [formData, setFormData] = useState({
     titulo: "",
     descripcion: "", 
@@ -19,49 +18,10 @@ export default function EditarTarea() {
   const [loadingTareas, setLoadingTareas] = useState(true);
   const navigate = useNavigate();
 
-  // Datos de ejemplo (reemplazar con fetch de API más tarde)
-  const tareasEjemplo = [
-    {
-      id: "1",
-      titulo: "Sacar al perro",
-      descripcion: "Pasear al perro por el parque durante 30 minutos",
-      prioridad: "alta",
-      estado: "pendiente",
-      fechaVencimiento: "2024-12-25T10:30:00.000Z",
-      completada: false
-    },
-    {
-      id: "2", 
-      titulo: "Hacer trabajo DS2",
-      descripcion: "Completar el proyecto de desarrollo de software",
-      prioridad: "baja",
-      estado: "en_progreso", 
-      fechaVencimiento: "2024-12-30T23:59:00.000Z",
-      completada: false
-    },
-    {
-      id: "3",
-      titulo: "P.Integrador",
-      descripcion: "Presentar el proyecto integrador final",
-      prioridad: "media",
-      estado: "terminada",
-      fechaVencimiento: "2024-12-20T15:00:00.000Z", 
-      completada: true
-    },
-    {
-      id: "4",
-      titulo: "Comprar víveres",
-      descripcion: "Ir al supermercado y comprar la lista semanal",
-      prioridad: "media",
-      estado: "pendiente",
-      fechaVencimiento: "2024-12-24T18:00:00.000Z",
-      completada: false
-    }
-  ];
-
-  // Verificar sesión y cargar tareas al montar el componente
-  useEffect(() => {
+  // Cargar todas las tareas del usuario
+  const cargarTareas = async () => {
     const token = localStorage.getItem('token');
+    
     if (!token) {
       setError("No hay sesión activa. Redirigiendo al login...");
       setTimeout(() => {
@@ -70,28 +30,67 @@ export default function EditarTarea() {
       return;
     }
 
-    // Simular carga de tareas (reemplazar con API call)
-    const cargarTareas = async () => {
-      try {
-        setLoadingTareas(true);
-        
-        // TODO: Reemplazar con fetch real
-        // const response = await fetch(`${API_URL}/tasks`, {
-        //   headers: { 'Authorization': `Bearer ${token}` }
-        // });
-        // const tareasData = await response.json();
-        
-        // Simular delay de red
-        await new Promise(resolve => setTimeout(resolve, 1000));
-        
-        setTareas(tareasEjemplo);
-      } catch (err) {
-        setError("Error al cargar las tareas: " + err.message);
-      } finally {
-        setLoadingTareas(false);
-      }
-    };
+    try {
+      setLoadingTareas(true);
+      setError("");
+      
+      console.log("Cargando todas las tareas para editar...");
+      
+      const response = await fetch("https://checknote-27fe.onrender.com/api/v1/tasks", {
+        method: "GET",
+        headers: {
+          "Authorization": `Bearer ${token}`,
+          "Content-Type": "application/json",
+        },
+      });
 
+      console.log("Response status:", response.status);
+
+      if (!response.ok) {
+        if (response.status === 401) {
+          localStorage.removeItem('token');
+          localStorage.removeItem('user');
+          localStorage.removeItem('userId');
+          localStorage.removeItem('userName');
+          
+          setError("Tu sesión ha expirado. Redirigiendo al login...");
+          setTimeout(() => {
+            navigate('/login');
+          }, 2000);
+          return;
+        }
+        
+        throw new Error(`Error ${response.status}: ${response.statusText}`);
+      }
+
+      const responseText = await response.text();
+      console.log("Response data:", responseText);
+
+      let tareasData = [];
+      try {
+        const responseData = responseText ? JSON.parse(responseText) : {};
+        tareasData = responseData.tasks || responseData.data || responseData;
+        if (!Array.isArray(tareasData)) {
+          tareasData = [];
+        }
+      } catch (parseError) {
+        console.error("Error parseando JSON:", parseError);
+        tareasData = [];
+      }
+
+      console.log(`Cargadas ${tareasData.length} tareas`);
+      setTareas(tareasData);
+
+    } catch (err) {
+      console.error("Error cargando tareas:", err);
+      setError("Error al cargar las tareas: " + err.message);
+    } finally {
+      setLoadingTareas(false);
+    }
+  };
+
+  // Verificar sesión y cargar tareas al montar
+  useEffect(() => {
     cargarTareas();
   }, [navigate]);
 
@@ -112,18 +111,18 @@ export default function EditarTarea() {
     setTareaSeleccionada(tareaId);
     
     if (tareaId) {
-      const tarea = tareas.find(t => t.id === tareaId);
+      const tarea = tareas.find(t => (t.id || t._id) === tareaId);
       if (tarea) {
         const { fecha, hora } = formatearFechaParaInput(tarea.fechaVencimiento);
         
         setFormData({
-          titulo: tarea.titulo,
-          descripcion: tarea.descripcion,
+          titulo: tarea.titulo || "",
+          descripcion: tarea.descripcion || "",
           fechaVencimiento: fecha,
           hora: hora,
-          prioridad: tarea.prioridad,
-          estado: tarea.estado,
-          completada: tarea.completada
+          prioridad: tarea.prioridad || "media",
+          estado: tarea.estado || "pendiente",
+          completada: tarea.completada || false
         });
       }
     } else {
@@ -159,11 +158,9 @@ export default function EditarTarea() {
       return;
     }
 
-    // Obtener token y userId
     const token = localStorage.getItem('token');
-    const userId = localStorage.getItem('userId');
 
-    if (!token || !userId) {
+    if (!token) {
       setError("No se encontró información de autenticación");
       setLoading(false);
       navigate('/login');
@@ -185,38 +182,65 @@ export default function EditarTarea() {
       prioridad: formData.prioridad,
       estado: formData.estado,
       completada: formData.completada,
-      fechaVencimiento: fechaCompleta,
-      userId: userId
+      fechaVencimiento: fechaCompleta
     };
 
     console.log("Datos a actualizar:", taskData);
     console.log("ID de tarea:", tareaSeleccionada);
 
     try {
-      // TODO: Implementar llamada real a la API
-      // const res = await fetch(`https://checknote-27fe.onrender.com/api/v1/tasks/${tareaSeleccionada}`, {
-      //   method: "PUT",
-      //   headers: {
-      //     "Content-Type": "application/json",
-      //     "Authorization": `Bearer ${token}`,
-      //   },
-      //   body: JSON.stringify(taskData),
-      // });
+      const response = await fetch(`https://checknote-27fe.onrender.com/api/v1/tasks/${tareaSeleccionada}`, {
+        method: "PUT",
+        headers: {
+          "Content-Type": "application/json",
+          "Authorization": `Bearer ${token}`,
+        },
+        body: JSON.stringify(taskData),
+      });
 
-      // Simular delay de actualización
-      await new Promise(resolve => setTimeout(resolve, 1500));
-      
-      console.log("Tarea actualizada exitosamente");
+      console.log("Update response status:", response.status);
+
+      if (!response.ok) {
+        if (response.status === 401) {
+          localStorage.removeItem('token');
+          localStorage.removeItem('user');
+          localStorage.removeItem('userId');
+          localStorage.removeItem('userName');
+          
+          setError("Tu sesión ha expirado. Redirigiendo al login...");
+          setTimeout(() => {
+            navigate('/login');
+          }, 2000);
+          return;
+        }
+
+        const errorText = await response.text();
+        console.error("Update error response:", errorText);
+        throw new Error(`Error ${response.status}: ${errorText || response.statusText}`);
+      }
+
+      const updateResult = await response.json();
+      console.log("Tarea actualizada exitosamente:", updateResult);
       
       navigate('/home', { 
-        state: { success: "✅ Tarea actualizada exitosamente" } 
+        state: { success: "Tarea actualizada exitosamente!" } 
       });
 
     } catch (err) {
       console.error("Error al actualizar:", err);
-      setError("Error inesperado: " + err.message);
+      setError("Error al actualizar la tarea: " + err.message);
     } finally {
       setLoading(false);
+    }
+  };
+
+  // Función para obtener emoji según el estado
+  const getEstadoEmoji = (estado) => {
+    switch(estado) {
+      case 'pendiente': return '⏰';
+      case 'en_progreso': return '⚡';
+      case 'terminada': return '✅';
+      default: return '📝';
     }
   };
 
@@ -262,7 +286,7 @@ export default function EditarTarea() {
                   color: 'var(--text-secondary)',
                   fontWeight: '500'
                 }}>
-                  Tarea a editar
+                  Tarea a editar ({tareas.length} disponibles)
                 </label>
                 {loadingTareas ? (
                   <div style={{
@@ -274,6 +298,17 @@ export default function EditarTarea() {
                     textAlign: 'center'
                   }}>
                     ⏳ Cargando tareas...
+                  </div>
+                ) : tareas.length === 0 ? (
+                  <div style={{
+                    padding: '12px',
+                    borderRadius: 'var(--radius-sm)',
+                    background: 'rgba(255,255,255,0.05)',
+                    color: 'var(--text-muted)',
+                    fontSize: '14px',
+                    textAlign: 'center'
+                  }}>
+                    📝 No hay tareas disponibles para editar
                   </div>
                 ) : (
                   <select
@@ -292,7 +327,9 @@ export default function EditarTarea() {
                       outline: 'none',
                       transition: 'all var(--transition)',
                       boxSizing: 'border-box',
-                      cursor: 'pointer'
+                      cursor: 'pointer',
+                      maxHeight: '120px',
+                      overflowY: 'auto'
                     }}
                   >
                     <option value="" style={{ background: '#111827', color: '#ffffff' }}>
@@ -300,16 +337,34 @@ export default function EditarTarea() {
                     </option>
                     {tareas.map(tarea => (
                       <option 
-                        key={tarea.id} 
-                        value={tarea.id}
+                        key={tarea.id || tarea._id} 
+                        value={tarea.id || tarea._id}
                         style={{ background: '#111827', color: '#ffffff' }}
                       >
-                        {tarea.titulo} ({tarea.estado === 'pendiente' ? '⏰' : tarea.estado === 'en_progreso' ? '⚡' : '✅'})
+                        {getEstadoEmoji(tarea.estado)} {tarea.titulo} - {tarea.prioridad?.toUpperCase()}
                       </option>
                     ))}
                   </select>
                 )}
               </div>
+
+              {/* Mostrar información de la tarea seleccionada */}
+              {tareaSeleccionada && tareas.length > 0 && (
+                <div style={{
+                  padding: '12px',
+                  borderRadius: 'var(--radius-sm)',
+                  background: 'rgba(16,185,129,0.1)',
+                  border: '1px solid rgba(16,185,129,0.2)',
+                  fontSize: '12px',
+                  color: 'var(--text-secondary)'
+                }}>
+                  📝 Editando: <strong>{formData.titulo}</strong>
+                  <br />
+                  Estado actual: <strong>{formData.estado?.replace('_', ' ')}</strong>
+                  <br />
+                  Prioridad: <strong>{formData.prioridad}</strong>
+                </div>
+              )}
 
               {/* Solo mostrar el resto del formulario si hay una tarea seleccionada */}
               {tareaSeleccionada && (
@@ -418,7 +473,6 @@ export default function EditarTarea() {
                         name="fechaVencimiento"
                         value={formData.fechaVencimiento}
                         onChange={handleChange}
-                        required
                         style={{
                           width: '100%',
                           padding: '12px',
@@ -449,7 +503,6 @@ export default function EditarTarea() {
                         name="hora"
                         value={formData.hora}
                         onChange={handleChange}
-                        required
                         style={{
                           width: '100%',
                           padding: '12px',
@@ -466,90 +519,93 @@ export default function EditarTarea() {
                     </div>
                   </div>
 
-                  {/* Estado Kanban */}
-                  <div>
-                    <label htmlFor="estado" style={{ 
-                      display: 'block', 
-                      marginBottom: '6px', 
-                      fontSize: '14px',
-                      color: 'var(--text-secondary)',
-                      fontWeight: '500'
-                    }}>
-                      Estado de la tarea
-                    </label>
-                    <select
-                      id="estado"
-                      name="estado"
-                      value={formData.estado}
-                      onChange={handleChange}
-                      required
-                      style={{
-                        width: '100%',
-                        padding: '12px',
-                        borderRadius: 'var(--radius-sm)',
-                        border: '1px solid rgba(255,255,255,0.1)',
-                        background: 'rgba(255,255,255,0.05)',
-                        color: 'var(--text-primary)',
+                  {/* Estado y Prioridad en una fila */}
+                  <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '12px' }}>
+                    {/* Estado Kanban */}
+                    <div>
+                      <label htmlFor="estado" style={{ 
+                        display: 'block', 
+                        marginBottom: '6px', 
                         fontSize: '14px',
-                        outline: 'none',
-                        transition: 'all var(--transition)',
-                        boxSizing: 'border-box',
-                        cursor: 'pointer'
-                      }}
-                    >
-                      <option value="pendiente" style={{ background: '#111827', color: '#ffffff' }}>
-                        ⏰ Pendiente
-                      </option>
-                      <option value="en_progreso" style={{ background: '#111827', color: '#ffffff' }}>
-                        ⚡ En Progreso
-                      </option>
-                      <option value="terminada" style={{ background: '#111827', color: '#ffffff' }}>
-                        ✅ Terminada
-                      </option>
-                    </select>
-                  </div>
+                        color: 'var(--text-secondary)',
+                        fontWeight: '500'
+                      }}>
+                        Estado
+                      </label>
+                      <select
+                        id="estado"
+                        name="estado"
+                        value={formData.estado}
+                        onChange={handleChange}
+                        required
+                        style={{
+                          width: '100%',
+                          padding: '12px',
+                          borderRadius: 'var(--radius-sm)',
+                          border: '1px solid rgba(255,255,255,0.1)',
+                          background: 'rgba(255,255,255,0.05)',
+                          color: 'var(--text-primary)',
+                          fontSize: '14px',
+                          outline: 'none',
+                          transition: 'all var(--transition)',
+                          boxSizing: 'border-box',
+                          cursor: 'pointer'
+                        }}
+                      >
+                        <option value="pendiente" style={{ background: '#111827', color: '#ffffff' }}>
+                          ⏰ Pendiente
+                        </option>
+                        <option value="en_progreso" style={{ background: '#111827', color: '#ffffff' }}>
+                          ⚡ En Progreso
+                        </option>
+                        <option value="terminada" style={{ background: '#111827', color: '#ffffff' }}>
+                          ✅ Terminada
+                        </option>
+                      </select>
+                    </div>
 
-                  {/* Prioridad */}
-                  <div>
-                    <label htmlFor="prioridad" style={{ 
-                      display: 'block', 
-                      marginBottom: '6px', 
-                      fontSize: '14px',
-                      color: 'var(--text-secondary)',
-                      fontWeight: '500'
-                    }}>
-                      Nivel de prioridad
-                    </label>
-                    <select
-                      id="prioridad"
-                      name="prioridad"
-                      value={formData.prioridad}
-                      onChange={handleChange}
-                      required
-                      style={{
-                        width: '100%',
-                        padding: '12px',
-                        borderRadius: 'var(--radius-sm)',
-                        border: '1px solid rgba(255,255,255,0.1)',
-                        background: 'rgba(255,255,255,0.05)',
-                        color: 'var(--text-primary)',
+                    {/* Prioridad */}
+                    <div>
+                      <label htmlFor="prioridad" style={{ 
+                        display: 'block', 
+                        marginBottom: '6px', 
                         fontSize: '14px',
-                        outline: 'none',
-                        transition: 'all var(--transition)',
-                        boxSizing: 'border-box',
-                        cursor: 'pointer'
-                      }}
-                    >
-                      <option value="baja" style={{ background: '#111827', color: '#ffffff' }}>
-                        🟢 Baja prioridad
-                      </option>
-                      <option value="media" style={{ background: '#111827', color: '#ffffff' }}>
-                        🟡 Prioridad media
-                      </option>
-                      <option value="alta" style={{ background: '#111827', color: '#ffffff' }}>
-                        🔴 Alta prioridad
-                      </option>
-                    </select>
+                        color: 'var(--text-secondary)',
+                        fontWeight: '500'
+                      }}>
+                        Prioridad
+                      </label>
+                      <select
+                        id="prioridad"
+                        name="prioridad"
+                        value={formData.prioridad}
+                        onChange={handleChange}
+                        required
+                        style={{
+                          width: '100%',
+                          padding: '12px',
+                          borderRadius: 'var(--radius-sm)',
+                          border: '1px solid rgba(255,255,255,0.1)',
+                          background: 'rgba(255,255,255,0.05)',
+                          color: 'var(--text-primary)',
+                          fontSize: '14px',
+                          outline: 'none',
+                          transition: 'all var(--transition)',
+                          boxSizing: 'border-box',
+                          cursor: 'pointer'
+                        }}
+                      >
+                        <option value="baja" style={{ background: '#111827', color: '#ffffff' }}>
+                          🟢 Baja
+                        </option>
+                        <option value="media" style={{ background: '#111827', color: '#ffffff' }}>
+                          🟡 Media
+                        </option>
+                        <option value="alta" style={{ background: '#111827', color: '#ffffff' }}>
+                          🔴 Alta
+                        </option>
+                      </select>
+                    </div>
                   </div>
 
                   {/* Checkbox completada */}
@@ -573,7 +629,7 @@ export default function EditarTarea() {
                       cursor: 'pointer',
                       userSelect: 'none'
                     }}>
-                      ✅ Marcar como completada
+                      Marcar como completada
                     </label>
                   </div>
                 </>
@@ -594,42 +650,50 @@ export default function EditarTarea() {
                 </div>
               )}
 
-              {/* Botón submit */}
-              <button 
-                type="submit" 
-                disabled={loading || !tareaSeleccionada}
-                className="filter"
-                style={{
-                  marginTop: '12px',
-                  padding: '14px 24px',
-                  background: (loading || !tareaSeleccionada)
-                    ? 'linear-gradient(135deg, #6b7280, #4b5563)' 
-                    : 'linear-gradient(135deg, var(--primary), var(--primary-dark))',
-                  color: 'white',
-                  border: 'none',
-                  borderRadius: 'var(--radius-sm)',
-                  fontSize: '16px',
-                  fontWeight: '600',
-                  cursor: (loading || !tareaSeleccionada) ? 'not-allowed' : 'pointer',
-                  transition: 'all var(--transition)',
-                  boxShadow: 'var(--shadow-filter)',
-                  opacity: (loading || !tareaSeleccionada) ? 0.7 : 1
-                }}
-                onMouseEnter={(e) => {
-                  if (!loading && tareaSeleccionada) {
-                    e.target.style.transform = 'translateY(-1px)';
-                    e.target.style.boxShadow = '0 8px 25px rgba(16,185,129,0.3)';
-                  }
-                }}
-                onMouseLeave={(e) => {
-                  if (!loading && tareaSeleccionada) {
-                    e.target.style.transform = 'translateY(0)';
-                    e.target.style.boxShadow = 'var(--shadow-filter)';
-                  }
-                }}
-              >
-                {loading ? "⏳ Actualizando tarea..." : "💾 Guardar Cambios"}
-              </button>
+              {/* Botones */}
+              <div style={{ display: 'flex', gap: '12px', marginTop: '12px' }}>
+                <button 
+                  type="submit" 
+                  disabled={loading || !tareaSeleccionada}
+                  className="filter"
+                  style={{
+                    flex: 1,
+                    padding: '14px 24px',
+                    background: (loading || !tareaSeleccionada)
+                      ? 'linear-gradient(135deg, #6b7280, #4b5563)' 
+                      : 'linear-gradient(135deg, var(--primary), var(--primary-dark))',
+                    color: 'white',
+                    border: 'none',
+                    borderRadius: 'var(--radius-sm)',
+                    fontSize: '16px',
+                    fontWeight: '600',
+                    cursor: (loading || !tareaSeleccionada) ? 'not-allowed' : 'pointer',
+                    transition: 'all var(--transition)',
+                    boxShadow: 'var(--shadow-filter)',
+                    opacity: (loading || !tareaSeleccionada) ? 0.7 : 1
+                  }}
+                >
+                  {loading ? "Guardando..." : "Guardar Cambios"}
+                </button>
+                
+                <button 
+                  type="button"
+                  onClick={() => navigate('/home')}
+                  style={{
+                    padding: '14px 24px',
+                    background: 'rgba(255,255,255,0.1)',
+                    color: 'var(--text-secondary)',
+                    border: '1px solid rgba(255,255,255,0.2)',
+                    borderRadius: 'var(--radius-sm)',
+                    fontSize: '14px',
+                    fontWeight: '500',
+                    cursor: 'pointer',
+                    transition: 'all var(--transition)'
+                  }}
+                >
+                  Cancelar
+                </button>
+              </div>
             </form>
           </section>
         </div>
