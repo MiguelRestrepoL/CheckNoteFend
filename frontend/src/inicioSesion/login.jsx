@@ -64,8 +64,7 @@ export default function InicioSesion() {
         throw new Error("Respuesta del servidor incompleta");
       }
 
-      // Verificar token (opcional - puedes comentar esto si da problemas)
-      /*
+      
       const verifyRes = await fetch("https://checknote-27fe.onrender.com/api/v1/auth/verify", {
         method: "POST",
         headers: {
@@ -76,9 +75,7 @@ export default function InicioSesion() {
       if (!verifyRes.ok) {
         throw new Error("Token inválido del servidor");
       }
-      */
 
-      // Guardar datos
       localStorage.setItem('token', token);
       localStorage.setItem('user', JSON.stringify(user));
       localStorage.setItem('userId', user._id || user.id); 

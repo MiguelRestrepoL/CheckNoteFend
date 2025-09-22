@@ -8,84 +8,61 @@ export default function OlvidarPw2() {
   const [confirmPassword, setConfirmPassword] = useState("");
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
-  const [tokenValid, setTokenValid] = useState(null); // null = verificando, true = válido, false = inválido
-  const [validToken, setValidToken] = useState(""); // Para guardar el token válido
+  const [resetToken, setResetToken] = useState("");
   const navigate = useNavigate();
 
-  // Verificar token al montar el componente
+  // Obtener token al montar el componente
   useEffect(() => {
-    const verifyToken = async () => {
-      // Intentar obtener token de diferentes fuentes
-      let currentToken = token;
-      
-      // Si no hay token en params, intentar obtenerlo de query params
-      if (!currentToken) {
-        const urlParams = new URLSearchParams(location.search);
-        currentToken = urlParams.get('token');
-      }
-      
-      // Si aún no hay token, intentar obtenerlo de localStorage (si el backend lo guarda ahí)
-      if (!currentToken) {
-        currentToken = localStorage.getItem('resetToken');
-      }
+    let currentToken = token;
+    
+    // Si no hay token en params, intentar obtenerlo de query params
+    if (!currentToken) {
+      const urlParams = new URLSearchParams(location.search);
+      currentToken = urlParams.get('token');
+    }
+    
+    console.log("=== OBTENIENDO TOKEN ===");
+    console.log("Token desde params:", token);
+    console.log("Token desde query:", new URLSearchParams(location.search).get('token'));
+    console.log("Token final:", currentToken);
 
-      console.log("=== VERIFICANDO TOKEN ===");
-      console.log("Token desde params:", token);
-      console.log("Token desde query:", new URLSearchParams(location.search).get('token'));
-      console.log("Token final:", currentToken);
+    if (!currentToken) {
+      setError("Token no válido - acceso denegado. Debe acceder desde el enlace del email.");
+      return;
+    }
 
-      if (!currentToken) {
-        setTokenValid(false);
-        setError("Token no válido - acceso denegado. Debe acceder desde el enlace del email.");
-        return;
-      }
-
-      try {
-        // Verificar el token usando el endpoint correcto
-        const res = await fetch(`https://checknote-27fe.onrender.com/api/v1/auth/verify`, {
-          method: "POST",
-          headers: { 
-            "Content-Type": "application/json",
-            "Accept": "application/json"
-          },
-          body: JSON.stringify({ token: currentToken })
-        });
-
-        console.log("Status verificación:", res.status);
-        console.log("Endpoint usado:", "/api/v1/auth/verify");
-
-        if (res.ok) {
-          console.log("✅ Token válido");
-          setTokenValid(true);
-          // Guardar el token válido en el estado para usarlo después
-          setValidToken(currentToken);
-        } else {
-          console.log("❌ Token inválido");
-          const data = await res.json().catch(() => ({}));
-          setTokenValid(false);
-          setError(data.message || "Token no válido o expirado");
-        }
-      } catch (err) {
-        console.error("Error verificando token:", err);
-        setTokenValid(false);
-        setError("Error al verificar el token. Intenta solicitar un nuevo enlace.");
-      }
-    };
-
-    verifyToken();
+    // Guardar el token para usarlo después
+    setResetToken(currentToken);
   }, [token, location]);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     
-    // Validaciones
+    // Validar que tenemos token
+    if (!resetToken) {
+      setError("Token no válido. Debe acceder desde el enlace del email.");
+      return;
+    }
+
+    // Validaciones de contraseña
     if (password !== confirmPassword) {
       setError("Las contraseñas no coinciden.");
       return;
     }
 
-    if (password.length < 6) {
-      setError("La contraseña debe tener al menos 6 caracteres");
+    if (password.length < 8) {
+      setError("La contraseña debe tener al menos 8 caracteres");
+      return;
+    }
+
+    // Validaciones adicionales basadas en el PasswordResetService
+    const hasUppercase = /[A-Z]/.test(password);
+    const hasLowercase = /[a-z]/.test(password);
+    const hasNumber = /\d/.test(password);
+    const hasSpecialChar = /[!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?]/.test(password);
+
+    if (!hasUppercase || !hasLowercase || !hasNumber || !hasSpecialChar) {
+      setError("La contraseña debe contener al menos: 1 mayúscula, 1 minúscula, 1 número y 1 carácter especial");
       return;
     }
 
@@ -93,22 +70,20 @@ export default function OlvidarPw2() {
     setError("");
 
     console.log("=== RESTABLECIENDO CONTRASEÑA ===");
-    console.log("Token a usar:", validToken);
-    console.log("Password length:", password.length);
+    console.log("Token a usar:", resetToken.substring(0, 20) + "...");
 
     try {
       const payload = { 
-        token: validToken, // Usar el token validado
+        token: resetToken,
         nuevaContrasena: password 
       };
 
-      console.log("Payload:", JSON.stringify(payload, null, 2));
+      console.log("Payload enviado:", { token: resetToken.substring(0, 20) + "...", nuevaContrasena: "***" });
 
       const response = await fetch("https://checknote-27fe.onrender.com/api/v1/auth/reset-password", {
         method: "POST",
         headers: { 
           "Content-Type": "application/json",
-          "Accept": "application/json"
         },
         body: JSON.stringify(payload),
       });
@@ -145,11 +120,11 @@ export default function OlvidarPw2() {
         
         let errorMessage;
         if (response.status === 400) {
-          errorMessage = data.message || "Datos inválidos";
+          errorMessage = data.message || "Token inválido o datos incorrectos";
         } else if (response.status === 401) {
-          errorMessage = "Token expirado o inválido";
+          errorMessage = "Token expirado o inválido. Solicita un nuevo enlace de recuperación.";
         } else if (response.status === 404) {
-          errorMessage = "Token no encontrado";
+          errorMessage = "Token no encontrado. Solicita un nuevo enlace de recuperación.";
         } else {
           errorMessage = data.message || "Error al restablecer la contraseña";
         }
@@ -160,37 +135,19 @@ export default function OlvidarPw2() {
       console.error("Error en la petición:", err);
       
       if (err.name === 'TypeError' && err.message.includes('fetch')) {
-        setError("Error de conexión. Verifica tu internet.");
+        setError("Error de conexión. Verifica tu internet y el estado del servidor.");
       } else if (err.message.includes('JSON')) {
         setError("Error procesando respuesta del servidor.");
       } else {
-        setError("Error de conexión con el servidor: " + err.message);
+        setError("Error de conexión: " + err.message);
       }
     } finally {
       setLoading(false);
     }
   };
 
-  // Si aún está verificando el token
-  if (tokenValid === null) {
-    return (
-      <div className="main-container gradient-bg">
-        <div className="card forgot-style with-shadow">
-          <div className="logo size-md">
-            <img src="/logo.png" alt="Checknote" />
-            <h1>Checknote</h1>
-          </div>
-          <div style={{ textAlign: 'center', padding: '40px' }}>
-            <h2 className="title-secondary">Verificando acceso...</h2>
-            <p style={{ color: '#6c757d' }}>Validando enlace de recuperación</p>
-          </div>
-        </div>
-      </div>
-    );
-  }
-
-  // Si el token no es válido
-  if (tokenValid === false) {
+  // Si no hay token, mostrar error
+  if (!resetToken && !loading) {
     return (
       <div className="main-container gradient-bg">
         <div className="card forgot-style with-shadow">
@@ -200,12 +157,12 @@ export default function OlvidarPw2() {
           </div>
           
           <div style={{ textAlign: 'center', padding: '20px' }}>
-            <h2 className="title-secondary" style={{ color: '#dc3545' }}>Enlace no válido</h2>
+            <h2 className="title-secondary" style={{ color: '#dc3545' }}>Acceso denegado</h2>
             <p style={{ color: '#6c757d', marginBottom: '20px' }}>
-              {error || "El enlace ha expirado o no es válido"}
+              Debe acceder desde el enlace enviado a su correo electrónico
             </p>
             <Link to="/olvidar-password" className="btn btn-primary btn-rounded">
-              Solicitar nuevo enlace
+              Solicitar enlace de recuperación
             </Link>
           </div>
 
@@ -217,7 +174,7 @@ export default function OlvidarPw2() {
     );
   }
 
-  // Formulario principal (token válido)
+  // Formulario principal
   return (
     <div className="main-container gradient-bg">
       <div className="card forgot-style with-shadow">
@@ -228,10 +185,11 @@ export default function OlvidarPw2() {
         </div>
 
         {/* Título */}
-        <h2 className="title-secondary">Ingrese una nueva contraseña para su cuenta</h2>
+        <h2 className="title-secondary">Nueva Contraseña</h2>
+        <p className="subtitle">Ingrese una contraseña segura para su cuenta</p>
 
         {/* Info de debugging */}
-        {process.env.NODE_ENV === 'development' && (
+        {process.env.NODE_ENV === 'development' && resetToken && (
           <div style={{ 
             background: '#2d3748', 
             padding: '10px', 
@@ -241,11 +199,8 @@ export default function OlvidarPw2() {
             color: '#a0aec0'
           }}>
             <strong>DEBUG INFO:</strong><br />
-            Token params: {token?.substring(0, 20)}...<br />
-            Token query: {new URLSearchParams(location.search).get('token')?.substring(0, 20)}...<br />
-            Token válido: {validToken?.substring(0, 20)}...<br />
-            Estado: {tokenValid ? 'Válido' : 'Inválido'}<br />
-            URL verificación: /api/v1/auth/verify<br />
+            Token disponible: {resetToken.substring(0, 20)}...<br />
+            Token length: {resetToken.length}<br />
             URL reset: /api/v1/auth/reset-password
           </div>
         )}
@@ -259,12 +214,12 @@ export default function OlvidarPw2() {
               <label>Nueva Contraseña</label>
               <input
                 type="password"
-                placeholder="Mínimo 6 caracteres"
+                placeholder="Mínimo 8 caracteres con mayús, minus, número y símbolo"
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
                 required
                 disabled={loading}
-                minLength={6}
+                minLength={8}
               />
             </div>
           </div>
@@ -285,6 +240,27 @@ export default function OlvidarPw2() {
             </div>
           </div>
 
+          {/* Requisitos de contraseña */}
+          <div style={{ 
+            fontSize: '12px', 
+            color: '#6c757d', 
+            marginBottom: '15px',
+            textAlign: 'left',
+            padding: '10px',
+            background: '#f8f9fa',
+            borderRadius: '5px',
+            color: '#495057'
+          }}>
+            <strong>Requisitos de contraseña:</strong>
+            <ul style={{ marginTop: '5px', paddingLeft: '15px' }}>
+              <li>Mínimo 8 caracteres</li>
+              <li>Al menos 1 letra mayúscula</li>
+              <li>Al menos 1 letra minúscula</li>
+              <li>Al menos 1 número</li>
+              <li>Al menos 1 carácter especial (!@#$%^&*...)</li>
+            </ul>
+          </div>
+
           {/* Error */}
           {error && <p className="text-error">{error}</p>}
 
@@ -294,13 +270,14 @@ export default function OlvidarPw2() {
             className="btn btn-primary btn-rounded" 
             disabled={loading || !password.trim() || !confirmPassword.trim()}
           >
-            {loading ? "Restableciendo..." : "Restablecer Contraseña"}
+            {loading ? "Restableciendo..." : "Establecer Nueva Contraseña"}
           </button>
         </form>
 
-        {/* Link adicional */}
+        {/* Links adicionales */}
         <div className="links-section">
-          <Link to="/login" className="link">Volver al inicio de sesión</Link>
+          <Link to="/olvidar-password" className="link small">Solicitar nuevo enlace</Link> | 
+          <Link to="/login" className="link small"> Volver al login</Link>
         </div>
       </div>
     </div>
