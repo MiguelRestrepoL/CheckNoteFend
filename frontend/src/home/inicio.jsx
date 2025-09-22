@@ -81,19 +81,13 @@ export default function Inicio() {
       // }
       console.log("⏭️ Saltando verificación de servidor, probando directo con /tasks");
 
-      // SOLUCIÓN TEMPORAL: Usar proxy CORS confiable
-      const API_BASE = "https://checknote-27fe.onrender.com/api/v1/tasks";
-      const PROXY_URL = "https://cors-anywhere.herokuapp.com/";
-      
-      console.log("🔄 Intentando con proxy CORS para evitar bloqueo...");
-      
-      const response = await fetch(PROXY_URL + API_BASE, {
+      // Ya no necesitamos proxy CORS - el problema era el token
+      const response = await fetch("https://checknote-27fe.onrender.com/api/v1/tasks", {
         method: "GET",
         headers: {
           "Authorization": `Bearer ${token}`,
           "Content-Type": "application/json",
-          "Accept": "application/json",
-          "X-Requested-With": "XMLHttpRequest"
+          "Accept": "application/json"
         },
       });
 
