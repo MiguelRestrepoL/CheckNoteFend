@@ -88,83 +88,28 @@ export default function OlvidarPw2() {
     console.log("Token a usar:", resetToken.substring(0, 20) + "...");
 
     try {
-      // Probar diferentes formatos de payload según los logs
-      const payloadOptions = [
-        // Formato 1: Según error del servidor
-        {
-          token: resetToken,
-          nuevaContrasena: password,
-          confirmacion: confirmPassword
+      // Formato correcto según el error del servidor
+      const payload = {
+        token: resetToken,
+        nueva_contrasena: password,  // Con guión bajo
+        confirmacion: confirmPassword
+      };
+
+      console.log("Enviando payload:", {
+        token: resetToken.substring(0, 20) + "...",
+        nueva_contrasena: "[OCULTA]",
+        confirmacion: "[OCULTA]"
+      });
+
+      const response = await fetch("https://checknote-27fe.onrender.com/api/v1/auth/reset-password", {
+        method: "POST",
+        headers: { 
+          "Content-Type": "application/json",
         },
-        // Formato 2: Nombres alternativos
-        {
-          token: resetToken,
-          newPassword: password,
-          confirmPassword: confirmPassword
-        },
-        // Formato 3: Snake case
-        {
-          token: resetToken,
-          nueva_contrasena: password,
-          confirmar_contrasena: confirmPassword
-        }
-      ];
+        body: JSON.stringify(payload),
+      });
 
-      let response;
-      let lastError;
-
-      // Intentar con cada formato
-      for (let i = 0; i < payloadOptions.length; i++) {
-        const payload = payloadOptions[i];
-        
-        console.log(`Intentando formato ${i + 1}:`, {
-          ...payload,
-          nuevaContrasena: payload.nuevaContrasena ? '[OCULTA]' : undefined,
-          newPassword: payload.newPassword ? '[OCULTA]' : undefined,
-          nueva_contrasena: payload.nueva_contrasena ? '[OCULTA]' : undefined,
-          confirmacion: payload.confirmacion ? '[OCULTA]' : undefined,
-          confirmPassword: payload.confirmPassword ? '[OCULTA]' : undefined,
-          confirmar_contrasena: payload.confirmar_contrasena ? '[OCULTA]' : undefined
-        });
-
-        try {
-          response = await fetch("https://checknote-27fe.onrender.com/api/v1/auth/reset-password", {
-            method: "POST",
-            headers: { 
-              "Content-Type": "application/json",
-            },
-            body: JSON.stringify(payload),
-          });
-
-          console.log(`Respuesta formato ${i + 1} - Status:`, response.status);
-
-          // Si obtuvimos una respuesta exitosa, salir del loop
-          if (response.ok) {
-            console.log(`✅ Formato ${i + 1} funcionó!`);
-            break;
-          }
-
-          // Si es 400, puede ser formato incorrecto, intentar siguiente
-          if (response.status === 400) {
-            const errorText = await response.text();
-            console.log(`Formato ${i + 1} falló:`, errorText);
-            lastError = errorText;
-            continue;
-          }
-
-          // Para otros errores, procesar inmediatamente
-          break;
-
-        } catch (fetchError) {
-          console.error(`Error en formato ${i + 1}:`, fetchError);
-          lastError = fetchError.message;
-          continue;
-        }
-      }
-
-      if (!response) {
-        throw new Error(lastError || "Error de conexión con el servidor");
-      }
+      console.log("Respuesta - Status:", response.status);
 
       let data = {};
       try {
