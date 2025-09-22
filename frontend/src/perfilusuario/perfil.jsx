@@ -328,72 +328,24 @@ export default function Perfil() {
         throw new Error("La nueva contraseña debe ser diferente a la actual");
       }
 
-      // Preparar datos para cambio de contraseña - probar diferentes formatos
-      // Formato 1: Basado en el mensaje de error del servidor
-      let updateData = {
-        "contraseña actual": manejoData.currentPassword,
-        "nueva contraseña": manejoData.password,
-        "confirmación": manejoData.confirmPassword
+      // Preparar datos para cambio de contraseña - usar campos exactos del controlador
+      const updateData = {
+        contrasenaActual: manejoData.currentPassword,
+        nuevaContrasena: manejoData.password,
+        confirmarNuevaContrasena: manejoData.confirmPassword
       };
-      
-      // Si el primer formato falla, intentaremos otros formatos comunes
-      const alternativeFormats = [
-        {
-          currentPassword: manejoData.currentPassword,
-          newPassword: manejoData.password,
-          confirmPassword: manejoData.confirmPassword
-        },
-        {
-          oldPassword: manejoData.currentPassword,
-          contrasena: manejoData.password,
-          confirmPassword: manejoData.confirmPassword
-        },
-        {
-          contrasenaActual: manejoData.currentPassword,
-          contrasena: manejoData.password
-        }
-      ];
 
       console.log("Password change data:", { 
-        hasCurrentPassword: !!updateData["contraseña actual"],
-        hasNewPassword: !!updateData["nueva contraseña"],
-        hasConfirmation: !!updateData["confirmación"],
+        hasCurrentPassword: !!updateData.contrasenaActual,
+        hasNewPassword: !!updateData.nuevaContrasena,
+        hasConfirmation: !!updateData.confirmarNuevaContrasena,
         endpoint: '/users/me'
       });
 
-      // Intentar cambio de contraseña con múltiples formatos
-      let passwordChangeSuccess = false;
-      let lastError = null;
-
-      // Probar formato principal primero
-      try {
-        await makeRequest('/users/me', updateData, true);
-        passwordChangeSuccess = true;
-      } catch (error) {
-        lastError = error;
-        console.log("First format failed, trying alternatives...");
-        
-        // Probar formatos alternativos
-        for (let i = 0; i < alternativeFormats.length && !passwordChangeSuccess; i++) {
-          try {
-            console.log(`Trying alternative format ${i + 1}:`, Object.keys(alternativeFormats[i]));
-            await makeRequest('/users/me', alternativeFormats[i], true);
-            passwordChangeSuccess = true;
-            console.log(`Alternative format ${i + 1} worked!`);
-            break;
-          } catch (altError) {
-            console.log(`Alternative format ${i + 1} failed:`, altError.message);
-            lastError = altError;
-          }
-        }
-      }
-
-      if (passwordChangeSuccess) {
-        setSuccess("Contraseña cambiada correctamente");
-        setManejoData({ currentPassword: "", password: "", confirmPassword: "" });
-      } else {
-        throw lastError;
-      }
+      await makeRequest('/users/me', updateData, true);
+      
+      setSuccess("Contraseña cambiada correctamente");
+      setManejoData({ currentPassword: "", password: "", confirmPassword: "" });
     } catch (err) {
       console.error("Error changing password:", err);
       setError("Error al cambiar la contraseña: " + err.message);
