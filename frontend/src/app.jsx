@@ -10,7 +10,7 @@ import EditarTarea from "./editartarea/editartarea.jsx";
 import Perfil from "./perfilusuario/perfil.jsx";
 import "./GlobalCSS1.css";
 import "./GlobalCSS2.css";
-
+import "./GlobalCSS3.css";
 
 function App() {
   return (
