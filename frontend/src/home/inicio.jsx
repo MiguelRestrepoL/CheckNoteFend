@@ -20,7 +20,7 @@ export default function Inicio() {
   const storedUser = localStorage.getItem('user');
   const user = storedUser ? JSON.parse(storedUser) : { nombres: 'Usuario' };
 
-  // Cargar tareas del usuario - SIMPLIFICADO COMO EL CÓDIGO VIEJO
+  // Cargar tareas del usuario - CON VERIFY INTEGRADO
   const cargarTareas = async () => {
     const token = localStorage.getItem('token');
     
@@ -36,10 +36,41 @@ export default function Inicio() {
       setLoading(true);
       setError("");
 
-      console.log("=== CARGANDO TAREAS (CÓDIGO VIEJO) ===");
-      console.log("1. Token encontrado en localStorage:", token ? "✅" : "❌");
-      console.log("2. Longitud del token:", token?.length);
+      console.log("=== CARGANDO TAREAS CON VERIFY ===");
+      console.log("1. Token encontrado:", token ? "✅" : "❌");
+      
+      // PASO 1: Verificar token antes de usar
+      console.log("2. Verificando token...");
+      const verifyRes = await fetch("https://checknote-27fe.onrender.com/api/v1/auth/verify", {
+        method: "POST",
+        headers: {
+          "Authorization": `Bearer ${token}`
+        }
+      });
 
+      console.log("3. Verify status:", verifyRes.status);
+
+      if (!verifyRes.ok) {
+        const verifyError = await verifyRes.json();
+        console.log("❌ Token inválido en verify:", verifyError);
+        
+        // Limpiar localStorage y redirigir
+        localStorage.removeItem('token');
+        localStorage.removeItem('user');
+        localStorage.removeItem('userId');
+        localStorage.removeItem('userName');
+        
+        setError("Tu sesión ha expirado. Redirigiendo al login...");
+        setTimeout(() => {
+          navigate('/login');
+        }, 2000);
+        return;
+      }
+
+      console.log("4. Token verificado correctamente ✅");
+
+      // PASO 2: Usar el mismo token que acabamos de verificar
+      console.log("5. Cargando tareas con token verificado...");
       const response = await fetch("https://checknote-27fe.onrender.com/api/v1/tasks", {
         method: "GET",
         headers: {
@@ -47,55 +78,82 @@ export default function Inicio() {
         },
       });
 
-      console.log("3. Status respuesta:", response.status);
-      console.log("4. Headers respuesta:", Object.fromEntries(response.headers.entries()));
+      console.log("6. Status respuesta tasks:", response.status);
+      console.log("7. Headers respuesta:", Object.fromEntries(response.headers.entries()));
 
       if (!response.ok) {
         if (response.status === 401) {
-          console.log("❌ Error 401 - Token rechazado por el servidor");
-          localStorage.removeItem('token');
-          localStorage.removeItem('user');
-          localStorage.removeItem('userId');
-          localStorage.removeItem('userName');
-          setError("Tu sesión ha expirado. Redirigiendo al login...");
-          setTimeout(() => {
-            navigate('/login');
-          }, 2000);
+          console.log("❌ Error 401 DESPUÉS del verify exitoso - Problema del servidor");
+          
+          // Intentar una vez más con el token recién verificado
+          console.log("8. Reintentando una vez más...");
+          const retryResponse = await fetch("https://checknote-27fe.onrender.com/api/v1/tasks", {
+            method: "GET",
+            headers: {
+              "Authorization": `Bearer ${token}`,
+            },
+          });
+
+          if (!retryResponse.ok) {
+            console.log("❌ Reintento también falló - Token definitivamente inválido");
+            localStorage.removeItem('token');
+            localStorage.removeItem('user');
+            localStorage.removeItem('userId');
+            localStorage.removeItem('userName');
+            setError("Tu sesión ha expirado. Redirigiendo al login...");
+            setTimeout(() => {
+              navigate('/login');
+            }, 2000);
+            return;
+          }
+          
+          console.log("✅ Reintento exitoso");
+          // Usar la respuesta del reintento
+          const responseText = await retryResponse.text();
+          console.log("9. Respuesta del reintento:", responseText);
+          
+          // Procesar respuesta (código igual que antes)
+          let tareasData = [];
+          try {
+            const responseData = responseText ? JSON.parse(responseText) : {};
+            tareasData = responseData.tasks || responseData.data || responseData;
+            if (!Array.isArray(tareasData)) tareasData = [];
+          } catch (parseError) {
+            console.error("Error parseando JSON:", parseError);
+          }
+          
+          const tareasOrganizadas = {
+            pendiente: tareasData.filter(tarea => tarea.estado === 'pendiente'),
+            en_progreso: tareasData.filter(tarea => tarea.estado === 'en_progreso'),
+            terminada: tareasData.filter(tarea => tarea.estado === 'terminada')
+          };
+          
+          setTareas(tareasOrganizadas);
           return;
         }
         throw new Error(`Error ${response.status}: ${response.statusText}`);
       }
 
+      // Proceso normal si la primera petición fue exitosa
       const responseText = await response.text();
-      console.log("5. Respuesta raw:", responseText);
+      console.log("8. Respuesta exitosa:", responseText);
 
-      let tareasData;
+      let tareasData = [];
       try {
         const responseData = responseText ? JSON.parse(responseText) : {};
-        console.log("6. Respuesta parseada:", responseData);
-        
-        // Extraer tareas según la estructura de respuesta
         tareasData = responseData.tasks || responseData.data || responseData;
-        
-        if (!Array.isArray(tareasData)) {
-          tareasData = []; // Si no es array, usar array vacío
-          console.log("7. No se encontraron tareas en formato array, usando array vacío");
-        } else {
-          console.log("7. Tareas encontradas:", tareasData.length);
-        }
+        if (!Array.isArray(tareasData)) tareasData = [];
       } catch (parseError) {
         console.error("Error parseando JSON:", parseError);
-        tareasData = [];
       }
       
-      // Organizar tareas por estado para el tablero Kanban
       const tareasOrganizadas = {
         pendiente: tareasData.filter(tarea => tarea.estado === 'pendiente'),
         en_progreso: tareasData.filter(tarea => tarea.estado === 'en_progreso'),
         terminada: tareasData.filter(tarea => tarea.estado === 'terminada')
       };
 
-      console.log("8. Tareas organizadas:", {
+      console.log("9. Tareas organizadas:", {
         pendiente: tareasOrganizadas.pendiente.length,
         en_progreso: tareasOrganizadas.en_progreso.length,
         terminada: tareasOrganizadas.terminada.length
