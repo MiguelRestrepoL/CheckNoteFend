@@ -1,5 +1,3 @@
-
-import React, { useState, useEffect } from "react";
 import { useLocation, Link, useNavigate } from "react-router-dom";
 
 export default function Inicio() {
@@ -20,9 +18,13 @@ export default function Inicio() {
   const storedUser = localStorage.getItem('user');
   const user = storedUser ? JSON.parse(storedUser) : { nombres: 'Usuario' };
 
-  // Función simplificada para cargar tareas
+  // Función para cargar tareas con mejor debugging
   const cargarTareas = async () => {
     const token = localStorage.getItem('token');
+    
+    console.log("=== INICIANDO CARGA DE TAREAS ===");
+    console.log("Token presente:", token ? "✅ SÍ" : "❌ NO");
+    console.log("Token preview:", token ? token.substring(0, 20) + "..." : "N/A");
     
     if (!token) {
       setError("No hay sesión activa. Redirigiendo al login...");
@@ -36,7 +38,37 @@ export default function Inicio() {
       setLoading(true);
       setError("");
 
-      console.log("Cargando tareas...");
+      // PASO 1: Verificar que el token sigue siendo válido
+      console.log("PASO 1: Verificando token antes de cargar tareas...");
+      const verifyResponse = await fetch("https://checknote-27fe.onrender.com/api/v1/auth/verify", {
+        method: "POST",
+        headers: {
+          "Authorization": `Bearer ${token}`,
+          "Content-Type": "application/json",
+        },
+      });
+
+      console.log("Verify status:", verifyResponse.status);
+      
+      if (!verifyResponse.ok) {
+        console.log("❌ Token inválido en verify");
+        localStorage.removeItem('token');
+        localStorage.removeItem('user');
+        localStorage.removeItem('userId');
+        localStorage.removeItem('userName');
+        
+        setError("Tu sesión ha expirado. Redirigiendo al login...");
+        setTimeout(() => {
+          navigate('/login');
+        }, 2000);
+        return;
+      }
+
+      const verifyData = await verifyResponse.json();
+      console.log("✅ Token verificado correctamente");
+      
+      // PASO 2: Usar el token verificado para cargar tareas
+      console.log("PASO 2: Cargando tareas con token verificado...");
       
       const response = await fetch("https://checknote-27fe.onrender.com/api/v1/tasks", {
         method: "GET",
@@ -46,11 +78,14 @@ export default function Inicio() {
         },
       });
 
-      console.log("Status respuesta:", response.status);
+      console.log("Tasks response status:", response.status);
+      console.log("Tasks response headers:", Object.fromEntries(response.headers.entries()));
 
       if (!response.ok) {
         if (response.status === 401) {
-          // Token expirado o inválido
+          console.log("❌ 401 en /tasks después de verify exitoso");
+          
+          // Limpiar sesión
           localStorage.removeItem('token');
           localStorage.removeItem('user');
           localStorage.removeItem('userId');
@@ -63,6 +98,8 @@ export default function Inicio() {
           return;
         }
         
+        const errorText = await response.text();
+        console.log("Error response body:", errorText);
         throw new Error(`Error ${response.status}: ${response.statusText}`);
       }
 
@@ -116,6 +153,15 @@ export default function Inicio() {
 
   const toggleMenu = () => {
     setMenuOpen(!menuOpen);
+  };
+
+  // Función para limpiar sesión y forzar nuevo login
+  const forzarNuevoLogin = () => {
+    localStorage.removeItem('token');
+    localStorage.removeItem('user');
+    localStorage.removeItem('userId');
+    localStorage.removeItem('userName');
+    navigate('/login');
   };
 
   const getPriorityClass = (prioridad) => {
@@ -212,10 +258,27 @@ export default function Inicio() {
                   borderRadius: '4px',
                   color: 'white',
                   cursor: 'pointer',
-                  fontSize: '12px'
+                  fontSize: '12px',
+                  marginRight: '8px'
                 }}
               >
                 🔄 Reintentar
+              </button>
+              
+              <button
+                onClick={forzarNuevoLogin}
+                style={{
+                  marginTop: '12px',
+                  padding: '8px 16px',
+                  backgroundColor: 'rgba(255,255,255,0.1)',
+                  border: '1px solid rgba(255,255,255,0.3)',
+                  borderRadius: '4px',
+                  color: 'white',
+                  cursor: 'pointer',
+                  fontSize: '12px'
+                }}
+              >
+                🚪 Nuevo Login
               </button>
             </div>
           )}
@@ -328,4 +391,3 @@ export default function Inicio() {
       </footer>
     </div>
   );
-}
