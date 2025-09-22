@@ -88,17 +88,17 @@ export default function OlvidarPw2() {
     console.log("Token a usar:", resetToken.substring(0, 20) + "...");
 
     try {
-      // Formato correcto según el error del servidor
+      // Formato correcto según el AuthController (camelCase)
       const payload = {
         token: resetToken,
-        nueva_contrasena: password,  // Con guión bajo
-        confirmacion: confirmPassword
+        nuevaContrasena: password,      // camelCase como espera el controller
+        confirmarContrasena: confirmPassword  // camelCase como espera el controller
       };
 
       console.log("Enviando payload:", {
         token: resetToken.substring(0, 20) + "...",
-        nueva_contrasena: "[OCULTA]",
-        confirmacion: "[OCULTA]"
+        nuevaContrasena: "[OCULTA]",
+        confirmarContrasena: "[OCULTA]"
       });
 
       const response = await fetch("https://checknote-27fe.onrender.com/api/v1/auth/reset-password", {
