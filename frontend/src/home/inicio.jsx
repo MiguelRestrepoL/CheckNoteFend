@@ -81,6 +81,7 @@ export default function Inicio() {
       // }
       console.log("⏭️ Saltando verificación de servidor, probando directo con /tasks");
 
+      // Ya no necesitamos proxy CORS - el problema era el token
       const response = await fetch("https://checknote-27fe.onrender.com/api/v1/tasks", {
         method: "GET",
         headers: {
