@@ -1,6 +1,6 @@
+
 import React, { useState } from "react";
 import { useNavigate, Link } from "react-router-dom";
-import "./inicioSesion.css";
 
 export default function InicioSesion() {
   const [correo, setCorreo] = useState("");
@@ -64,7 +64,7 @@ export default function InicioSesion() {
         throw new Error("Respuesta del servidor incompleta");
       }
 
-      
+      // Verificar token - RESTAURADO
       const verifyRes = await fetch("https://checknote-27fe.onrender.com/api/v1/auth/verify", {
         method: "POST",
         headers: {
@@ -72,10 +72,18 @@ export default function InicioSesion() {
         },
       });
 
+      console.log("Verify response status:", verifyRes.status);
+
       if (!verifyRes.ok) {
+        const verifyError = await verifyRes.json();
+        console.log("Verify error:", verifyError);
         throw new Error("Token inválido del servidor");
       }
 
+      const verifyData = await verifyRes.json();
+      console.log("Token verificado exitosamente:", verifyData);
+
+      // Guardar datos
       localStorage.setItem('token', token);
       localStorage.setItem('user', JSON.stringify(user));
       localStorage.setItem('userId', user._id || user.id); 
