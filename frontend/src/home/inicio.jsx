@@ -20,174 +20,72 @@ export default function Inicio() {
   const storedUser = localStorage.getItem('user');
   const user = storedUser ? JSON.parse(storedUser) : { nombres: 'Usuario' };
 
-  // NUEVA FUNCIÓN: Verificar token antes de usar
-  const verificarToken = async () => {
+  // Cargar tareas del usuario - SIMPLIFICADO COMO EL CÓDIGO VIEJO
+  const cargarTareas = async () => {
     const token = localStorage.getItem('token');
     
     if (!token) {
-      console.log("❌ No hay token en localStorage");
-      return false;
+      setError("No hay sesión activa. Redirigiendo al login...");
+      setTimeout(() => {
+        navigate('/login');
+      }, 2000);
+      return;
     }
 
-    try {
-      console.log("🔐 Verificando token antes de cargar tareas...");
-      
-      const verifyRes = await fetch("https://checknote-27fe.onrender.com/api/v1/auth/verify", {
-        method: "POST",
-        headers: {
-          "Authorization": `Bearer ${token}`
-          // Quitar Content-Type porque no enviamos body JSON
-        }
-      });
-
-      console.log("Verify response status:", verifyRes.status);
-
-      if (verifyRes.ok) {
-        const verifyData = await verifyRes.json();
-        console.log("✅ Token válido:", verifyData);
-        return true;
-      } else {
-        const errorData = await verifyRes.json();
-        console.log("❌ Token inválido:", errorData);
-        
-        // Limpiar localStorage si el token es inválido
-        localStorage.removeItem('token');
-        localStorage.removeItem('user');
-        localStorage.removeItem('userId');
-        localStorage.removeItem('userName');
-        
-        return false;
-      }
-    } catch (error) {
-      console.error("❌ Error verificando token:", error);
-      
-      // Limpiar localStorage en caso de error de red
-      localStorage.removeItem('token');
-      localStorage.removeItem('user');
-      localStorage.removeItem('userId');
-      localStorage.removeItem('userName');
-      
-      return false;
-    }
-  };
-
-  // Verificar estado del servidor
-  const checkServerStatus = async () => {
-    try {
-      console.log("🔍 Verificando estado del servidor...");
-      
-      const response = await fetch("https://checknote-27fe.onrender.com/health", {
-        method: "GET",
-        headers: {
-          "Content-Type": "application/json"
-        }
-      });
-
-      if (response.ok) {
-        console.log("✅ Servidor en línea");
-        setServerStatus("online");
-        return true;
-      } else {
-        console.log("⚠️ Servidor responde pero con error:", response.status);
-        setServerStatus("offline");
-        return false;
-      }
-    } catch (err) {
-      console.log("❌ Servidor fuera de línea:", err.message);
-      setServerStatus("offline");
-      return false;
-    }
-  };
-
-  // Cargar tareas del usuario - CORREGIDO
-  const cargarTareas = async () => {
     try {
       setLoading(true);
       setError("");
 
-      console.log("=== CARGANDO TAREAS ===");
+      console.log("=== CARGANDO TAREAS (CÓDIGO VIEJO) ===");
+      console.log("1. Token encontrado en localStorage:", token ? "✅" : "❌");
+      console.log("2. Longitud del token:", token?.length);
 
-      // PASO 1: Verificar que el token sea válido
-      const tokenValido = await verificarToken();
-      
-      if (!tokenValido) {
-        setError("Tu sesión ha expirado. Redirigiendo al login...");
-        setTimeout(() => {
-          navigate('/login');
-        }, 2000);
-        return;
-      }
-
-      // PASO 2: Obtener token ya validado
-      const token = localStorage.getItem('token');
-      
-      console.log("1. Token validado exitosamente ✅");
-      console.log("2. URL:", "https://checknote-27fe.onrender.com/api/v1/tasks");
-
-      // PASO 3: Cargar tareas con token válido
       const response = await fetch("https://checknote-27fe.onrender.com/api/v1/tasks", {
         method: "GET",
         headers: {
           "Authorization": `Bearer ${token}`,
-          "Content-Type": "application/json",
-          "Accept": "application/json"
         },
       });
 
-      console.log("3. Status respuesta tasks:", response.status);
-      console.log("4. Status text:", response.statusText);
+      console.log("3. Status respuesta:", response.status);
+      console.log("4. Headers respuesta:", Object.fromEntries(response.headers.entries()));
 
       if (!response.ok) {
         if (response.status === 401) {
-          console.log("❌ Token expirado durante la petición de tareas");
-          // Limpiar y redirigir
+          console.log("❌ Error 401 - Token rechazado por el servidor");
           localStorage.removeItem('token');
           localStorage.removeItem('user');
           localStorage.removeItem('userId');
           localStorage.removeItem('userName');
-          
           setError("Tu sesión ha expirado. Redirigiendo al login...");
           setTimeout(() => {
             navigate('/login');
           }, 2000);
           return;
-        } else if (response.status === 403) {
-          setError("No tienes permisos para acceder a las tareas.");
-          return;
-        } else if (response.status === 404) {
-          setError("Endpoint de tareas no encontrado.");
-          return;
-        } else if (response.status === 500) {
-          setError("Error interno del servidor.");
-          return;
         }
-        
         throw new Error(`Error ${response.status}: ${response.statusText}`);
       }
 
       const responseText = await response.text();
       console.log("5. Respuesta raw:", responseText);
 
-      let responseData;
+      let tareasData;
       try {
-        responseData = responseText ? JSON.parse(responseText) : {};
+        const responseData = responseText ? JSON.parse(responseText) : {};
         console.log("6. Respuesta parseada:", responseData);
+        
+        // Extraer tareas según la estructura de respuesta
+        tareasData = responseData.tasks || responseData.data || responseData;
+        
+        if (!Array.isArray(tareasData)) {
+          tareasData = []; // Si no es array, usar array vacío
+          console.log("7. No se encontraron tareas en formato array, usando array vacío");
+        } else {
+          console.log("7. Tareas encontradas:", tareasData.length);
+        }
       } catch (parseError) {
         console.error("Error parseando JSON:", parseError);
-        throw new Error("Respuesta del servidor no válida");
-      }
-
-      // CORREGIDO: Extraer tareas de la respuesta correcta
-      const tareasData = responseData.tasks || responseData.data || responseData || [];
-      
-      console.log("7. Tareas extraídas:", tareasData);
-      console.log("8. Es array?", Array.isArray(tareasData));
-
-      if (!Array.isArray(tareasData)) {
-        console.error("Las tareas no son un array:", typeof tareasData);
-        console.log("Estructura de respuesta:", responseData);
-        setError("Formato de respuesta inesperado del servidor.");
-        return;
+        tareasData = [];
       }
       
       // Organizar tareas por estado para el tablero Kanban
@@ -197,28 +95,17 @@ export default function Inicio() {
         terminada: tareasData.filter(tarea => tarea.estado === 'terminada')
       };
 
-      console.log("9. Tareas organizadas:", {
+      console.log("8. Tareas organizadas:", {
         pendiente: tareasOrganizadas.pendiente.length,
         en_progreso: tareasOrganizadas.en_progreso.length,
         terminada: tareasOrganizadas.terminada.length
       });
 
       setTareas(tareasOrganizadas);
-      setServerStatus("online");
 
     } catch (err) {
       console.error("❌ Error completo:", err);
-      console.error("Stack:", err.stack);
-      
-      // Manejo específico de errores
-      if (err.name === 'TypeError' && err.message.includes('fetch')) {
-        setError("Error de conexión. Verifica tu internet.");
-        setServerStatus("offline");
-      } else if (err.message.includes('JSON')) {
-        setError("Error procesando respuesta del servidor.");
-      } else {
-        setError("Error cargando tareas: " + err.message);
-      }
+      setError("Error al cargar las tareas: " + err.message);
     } finally {
       setLoading(false);
     }
