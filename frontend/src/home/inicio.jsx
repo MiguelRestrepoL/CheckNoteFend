@@ -70,6 +70,7 @@ export default function Inicio() {
                 "Authorization": `Bearer ${token}`,
                 "Content-Type": "application/json",
               },
+              body: JSON.stringify({}) // ← AGREGAR BODY VACÍO PARA EVITAR ERROR JSON
             });
             console.log("🔍 Test verify status:", testVerify.status);
             if (testVerify.ok) {
