@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Inicio de Sesión</title>
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+  <div class="main-container solid-bg">
+    <div class="card login-style with-shadow">
+      <div class="logo size-lg">
+        <img src="logo.png" alt="Checknote logo" />
+      </div>
+
+      <h2 class="title-secondary">¡Bienvenido nuevamente!</h2>
+      <p class="subtitle">Ingrese su correo y contraseña para acceder</p>
+
+      <form id="login-form" class="form spaced">
+        <div class="field-group">
+          <img src="correo.png" alt="Email" class="field-icon" />
+          <div class="field-input">
+            <label for="correo">E-mail</label>
+            <input
+              type="email"
+              id="correo"
+              class="login-input"
+              placeholder="Ingrese su correo"
+              required
+            />
+          </div>
+        </div>
+
+        <div class="field-group">
+          <img src="clave.png" alt="Contraseña" class="field-icon" />
+          <div class="field-input">
+            <label for="contrasena">Contraseña</label>
+            <input
+              type="password"
+              id="contrasena"
+              class="login-input"
+              placeholder="Ingrese su contraseña"
+              required
+            />
+          </div>
+          <button
+            type="button"
+            id="toggle-password"
+            class="password-toggle"
+            aria-label="Mostrar contraseña"
+          >
+            👁️‍🗨️
+          </button>
+        </div>
+
+        <div class="btn-container">
+          <button type="submit" id="login-btn" class="btn btn-primary">
+            Iniciar sesión
+          </button>
+        </div>
+      </form>
+
+      <p id="error-msg" class="text-error" aria-live="polite"></p>
+
+      <a href="olvidar-password.html" class="link small">
+        ¿Olvidó su contraseña?
+      </a>
+
+      <div class="links-section">
+        ¿No tiene cuenta? <a href="registro.html" class="link">Registrarse</a>
+      </div>
+    </div>
+  </div>
+
+  <script src="login.js"></script>
+</body>
+</html>
