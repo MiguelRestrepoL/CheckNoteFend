@@ -72,6 +72,11 @@ function redirectToHome() {
     window.location.href = '/home.html';   // igual desde raíz
 }
 
+function redirectToRegistro() {
+    console.log('Redirigiendo al registro...');     
+    window.location.href = '/registro.html';  // ✅ apunta a raíz del build
+} 
+
         // Función global para navegación
         window.navigateTo = function(route) {
             console.log('Navegando a:', route);
@@ -79,7 +84,8 @@ function redirectToHome() {
 
 const routes = {
     '/login': '/login.html',
-    '/registro': '/registro.html'
+    '/registro': '/registro.html',
+    '/home': '/home.html'
 };
             if (!route.startsWith('/')) {
                 route = '/' + route;
