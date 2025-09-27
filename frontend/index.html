@@ -77,18 +77,16 @@
         window.navigateTo = function(route) {
             console.log('Navegando a:', route);
             
-            const routes = {
-                '/login': 'inicioSesion/login.html',
-                '/registro': 'registrarse/registro.html',
-                '/register': 'registrarse/registro.html',
-                '/olvidar-password': 'olvidarpw/olvidar-password.html',
-                '/forgot-password': 'olvidarpw/olvidar-password.html',
-                '/home': 'home/home.html',
-                '/dashboard': 'home/home.html',
-                '/crear-tarea': 'creartarea/crear-tarea.html',
-                '/editar-tarea': 'editartarea/editar-tarea.html',
-                '/perfil': 'perfilusuario/perfil.html'
-            };
+const routes = {
+    '/login': 'login.html',
+    '/registro': 'registro.html', 
+    '/register': 'registro.html',
+    '/olvidar-password': 'olvidar-password.html',
+    '/forgot-password': 'olvidar-password.html',
+    '/home': 'home.html',
+    '/dashboard': 'home.html',
+    // etc...
+};
 
             if (!route.startsWith('/')) {
                 route = '/' + route;
