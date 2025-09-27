@@ -56,19 +56,19 @@
         // ===============================================
         
         // Configuración de rutas
-        const routes = {
-            '/': 'login.html',
-            '/login': 'login.html',
-            '/registro': 'registro.html',
-            '/register': 'registro.html',
-            '/olvidar-password': 'olvidar-password.html',
-            '/forgot-password': 'olvidar-password.html',
-            '/home': 'home.html',
-            '/dashboard': 'home.html',
-            '/crear-tarea': 'crear-tarea.html',
-            '/editar-tarea': 'editar-tarea.html',
-            '/perfil': 'perfil.html'
-        };
+const routes = {
+    '/': 'inicioSesion/login.html',
+    '/login': 'inicioSesion/login.html',
+    '/registro': 'registrarse/registro.html', // o la ruta correcta
+    '/register': 'registrarse/registro.html',
+    '/olvidar-password': 'olvidarpw/olvidar-password.html', // o la ruta correcta
+    '/forgot-password': 'olvidarpw/olvidar-password.html',
+    '/home': 'home/home.html', // o la ruta correcta
+    '/dashboard': 'home/home.html',
+    '/crear-tarea': 'creartarea/crear-tarea.html', // etc...
+    '/editar-tarea': 'editartarea/editar-tarea.html',
+    '/perfil': 'perfilusuario/perfil.html'
+};
 
         // Rutas que requieren autenticación
         const protectedRoutes = [
