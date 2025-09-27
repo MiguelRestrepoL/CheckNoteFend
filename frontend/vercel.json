@@ -1,5 +1,8 @@
 {
-  "rewrites": [
-    { "source": "/(.*)", "destination": "/" }
+  "buildCommand": null,
+  "outputDirectory": "src",
+  "routes": [
+    { "src": "/inicioSesion/(.*)", "dest": "/inicioSesion/$1" },
+    { "src": "/(.*)", "dest": "/$1" }
   ]
 }
