@@ -5,6 +5,7 @@
     { "src": "/", "dest": "/index.html" },
     { "src": "/registro.html", "dest": "/registro.html" },
     { "src": "/olvidar-password1.html", "dest": "/olvidar-password1.html" },
-    { "src": "/home.html", "dest": "/home.html" }
+    { "src": "/home.html", "dest": "/home.html" },
+    {"src": "/perfil.html", "dest": "/perfil.html"}
   ]
 }

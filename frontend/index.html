@@ -82,15 +82,21 @@ function redirectToOlvidarPassword() {
     window.location.href = '/olvidar-password1.html';  // ✅ apunta a raíz del build
 } 
 
-function redirectToOlvidarPassword() {
-    console.log('Redirigiendo a olvidar contraseña...');    
-    window.location.href = '/olvidar-password1.html';  // ✅ apunta a raíz del build
+function redirectToPerfil() {
+    console.log('Redirigiendo a perfil...');    
+    window.location.href = '/perfil.html';  // ✅ apunta a raíz del build
+} 
+
+        // Función global para redirigir a cualquier ruta
+        window.navigateTo = function(route) {
+            console.log('Navegando a:', route);
 
 const routes = {
     '/login': '/login.html',
     '/registro': '/registro.html',
     '/home': '/home.html',
-    '/olvidar-password': '/olvidar-password1.html'
+    '/olvidar-password': '/olvidar-password1.html',
+    '/perfil': '/perfil.html'
 };
             if (!route.startsWith('/')) {
                 route = '/' + route;
