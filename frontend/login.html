@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 <html lang="es">
 <head>
@@ -75,6 +74,11 @@
         .rate-limit-warning.show {
             display: block;
         }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
     </style>
 </head>
 <body>
@@ -146,12 +150,12 @@
                         </div>
                     </form>
                     
-                    <a href="#" onclick="navigateTo('/olvidar-password')" class="link small">
+                    <a href="olvidar-password.html" class="link small">
                         ¿Olvidó su contraseña?
                     </a>
                     
                     <div class="links-section">
-                        ¿No tiene cuenta? <a href="#" onclick="navigateTo('/registro')" class="link">Registrarse</a>
+                        ¿No tiene cuenta? <a href="registro.html" class="link">Registrarse</a>
                     </div>
                 </div>
             </div>
@@ -159,6 +163,28 @@
     </div>
 
     <script>
+        // ====================================================
+        // SISTEMA DE NAVEGACIÓN SIMPLE
+        // ====================================================
+        
+        function navigateTo(route) {
+            const routes = {
+                '/home': 'home.html',
+                '/registro': 'registro.html',
+                '/olvidar-password': 'olvidar-password.html',
+                '/login': 'login.html'
+            };
+            
+            const file = routes[route];
+            if (file) {
+                window.location.href = file;
+            } else {
+                console.error('Ruta no encontrada:', route);
+                // Fallback: intentar ir directamente
+                window.location.href = route;
+            }
+        }
+
         // ====================================================
         // SISTEMA DE VALIDACIÓN MEJORADO
         // ====================================================
@@ -275,36 +301,17 @@
         }
 
         // ====================================================
-        // VERIFICAR FUNCIONES GLOBALES DEL ROUTER
-        // ====================================================
-        
-        // Verificar que las funciones del router estén disponibles
-        function checkRouterFunctions() {
-            if (typeof navigateTo !== 'function') {
-                console.warn('Función navigateTo no encontrada. Usando redirección directa.');
-                // Fallback si no está disponible
-                window.navigateTo = function(route) {
-                    const routes = {
-                        '/home': 'home.html',
-                        '/registro': 'registro.html',
-                        '/olvidar-password': 'olvidar-password.html'
-                    };
-                    
-                    const file = routes[route];
-                    if (file) {
-                        window.location.href = file;
-                    } else {
-                        console.error('Ruta no encontrada:', route);
-                    }
-                };
-            }
-        }
-
-        // ====================================================
         // MAIN LOGIN LOGIC
         // ====================================================
         
         document.addEventListener('DOMContentLoaded', function() {
+            // Verificar mensaje de registro exitoso
+            const registroExitoso = sessionStorage.getItem('registroExitoso');
+            if (registroExitoso) {
+                showMessage('success', registroExitoso, 5000);
+                sessionStorage.removeItem('registroExitoso');
+            }
+
             // Verificar si ya está logueado
             const token = localStorage.getItem('token');
             const user = localStorage.getItem('user');
@@ -381,11 +388,15 @@
                 if (!emailResult.valid) {
                     showFieldError('email', emailResult.message);
                     hasErrors = true;
+                } else {
+                    clearFieldError('email');
                 }
 
                 if (!passwordResult.valid) {
                     showFieldError('password', passwordResult.message);
                     hasErrors = true;
+                } else {
+                    clearFieldError('password');
                 }
 
                 if (hasErrors) return;
@@ -439,18 +450,6 @@
                         throw new Error("Respuesta del servidor incompleta");
                     }
 
-                    // Verificar token
-                    const verifyResponse = await fetch("https://checknote-27fe.onrender.com/api/v1/auth/verify", {
-                        method: "POST",
-                        headers: {
-                            "Authorization": `Bearer ${token}`
-                        },
-                    });
-
-                    if (!verifyResponse.ok) {
-                        throw new Error("Error al verificar el token");
-                    }
-
                     // Login exitoso - limpiar intentos fallidos
                     localStorage.removeItem('loginAttempts');
                     localStorage.removeItem('lastLoginAttempt');
@@ -463,7 +462,7 @@
 
                     showMessage('success', '¡Inicio de sesión exitoso! Redirigiendo...', 2000);
                     
-                    // Redirigir usando el sistema de navegación
+                    // Redirigir
                     setTimeout(() => {
                         navigateTo('/home');
                     }, 1000);
