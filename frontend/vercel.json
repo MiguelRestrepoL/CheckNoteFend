@@ -3,6 +3,7 @@
   "routes": [
     { "src": "/login.html", "dest": "/login.html" },
     { "src": "/", "dest": "/index.html" },
-    { "src": "/registro.html", "dest": "/registro.html" }
+    { "src": "/registro.html", "dest": "/registro.html" },
+    { "src": "/olvidar-password1.html", "dest": "/olvidar-password1.html" }
   ]
 }

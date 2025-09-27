@@ -77,6 +77,11 @@ function redirectToRegistro() {
     window.location.href = '/registro.html';  // ✅ apunta a raíz del build
 } 
 
+function redirectToOlvidarPassword() {
+    console.log('Redirigiendo a olvidar contraseña...');    
+    window.location.href = '/olvidar-password1.html';  // ✅ apunta a raíz del build
+} 
+
         // Función global para navegación
         window.navigateTo = function(route) {
             console.log('Navegando a:', route);
@@ -85,7 +90,8 @@ function redirectToRegistro() {
 const routes = {
     '/login': '/login.html',
     '/registro': '/registro.html',
-    '/home': '/home.html'
+    '/home': '/home.html',
+    '/olvidar-password': '/olvidar-password1.html'
 };
             if (!route.startsWith('/')) {
                 route = '/' + route;
