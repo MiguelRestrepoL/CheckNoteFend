@@ -1,141 +1,88 @@
-
 <!DOCTYPE html>
 <html lang="es">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>CheckNote</title>
-    <style>
-        body {
-            font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
-            margin: 0;
-            padding: 0;
-            background: linear-gradient(to bottom, #0b1220, #0f172a);
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            min-height: 100vh;
-            color: white;
-        }
-        
-        .loading {
-            text-align: center;
-        }
-        
-        .loading h1 {
-            margin-bottom: 20px;
-            font-size: 2rem;
-        }
-        
-        .spinner {
-            width: 40px;
-            height: 40px;
-            border: 4px solid rgba(255, 255, 255, 0.3);
-            border-top: 4px solid #10b981;
-            border-radius: 50%;
-            animation: spin 1s linear infinite;
-            margin: 0 auto;
-        }
-        
-        @keyframes spin {
-            0% { transform: rotate(0deg); }
-            100% { transform: rotate(360deg); }
-        }
-    </style>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>CheckNote</title>
+  <style>
+    body {
+      font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+      margin: 0;
+      padding: 0;
+      background: linear-gradient(to bottom, #0b1220, #0f172a);
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      min-height: 100vh;
+      color: white;
+    }
+    .loading { text-align: center; }
+    .loading h1 { margin-bottom: 20px; font-size: 2rem; }
+    .spinner {
+      width: 40px; height: 40px;
+      border: 4px solid rgba(255, 255, 255, 0.3);
+      border-top: 4px solid #10b981;
+      border-radius: 50%;
+      animation: spin 1s linear infinite;
+      margin: 0 auto;
+    }
+    @keyframes spin {
+      0% { transform: rotate(0deg); }
+      100% { transform: rotate(360deg); }
+    }
+  </style>
 </head>
 <body>
-    <div class="loading">
-        <h1>CheckNote</h1>
-        <div class="spinner"></div>
-        <p>Cargando aplicación...</p>
-    </div>
+  <div class="loading">
+    <h1>CheckNote</h1>
+    <div class="spinner"></div>
+    <p>Cargando aplicación...</p>
+  </div>
 
-    <script>
-        // ===============================================
-        // ROUTER SIMPLIFICADO - SIN LOOPS
-        // ===============================================
-        
-        console.log('=== CheckNote Router Simplificado ===');
+  <script>
+    // =================================================
+    // Mini Router
+    // =================================================
+    const routes = {
+      '/': 'index.html',
+      '/login': 'login.html',
+      '/home': 'home.html',
+      '/registro': 'registro.html'
+    };
 
-        function isAuthenticated() {
-            const token = localStorage.getItem('token');
-            const user = localStorage.getItem('user');
-            return !!(token && user);
+    function isAuthenticated() {
+      return !!(localStorage.getItem('token') && localStorage.getItem('user'));
+    }
+
+    function navigateTo(path) {
+      console.log('Navegando a:', path);
+      if (!routes[path]) {
+        console.error('Ruta no encontrada:', path);
+        return;
+      }
+      window.location.href = routes[path];
+    }
+
+    // Exponer global para otras páginas
+    window.navigateTo = navigateTo;
+    window.logout = () => {
+      localStorage.clear();
+      navigateTo('/login');
+    };
+
+    // =================================================
+    // Lógica inicial
+    // =================================================
+    document.addEventListener('DOMContentLoaded', () => {
+      console.log('Index cargado, revisando sesión...');
+      setTimeout(() => {
+        if (isAuthenticated()) {
+          navigateTo('/home');
+        } else {
+          navigateTo('/login');
         }
-
-function redirectToLogin() {
-    console.log('Redirigiendo al login...');
-    window.location.href = '/login.html';  // ← Agregar frontend/
-}
-
-
-        function redirectToHome() {
-            console.log('Redirigiendo al home...');
-            window.location.href = '/home.html';
-        }
-
-        // Función global para navegación
-        window.navigateTo = function(route) {
-            console.log('Navegando a:', route);
-            
-
-
-const routes = {
-    '/login': '/login.html',
-    '/registro': '/registro.html',
-};
-
-            if (!route.startsWith('/')) {
-                route = '/' + route;
-            }
-
-            const file = routes[route];
-            if (file) {
-                window.location.href = file;
-            } else {
-                console.error('Ruta no encontrada:', route);
-            }
-        };
-
-        // Función global para logout
-        window.logout = function() {
-            localStorage.removeItem('token');
-            localStorage.removeItem('user');
-            localStorage.removeItem('userId');
-            localStorage.removeItem('userName');
-            
-            console.log('Usuario deslogueado');
-            redirectToLogin();
-        };
-
-        // Lógica principal - SOLO al cargar index.html
-        document.addEventListener('DOMContentLoaded', function() {
-            console.log('CheckNote Router iniciado');
-            console.log('URL actual:', window.location.href);
-            console.log('Pathname:', window.location.pathname);
-
-            // Solo ejecutar si estamos en index.html (página principal)
-            const isMainPage = window.location.pathname === '/' || 
-                              window.location.pathname === '/index.html' ||
-                              window.location.pathname.endsWith('/');
-
-            if (!isMainPage) {
-                console.log('No estamos en la página principal, no redirigir');
-                return;
-            }
-
-            const isAuth = isAuthenticated();
-            console.log('Usuario autenticado:', isAuth);
-            
-            // Pequeño delay para mostrar el loading
-            setTimeout(() => {
-                if (isAuth) {
-                    redirectToHome();
-                } else {
-                    redirectToLogin();
-                }
-            }, 1000);
-        });
-    </script>
+      }, 1000);
+    });
+  </script>
 </body>
 </html>
