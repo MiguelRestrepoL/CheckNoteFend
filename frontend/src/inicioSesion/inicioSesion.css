@@ -1,4 +1,5 @@
-/* Botón para mostrar/ocultar contraseña */
+/*
+
 .password-toggle {
   background: none;
   border: none;
@@ -20,3 +21,4 @@
   outline: none;
   color: var(--primary);
 }
+
