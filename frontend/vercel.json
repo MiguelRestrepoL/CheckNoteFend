@@ -1,9 +1,7 @@
+
 {
-  "buildCommand": "vite build",
-  "outputDirectory": "dist",
-  "framework": "vite",
   "routes": [
-    { "src": "/login", "dest": "/login.html" },
+    { "src": "/login.html", "dest": "/login.html" },
     { "src": "/", "dest": "/index.html" }
   ]
 }
