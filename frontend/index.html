@@ -65,7 +65,7 @@
 
 function redirectToLogin() {
     console.log('Redirigiendo al login...');
-    window.location.href = 'frontend/login.html';  // ← Agregar frontend/
+    window.location.href = '/login.html';  // ← Agregar frontend/
 }
 
 
@@ -79,10 +79,10 @@ function redirectToLogin() {
             console.log('Navegando a:', route);
             
 
+
 const routes = {
-    '/login': 'frontend/login.html',  // ← Agregar frontend/
-    '/registro': 'frontend/registro.html', 
-    // etc...
+    '/login': '/login.html',
+    '/registro': '/registro.html',
 };
 
             if (!route.startsWith('/')) {
