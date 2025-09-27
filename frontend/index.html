@@ -62,33 +62,25 @@
             const user = localStorage.getItem('user');
             return !!(token && user);
         }
-
 function redirectToLogin() {
     console.log('Redirigiendo al login...');
-    window.location.href = 'inicioSesion/login.html';  
+    window.location.href = '/login.html';  // ✅ apunta a raíz del build
 }
 
-
-        function redirectToHome() {
-            console.log('Redirigiendo al home...');
-            window.location.href = '/home.html';
-        }
+function redirectToHome() {
+    console.log('Redirigiendo al home...');
+    window.location.href = '/home.html';   // igual desde raíz
+}
 
         // Función global para navegación
         window.navigateTo = function(route) {
             console.log('Navegando a:', route);
             
 
-function redirectToLogin() {
-    console.log('Redirigiendo al login...');
-    window.location.href = 'inicioSesion/login.html'; 
-}
-
 const routes = {
-    '/login': 'inicioSesion/login.html',
-    '/registro': 'registrarse/registro.html',
+    '/login': '/login.html',
+    '/registro': '/registro.html'
 };
-
             if (!route.startsWith('/')) {
                 route = '/' + route;
             }
