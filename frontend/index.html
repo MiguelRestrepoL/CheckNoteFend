@@ -93,18 +93,24 @@
             return !!(token && user);
         }
 
-        function getCurrentRoute() {
-            const hash = window.location.hash.slice(1);
-            const pathname = window.location.pathname;
-            
-            // Si hay hash, usarlo
-            if (hash) {
-                return '/' + hash;
-            }
-            
-            // Si no hay hash, usar pathname
-            return pathname === '/' ? '/' : pathname;
-        }
+function getCurrentRoute() {
+    const hash = window.location.hash.slice(1);
+    const pathname = window.location.pathname;
+    
+    // NUEVO: Si ya estás en una página específica, no redirigir
+    if (pathname.includes('login.html')) return '/login';
+    if (pathname.includes('registro.html')) return '/registro';
+    if (pathname.includes('home.html')) return '/home';
+    if (pathname.includes('olvidar-password.html')) return '/olvidar-password';
+    
+    // Si hay hash, usarlo
+    if (hash) {
+        return '/' + hash;
+    }
+    
+    // Si no hay hash, usar pathname
+    return pathname === '/' ? '/' : pathname;
+}
 
         function redirectTo(route) {
             const file = routes[route];
