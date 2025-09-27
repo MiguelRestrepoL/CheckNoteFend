@@ -52,41 +52,10 @@
 
     <script>
         // ===============================================
-        // ROUTER PRINCIPAL DE CHECKNOTE - ARREGLADO
+        // ROUTER SIMPLIFICADO - SIN LOOPS
         // ===============================================
         
-        // Configuración de rutas - CORREGIDAS PARA TU ESTRUCTURA
-        const routes = {
-            '/': 'inicioSesion/login.html',
-            '/login': 'inicioSesion/login.html',
-            '/registro': 'registrarse/registro.html',
-            '/register': 'registrarse/registro.html', 
-            '/olvidar-password': 'olvidarpw/olvidar-password.html',
-            '/forgot-password': 'olvidarpw/olvidar-password.html',
-            '/home': 'home/home.html',
-            '/dashboard': 'home/home.html',
-            '/crear-tarea': 'creartarea/crear-tarea.html',
-            '/editar-tarea': 'editartarea/editar-tarea.html',
-            '/perfil': 'perfilusuario/perfil.html'
-        };
-
-        // Rutas que requieren autenticación
-        const protectedRoutes = [
-            '/home',
-            '/dashboard', 
-            '/crear-tarea',
-            '/editar-tarea',
-            '/perfil'
-        ];
-
-        // Rutas públicas (no requieren auth)
-        const publicRoutes = [
-            '/login',
-            '/registro',
-            '/register',
-            '/olvidar-password',
-            '/forgot-password'
-        ];
+        console.log('=== CheckNote Router Simplificado ===');
 
         function isAuthenticated() {
             const token = localStorage.getItem('token');
@@ -94,107 +63,43 @@
             return !!(token && user);
         }
 
-        function getCurrentRoute() {
-            const hash = window.location.hash.slice(1);
-            const pathname = window.location.pathname;
-            
-            // Si ya estás en una página específica, mapear correctamente
-            if (pathname.includes('inicioSesion/login.html')) return '/login';
-            if (pathname.includes('registrarse/registro.html')) return '/registro';
-            if (pathname.includes('home/home.html')) return '/home';
-            if (pathname.includes('olvidarpw/olvidar-password.html')) return '/olvidar-password';
-            if (pathname.includes('creartarea/crear-tarea.html')) return '/crear-tarea';
-            if (pathname.includes('editartarea/editar-tarea.html')) return '/editar-tarea';
-            if (pathname.includes('perfilusuario/perfil.html')) return '/perfil';
-            
-            // Si hay hash, usarlo
-            if (hash) {
-                return '/' + hash;
-            }
-            
-            // Si no hay hash, usar pathname
-            return pathname === '/' ? '/' : pathname;
+        function redirectToLogin() {
+            console.log('Redirigiendo al login...');
+            window.location.href = 'inicioSesion/login.html';
         }
 
-        // FUNCIÓN CLAVE: Verificar si ya estás en la página correcta
-        function isAlreadyOnCorrectPage(route) {
-            const expectedFile = routes[route];
-            const currentFile = window.location.pathname.split('/').pop();
-            return currentFile === expectedFile;
+        function redirectToHome() {
+            console.log('Redirigiendo al home...');
+            window.location.href = 'home/home.html';
         }
 
-        function redirectTo(route) {
-            const file = routes[route];
-            
-            if (!file) {
-                console.error('Ruta no encontrada:', route);
-                window.location.href = 'login.html';
-                return;
-            }
-
-            // CLAVE: No redirigir si ya estás en la página correcta
-            if (isAlreadyOnCorrectPage(route)) {
-                console.log(`Ya estás en la página correcta: ${file}`);
-                return;
-            }
-
-            console.log(`Redirigiendo a: ${route} -> ${file}`);
-            window.location.href = file;
-        }
-
-        function handleRouting() {
-            const currentRoute = getCurrentRoute();
-            const isAuth = isAuthenticated();
-            
-            console.log('Ruta actual:', currentRoute);
-            console.log('Autenticado:', isAuth);
-            console.log('Página actual:', window.location.pathname);
-
-            // Si está autenticado y trata de ir a login, redirigir a home
-            if (isAuth && (currentRoute === '/' || currentRoute === '/login')) {
-                redirectTo('/home');
-                return;
-            }
-
-            // Si no está autenticado y trata de acceder a ruta protegida
-            if (!isAuth && protectedRoutes.includes(currentRoute)) {
-                redirectTo('/login');
-                return;
-            }
-
-            // Si es ruta raíz y no está autenticado, ir a login
-            if (currentRoute === '/' && !isAuth) {
-                redirectTo('/login');
-                return;
-            }
-
-            // Si es ruta válida, redirigir (pero verificando si ya está ahí)
-            if (routes[currentRoute]) {
-                redirectTo(currentRoute);
-            } else {
-                // Ruta no encontrada, redirigir según autenticación
-                redirectTo(isAuth ? '/home' : '/login');
-            }
-        }
-
-        // Función global para navegación entre páginas
+        // Función global para navegación
         window.navigateTo = function(route) {
-            // Agregar '/' si no lo tiene
+            console.log('Navegando a:', route);
+            
+            const routes = {
+                '/login': 'inicioSesion/login.html',
+                '/registro': 'registrarse/registro.html',
+                '/register': 'registrarse/registro.html',
+                '/olvidar-password': 'olvidarpw/olvidar-password.html',
+                '/forgot-password': 'olvidarpw/olvidar-password.html',
+                '/home': 'home/home.html',
+                '/dashboard': 'home/home.html',
+                '/crear-tarea': 'creartarea/crear-tarea.html',
+                '/editar-tarea': 'editartarea/editar-tarea.html',
+                '/perfil': 'perfilusuario/perfil.html'
+            };
+
             if (!route.startsWith('/')) {
                 route = '/' + route;
             }
-            
-            console.log('Navegando a:', route);
-            
-            // Verificar si ya estás en la página correcta
-            if (isAlreadyOnCorrectPage(route)) {
-                console.log('Ya estás en la página correcta, no redirigir');
-                return;
+
+            const file = routes[route];
+            if (file) {
+                window.location.href = file;
+            } else {
+                console.error('Ruta no encontrada:', route);
             }
-            
-            // Actualizar hash para mantener historial
-            window.location.hash = route.slice(1);
-            redirectTo(route);
         };
 
         // Función global para logout
@@ -205,31 +110,37 @@
             localStorage.removeItem('userName');
             
             console.log('Usuario deslogueado');
-            redirectTo('/login');
+            redirectToLogin();
         };
 
-        // Ejecutar routing al cargar la página
+        // Lógica principal - SOLO al cargar index.html
         document.addEventListener('DOMContentLoaded', function() {
             console.log('CheckNote Router iniciado');
-            console.log('Página actual al cargar:', window.location.pathname);
+            console.log('URL actual:', window.location.href);
+            console.log('Pathname:', window.location.pathname);
+
+            // Solo ejecutar si estamos en index.html (página principal)
+            const isMainPage = window.location.pathname === '/' || 
+                              window.location.pathname === '/index.html' ||
+                              window.location.pathname.endsWith('/');
+
+            if (!isMainPage) {
+                console.log('No estamos en la página principal, no redirigir');
+                return;
+            }
+
+            const isAuth = isAuthenticated();
+            console.log('Usuario autenticado:', isAuth);
             
             // Pequeño delay para mostrar el loading
             setTimeout(() => {
-                handleRouting();
-            }, 500);
+                if (isAuth) {
+                    redirectToHome();
+                } else {
+                    redirectToLogin();
+                }
+            }, 1000);
         });
-
-        // Manejar cambios en el hash (botón atrás/adelante)
-        window.addEventListener('hashchange', function() {
-            console.log('Hash cambiado a:', window.location.hash);
-            handleRouting();
-        });
-
-        // Debug: mostrar información en consola
-        console.log('=== CheckNote Router ARREGLADO ===');
-        console.log('Rutas disponibles:', Object.keys(routes));
-        console.log('Rutas protegidas:', protectedRoutes);
-        console.log('Rutas públicas:', publicRoutes);
     </script>
 </body>
 </html>
