@@ -6,6 +6,7 @@
     { "src": "/registro.html", "dest": "/registro.html" },
     { "src": "/olvidar-password1.html", "dest": "/olvidar-password1.html" },
     { "src": "/home.html", "dest": "/home.html" },
-    {"src": "/perfil.html", "dest": "/perfil.html"}
+    {"src": "/perfil.html", "dest": "/perfil.html"},
+    {"src": "/olvidar-password2.html", "dest": "/olvidar-password2.html"}
   ]
 }

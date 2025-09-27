@@ -10,7 +10,8 @@ export default defineConfig({
         registro: resolve(__dirname, 'registro.html'),
         'olvidar-password1': resolve(__dirname, 'olvidar-password1.html'),
         home: resolve(__dirname, 'home.html'),
-        perfil: resolve(__dirname, 'perfil.html')
+        perfil: resolve(__dirname, 'perfil.html'),
+        'olvidar-password2': resolve(__dirname, 'olvidar-password2.html')
       }
     }
   }
