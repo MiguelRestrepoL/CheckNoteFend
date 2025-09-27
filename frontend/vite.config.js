@@ -9,7 +9,7 @@ export default defineConfig({
     rollupOptions: {
       input: {
         main: resolve(__dirname, 'index.html'), // index en la raíz
-        login: resolve(__dirname, 'src/inicioSesion/login.html') // login en src
+        login: resolve(__dirname, 'inicioSesion/login.html') // login en src
       }
     }
   }
