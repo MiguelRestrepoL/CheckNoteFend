@@ -1,7 +1,7 @@
 
 {
   "routes": [
-    { "src": "/login.html", "dest": "/login.html" },
+    { "src": "/login.html", "dest": "/login" },
     { "src": "/", "dest": "/index.html" }
   ]
 }
