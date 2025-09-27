@@ -2,16 +2,14 @@ import { defineConfig } from 'vite';
 import { resolve } from 'path';
 
 export default defineConfig({
-  root: 'src', // ahora la raíz es la carpeta src
+  root: '.', // raíz es frontend (donde está index.html)
   build: {
-    outDir: '../dist', // el build saldrá en frontend/dist
+    outDir: 'dist', // Vercel busca esto
+    emptyOutDir: true,
     rollupOptions: {
       input: {
-        main: resolve(__dirname, '/index.html'),
-        login: resolve(__dirname, 'src/inicioSesion/login.html'),
-        // aquí puedes seguir agregando más entradas
-        // registro: resolve(__dirname, 'src/registrarse/index.html'),
-        // home: resolve(__dirname, 'src/home/index.html'),
+        main: resolve(__dirname, 'index.html'), // index en la raíz
+        login: resolve(__dirname, 'src/inicioSesion/login.html') // login en src
       }
     }
   }
