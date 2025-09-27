@@ -55,20 +55,20 @@
         // ROUTER PRINCIPAL DE CHECKNOTE - ARREGLADO
         // ===============================================
         
-        // Configuración de rutas
-const routes = {
-    '/': 'inicioSesion/login.html',
-    '/login': 'inicioSesion/login.html',
-    '/registro': 'registrarse/registro.html', // o la ruta correcta
-    '/register': 'registrarse/registro.html',
-    '/olvidar-password': 'olvidarpw/olvidar-password.html', // o la ruta correcta
-    '/forgot-password': 'olvidarpw/olvidar-password.html',
-    '/home': 'home/home.html', // o la ruta correcta
-    '/dashboard': 'home/home.html',
-    '/crear-tarea': 'creartarea/crear-tarea.html', // etc...
-    '/editar-tarea': 'editartarea/editar-tarea.html',
-    '/perfil': 'perfilusuario/perfil.html'
-};
+        // Configuración de rutas - CORREGIDAS PARA TU ESTRUCTURA
+        const routes = {
+            '/': 'inicioSesion/login.html',
+            '/login': 'inicioSesion/login.html',
+            '/registro': 'registrarse/registro.html',
+            '/register': 'registrarse/registro.html', 
+            '/olvidar-password': 'olvidarpw/olvidar-password.html',
+            '/forgot-password': 'olvidarpw/olvidar-password.html',
+            '/home': 'home/home.html',
+            '/dashboard': 'home/home.html',
+            '/crear-tarea': 'creartarea/crear-tarea.html',
+            '/editar-tarea': 'editartarea/editar-tarea.html',
+            '/perfil': 'perfilusuario/perfil.html'
+        };
 
         // Rutas que requieren autenticación
         const protectedRoutes = [
@@ -99,13 +99,13 @@ const routes = {
             const pathname = window.location.pathname;
             
             // Si ya estás en una página específica, mapear correctamente
-            if (pathname.includes('login.html')) return '/login';
-            if (pathname.includes('registro.html')) return '/registro';
-            if (pathname.includes('home.html')) return '/home';
-            if (pathname.includes('olvidar-password.html')) return '/olvidar-password';
-            if (pathname.includes('crear-tarea.html')) return '/crear-tarea';
-            if (pathname.includes('editar-tarea.html')) return '/editar-tarea';
-            if (pathname.includes('perfil.html')) return '/perfil';
+            if (pathname.includes('inicioSesion/login.html')) return '/login';
+            if (pathname.includes('registrarse/registro.html')) return '/registro';
+            if (pathname.includes('home/home.html')) return '/home';
+            if (pathname.includes('olvidarpw/olvidar-password.html')) return '/olvidar-password';
+            if (pathname.includes('creartarea/crear-tarea.html')) return '/crear-tarea';
+            if (pathname.includes('editartarea/editar-tarea.html')) return '/editar-tarea';
+            if (pathname.includes('perfilusuario/perfil.html')) return '/perfil';
             
             // Si hay hash, usarlo
             if (hash) {
