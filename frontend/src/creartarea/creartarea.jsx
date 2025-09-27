@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { useNavigate, Link } from "react-router-dom";
-// NO importar creartarea.css - usar solo globalcss2.css
+// NO importar creartarea.css - usar solo globalcss2.css asd
 
 export default function CrearTarea() {
   const [formData, setFormData] = useState({
