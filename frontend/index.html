@@ -1,12 +1,203 @@
 <!DOCTYPE html>
-<html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>CheckNote</title>
-  </head>
-  <body>
-    <div id="root"></div>
-    <script type="module" src="/src/main.jsx"></script>
-  </body>
+    <style>
+        body {
+            font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+            margin: 0;
+            padding: 0;
+            background: linear-gradient(to bottom, #0b1220, #0f172a);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            color: white;
+        }
+        
+        .loading {
+            text-align: center;
+        }
+        
+        .loading h1 {
+            margin-bottom: 20px;
+            font-size: 2rem;
+        }
+        
+        .spinner {
+            width: 40px;
+            height: 40px;
+            border: 4px solid rgba(255, 255, 255, 0.3);
+            border-top: 4px solid #10b981;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin: 0 auto;
+        }
+        
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+    </style>
+</head>
+<body>
+    <div class="loading">
+        <h1>CheckNote</h1>
+        <div class="spinner"></div>
+        <p>Cargando aplicación...</p>
+    </div>
+
+    <script>
+        // ===============================================
+        // ROUTER PRINCIPAL DE CHECKNOTE
+        // ===============================================
+        
+        // Configuración de rutas
+        const routes = {
+            '/': 'login.html',
+            '/login': 'login.html',
+            '/registro': 'registro.html',
+            '/register': 'registro.html',
+            '/olvidar-password': 'olvidar-password.html',
+            '/forgot-password': 'olvidar-password.html',
+            '/home': 'home.html',
+            '/dashboard': 'home.html',
+            '/crear-tarea': 'crear-tarea.html',
+            '/editar-tarea': 'editar-tarea.html',
+            '/perfil': 'perfil.html'
+        };
+
+        // Rutas que requieren autenticación
+        const protectedRoutes = [
+            '/home',
+            '/dashboard', 
+            '/crear-tarea',
+            '/editar-tarea',
+            '/perfil'
+        ];
+
+        // Rutas públicas (no requieren auth)
+        const publicRoutes = [
+            '/login',
+            '/registro',
+            '/register',
+            '/olvidar-password',
+            '/forgot-password'
+        ];
+
+        function isAuthenticated() {
+            const token = localStorage.getItem('token');
+            const user = localStorage.getItem('user');
+            return !!(token && user);
+        }
+
+        function getCurrentRoute() {
+            const hash = window.location.hash.slice(1);
+            const pathname = window.location.pathname;
+            
+            // Si hay hash, usarlo
+            if (hash) {
+                return '/' + hash;
+            }
+            
+            // Si no hay hash, usar pathname
+            return pathname === '/' ? '/' : pathname;
+        }
+
+        function redirectTo(route) {
+            const file = routes[route];
+            
+            if (!file) {
+                console.error('Ruta no encontrada:', route);
+                // Redirigir a login por defecto
+                window.location.href = 'login.html';
+                return;
+            }
+
+            console.log(`Redirigiendo a: ${route} -> ${file}`);
+            window.location.href = file;
+        }
+
+        function handleRouting() {
+            const currentRoute = getCurrentRoute();
+            const isAuth = isAuthenticated();
+            
+            console.log('Ruta actual:', currentRoute);
+            console.log('Autenticado:', isAuth);
+
+            // Si está autenticado y trata de ir a login, redirigir a home
+            if (isAuth && (currentRoute === '/' || currentRoute === '/login')) {
+                redirectTo('/home');
+                return;
+            }
+
+            // Si no está autenticado y trata de acceder a ruta protegida
+            if (!isAuth && protectedRoutes.includes(currentRoute)) {
+                redirectTo('/login');
+                return;
+            }
+
+            // Si es ruta raíz y no está autenticado, ir a login
+            if (currentRoute === '/' && !isAuth) {
+                redirectTo('/login');
+                return;
+            }
+
+            // Si es ruta válida, redirigir
+            if (routes[currentRoute]) {
+                redirectTo(currentRoute);
+            } else {
+                // Ruta no encontrada, redirigir según autenticación
+                redirectTo(isAuth ? '/home' : '/login');
+            }
+        }
+
+        // Función global para navegación entre páginas
+        window.navigateTo = function(route) {
+            // Agregar '/' si no lo tiene
+            if (!route.startsWith('/')) {
+                route = '/' + route;
+            }
+            
+            // Actualizar hash para mantener historial
+            window.location.hash = route.slice(1);
+            handleRouting();
+        };
+
+        // Función global para logout
+        window.logout = function() {
+            localStorage.removeItem('token');
+            localStorage.removeItem('user');
+            localStorage.removeItem('userId');
+            localStorage.removeItem('userName');
+            
+            console.log('Usuario deslogueado');
+            redirectTo('/login');
+        };
+
+        // Ejecutar routing al cargar la página
+        document.addEventListener('DOMContentLoaded', function() {
+            console.log('CheckNote Router iniciado');
+            
+            // Pequeño delay para mostrar el loading
+            setTimeout(() => {
+                handleRouting();
+            }, 500);
+        });
+
+        // Manejar cambios en el hash (botón atrás/adelante)
+        window.addEventListener('hashchange', function() {
+            console.log('Hash cambiado a:', window.location.hash);
+            handleRouting();
+        });
+
+        // Debug: mostrar información en consola
+        console.log('=== CheckNote Router ===');
+        console.log('Rutas disponibles:', Object.keys(routes));
+        console.log('Rutas protegidas:', protectedRoutes);
+        console.log('Rutas públicas:', publicRoutes);
+    </script>
+</body>
 </html>
