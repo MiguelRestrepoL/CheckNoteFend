@@ -21,73 +21,45 @@ export default function InicioSesion() {
       contrasena: contrasena.length + " caracteres" 
     });
 
-    try {
-      const loginRes = await fetch("https://checknote-27fe.onrender.com/api/v1/auth/login", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        // Normalizar email como hace tu modelo
-        body: JSON.stringify({ 
-          correo: correo.trim().toLowerCase(), 
-          contrasena 
-        }),
-      });
+  try {
+    const loginRes = await fetch("https://checknote-27fe.onrender.com/api/v1/auth/login", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ correo, contrasena }),
+    });
 
-      // DEBUGGING: Mostrar response completa
-      console.log("Response Status:", loginRes.status);
-      console.log("Response Headers:", Object.fromEntries(loginRes.headers.entries()));
-
-      if (!loginRes.ok) {
-        const errorData = await loginRes.json();
-        console.log("Error Response:", errorData); // Ver qué dice exactamente el backend
-        
-        // Mensajes específicos según el error
-        if (loginRes.status === 401) {
-          throw new Error(errorData.message || "Email o contraseña incorrectos");
-        } else if (loginRes.status === 423) {
-          throw new Error("Cuenta temporalmente bloqueada por seguridad. Intenta en unos minutos.");
-        } else if (loginRes.status === 429) {
-          throw new Error("Demasiados intentos. Espera un momento antes de intentar nuevamente.");
-        } else {
-          throw new Error(errorData.message || "Error en el servidor");
-        }
+    if (!loginRes.ok) {
+      let errorData;
+      try {
+        errorData = await loginRes.json();
+      } catch {
+        errorData = { message: "Error desconocido del servidor" };
       }
 
-      const loginData = await loginRes.json();
-      const token = loginData.data?.token || loginData.token; // Puede estar en data o directamente
-      const user = loginData.data?.usuario || loginData.data?.user || loginData.user;
-
-      console.log("Login exitoso:", { token: token?.substring(0, 20) + "...", user: user?.correo });
-
-      if (!token || !user) {
-        throw new Error("Respuesta del servidor incompleta");
+      if (loginRes.status === 401) {
+        throw new Error(errorData.message || "Email o contraseña incorrectos");
+      } else if (loginRes.status === 423) {
+        throw new Error("Cuenta bloqueada por seguridad. Intenta en unos minutos.");
+      } else if (loginRes.status === 429) {
+        throw new Error("Demasiados intentos. Espera un momento antes de intentar nuevamente.");
+      } else {
+        throw new Error(errorData.message || "Error en el servidor");
       }
+    }
 
-      // Verificar token - RESTAURADO
-      const verifyRes = await fetch("https://checknote-27fe.onrender.com/api/v1/auth/verify", {
-        method: "POST",
-        headers: {
-          "Authorization": `Bearer ${token}`
-        },
-      });
+    const loginData = await loginRes.json();
+    const token = loginData.data?.token || loginData.token;
+    const user = loginData.data?.usuario || loginData.data?.user || loginData.user;
 
-      console.log("Verify response status:", verifyRes.status);
+    if (!token || !user) {
+      throw new Error("Respuesta del servidor incompleta");
+    }
 
-      if (!verifyRes.ok) {
-        const verifyError = await verifyRes.json();
-        console.log("Verify error:", verifyError);
-        throw new Error("Token inválido del servidor");
-      }
-
-      const verifyData = await verifyRes.json();
-      console.log("Token verificado exitosamente:", verifyData);
-
-      // Guardar datos
-      localStorage.setItem('token', token);
-      localStorage.setItem('user', JSON.stringify(user));
-      localStorage.setItem('userId', user._id || user.id); 
-      localStorage.setItem('userName', user.nombres); 
+    // Guardar datos
+    localStorage.setItem("token", token);
+    localStorage.setItem("user", JSON.stringify(user));
+    localStorage.setItem("userId", user._id || user.id);
+    localStorage.setItem("userName", user.nombres);
 
       // Redirigir
       navigate("/home", { state: { success: "¡Inicio de sesión exitoso!" } });
