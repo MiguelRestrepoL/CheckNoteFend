@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 <html lang="es">
 <head>
@@ -7,7 +6,7 @@
     <title>Dashboard - CheckNote</title>
     <link rel="stylesheet" href="./GlobalCSS2.css">
     <style>
-        /* Estilos adicionales específicos solo para error messages */
+        /* Estilos adicionales específicos */
         .error-message {
             padding: 16px;
             border-radius: 8px;
@@ -46,7 +45,6 @@
             background-color: rgba(255,255,255,0.1);
         }
 
-        /* DEBUG INFO */
         .debug-info {
             background: #2d3748;
             padding: 10px;
@@ -61,10 +59,148 @@
             display: none;
         }
 
-        /* Username styling */
         .username {
             color: var(--text-primary);
             font-weight: 500;
+        }
+
+        /* Kanban mejorado - 3 columnas horizontales */
+        .kanban-container {
+            width: 100%;
+            display: grid;
+            grid-template-columns: 1fr 1fr 1fr;
+            gap: var(--spacing-xl);
+            justify-content: center;
+        }
+
+        /* Acciones de tarea */
+        .task-actions {
+            display: flex;
+            gap: 8px;
+            margin-top: 8px;
+            justify-content: flex-end;
+        }
+
+        .task-action-btn {
+            width: 24px;
+            height: 24px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all var(--transition);
+            opacity: 0.7;
+        }
+
+        .task-action-btn:hover {
+            opacity: 1;
+            transform: scale(1.1);
+        }
+
+        .task-action-btn.edit {
+            background: linear-gradient(135deg, #3b82f6, #1d4ed8);
+        }
+
+        .task-action-btn.delete {
+            background: linear-gradient(135deg, #ef4444, #dc2626);
+        }
+
+        .task-action-btn img {
+            width: 14px;
+            height: 14px;
+            filter: brightness(0) invert(1);
+        }
+
+        /* Botón crear simple */
+        .create-btn {
+            background: linear-gradient(135deg, var(--primary), var(--primary-dark)); 
+            color: white; 
+            border: none; 
+            width: 56px; 
+            height: 56px; 
+            border-radius: 50%;
+            font-size: 24px; 
+            cursor: pointer; 
+            box-shadow: var(--shadow-add-btn);
+            transition: all var(--transition);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            text-decoration: none;
+        }
+
+        .create-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 12px 32px rgba(16,185,129,0.4);
+        }
+
+        /* Modal de confirmación */
+        .modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.7);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 1000;
+        }
+
+        .modal-content {
+            background: var(--bg-card);
+            padding: 24px;
+            border-radius: var(--radius-md);
+            box-shadow: var(--shadow-card);
+            color: var(--text-primary);
+            text-align: center;
+            max-width: 400px;
+            width: 90%;
+        }
+
+        .modal-buttons {
+            display: flex;
+            gap: 12px;
+            margin-top: 20px;
+            justify-content: center;
+        }
+
+        .modal-btn {
+            padding: 8px 16px;
+            border-radius: var(--radius-sm);
+            border: none;
+            font-size: 14px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all var(--transition);
+        }
+
+        .modal-btn.confirm {
+            background: linear-gradient(135deg, #ef4444, #dc2626);
+            color: white;
+        }
+
+        .modal-btn.cancel {
+            background: rgba(255,255,255,0.1);
+            color: var(--text-secondary);
+        }
+
+        /* Responsive kanban */
+        @media (max-width: 900px) {
+            .kanban-container {
+                grid-template-columns: 1fr 1fr;
+                gap: var(--spacing-lg);
+            }
+        }
+
+        @media (max-width: 480px) {
+            .kanban-container {
+                grid-template-columns: 1fr;
+                gap: var(--spacing-lg);
+            }
         }
     </style>
 </head>
@@ -180,16 +316,11 @@
                     </div>
                 </div>
 
-                <!-- Botón flotante -->
+                <!-- Botón crear simple -->
                 <div class="add-wrap">
-                    <div class="floating-menu">
-                        <div class="floating-options" id="floating-options">
-                            <a href="crear-tarea.html" class="floating-option create">📝</a>
-                            <a href="editar-tarea.html" class="floating-option edit">✏️</a>
-                            <a href="eliminar-tarea.html" class="floating-option delete">🗑️</a>
-                        </div>
-                        <button class="add-btn" id="add-btn">+</button>
-                    </div>
+                    <a href="crear-tarea.html" class="create-btn">
+                        📝
+                    </a>
                 </div>
             </div>
         </main>
@@ -203,6 +334,86 @@
         </footer>
     </div>
 
+    <!-- Modal de confirmación para eliminar -->
+    <div id="delete-modal" class="modal-overlay hidden">
+        <div class="modal-content">
+            <h3>🗑️ Confirmar Eliminación</h3>
+            <p id="delete-message">¿Estás seguro de que quieres eliminar esta tarea?</p>
+            <div class="modal-buttons">
+                <button id="confirm-delete" class="modal-btn confirm">Eliminar</button>
+                <button id="cancel-delete" class="modal-btn cancel">Cancelar</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal de edición -->
+    <div id="edit-modal" class="modal-overlay hidden">
+        <div class="modal-content" style="max-width: 500px;">
+            <h3>✏️ Editar Tarea</h3>
+            
+            <form id="edit-form" style="text-align: left; margin-top: 20px;">
+                <!-- Título -->
+                <div class="form-group">
+                    <label for="edit-titulo">Título</label>
+                    <input type="text" id="edit-titulo" class="form-input" required />
+                </div>
+
+                <!-- Descripción -->
+                <div class="form-group">
+                    <label for="edit-descripcion">Descripción</label>
+                    <textarea id="edit-descripcion" class="form-textarea" required></textarea>
+                </div>
+
+                <!-- Fecha y Hora -->
+                <div class="form-grid">
+                    <div class="form-group">
+                        <label for="edit-fecha">Fecha límite</label>
+                        <input type="date" id="edit-fecha" class="form-input" />
+                    </div>
+                    <div class="form-group">
+                        <label for="edit-hora">Hora límite</label>
+                        <input type="time" id="edit-hora" class="form-input" />
+                    </div>
+                </div>
+
+                <!-- Estado y Prioridad -->
+                <div class="form-grid">
+                    <div class="form-group">
+                        <label for="edit-estado">Estado</label>
+                        <select id="edit-estado" class="form-select">
+                            <option value="pendiente">⏰ Pendiente</option>
+                            <option value="en_progreso">⚡ En Progreso</option>
+                            <option value="terminada">✅ Terminada</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="edit-prioridad">Prioridad</label>
+                        <select id="edit-prioridad" class="form-select">
+                            <option value="baja">🟢 Baja</option>
+                            <option value="media">🟡 Media</option>
+                            <option value="alta">🔴 Alta</option>
+                        </select>
+                    </div>
+                </div>
+
+                <!-- Checkbox completada -->
+                <div class="checkbox-group">
+                    <input type="checkbox" id="edit-completada" />
+                    <label for="edit-completada">Marcar como completada</label>
+                </div>
+
+                <div class="modal-buttons" style="margin-top: 20px;">
+                    <button type="submit" id="save-edit" class="modal-btn" style="background: linear-gradient(135deg, var(--primary), var(--primary-dark)); color: white;">
+                        Guardar
+                    </button>
+                    <button type="button" id="cancel-edit" class="modal-btn cancel">
+                        Cancelar
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
     <script>
         // Variables globales
         let tareas = {
@@ -211,7 +422,8 @@
             terminada: []
         };
         let loading = true;
-        let menuOpen = false;
+        let tareaSeleccionadaParaEditar = null;
+        let tareaSeleccionadaParaEliminar = null;
 
         // Detectar ambiente de desarrollo
         const isDevelopment = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1';
@@ -237,8 +449,25 @@
             pendientesTasks: document.getElementById('pendientes-tasks'),
             enProgresoTasks: document.getElementById('en-progreso-tasks'),
             terminadasTasks: document.getElementById('terminadas-tasks'),
-            floatingOptions: document.getElementById('floating-options'),
-            addBtn: document.getElementById('add-btn')
+            
+            // Modal de eliminación
+            deleteModal: document.getElementById('delete-modal'),
+            deleteMessage: document.getElementById('delete-message'),
+            confirmDelete: document.getElementById('confirm-delete'),
+            cancelDelete: document.getElementById('cancel-delete'),
+            
+            // Modal de edición
+            editModal: document.getElementById('edit-modal'),
+            editForm: document.getElementById('edit-form'),
+            editTitulo: document.getElementById('edit-titulo'),
+            editDescripcion: document.getElementById('edit-descripcion'),
+            editFecha: document.getElementById('edit-fecha'),
+            editHora: document.getElementById('edit-hora'),
+            editEstado: document.getElementById('edit-estado'),
+            editPrioridad: document.getElementById('edit-prioridad'),
+            editCompletada: document.getElementById('edit-completada'),
+            saveEdit: document.getElementById('save-edit'),
+            cancelEdit: document.getElementById('cancel-edit')
         };
 
         // Función para mostrar mensajes
@@ -287,7 +516,186 @@
             }
         }
 
-        // Función para renderizar tareas
+        // Función para mostrar modal de eliminación
+        function mostrarModalEliminar(tarea) {
+            tareaSeleccionadaParaEliminar = tarea;
+            elements.deleteMessage.textContent = `¿Estás seguro de que quieres eliminar "${tarea.titulo}"?`;
+            elements.deleteModal.classList.remove('hidden');
+        }
+
+        // Función para ocultar modal de eliminación
+        function ocultarModalEliminar() {
+            tareaSeleccionadaParaEliminar = null;
+            elements.deleteModal.classList.add('hidden');
+        }
+
+        // Función para formatear fecha para input
+        function formatearFechaParaInput(fechaISO) {
+            if (!fechaISO) return { fecha: "", hora: "" };
+            
+            const fecha = new Date(fechaISO);
+            const fechaStr = fecha.toISOString().split('T')[0];
+            const horaStr = fecha.toTimeString().split(' ')[0].substring(0, 5);
+            
+            return { fecha: fechaStr, hora: horaStr };
+        }
+
+        // Función para mostrar modal de edición
+        function mostrarModalEditar(tarea) {
+            tareaSeleccionadaParaEditar = tarea;
+            
+            // Llenar formulario con datos de la tarea
+            elements.editTitulo.value = tarea.titulo || '';
+            elements.editDescripcion.value = tarea.descripcion || '';
+            
+            const { fecha, hora } = formatearFechaParaInput(tarea.fechaVencimiento);
+            elements.editFecha.value = fecha;
+            elements.editHora.value = hora;
+            
+            elements.editEstado.value = tarea.estado || 'pendiente';
+            elements.editPrioridad.value = tarea.prioridad || 'media';
+            elements.editCompletada.checked = tarea.completada || false;
+            
+            elements.editModal.classList.remove('hidden');
+        }
+
+        // Función para ocultar modal de edición
+        function ocultarModalEditar() {
+            tareaSeleccionadaParaEditar = null;
+            elements.editModal.classList.add('hidden');
+            elements.editForm.reset();
+        }
+
+        // Función para eliminar tarea
+        async function eliminarTarea() {
+            if (!tareaSeleccionadaParaEliminar) return;
+
+            const token = localStorage.getItem('token');
+            if (!token) {
+                showMessage('error', 'No hay sesión activa');
+                return;
+            }
+
+            try {
+                elements.confirmDelete.disabled = true;
+                elements.confirmDelete.textContent = 'Eliminando...';
+
+                const tareaId = tareaSeleccionadaParaEliminar.id || tareaSeleccionadaParaEliminar._id;
+                const response = await fetch(`https://checknote-27fe.onrender.com/api/v1/tasks/delete/${tareaId}`, {
+                    method: 'DELETE',
+                    headers: {
+                        'Authorization': `Bearer ${token}`,
+                        'Content-Type': 'application/json',
+                    },
+                });
+
+                if (!response.ok) {
+                    if (response.status === 401) {
+                        localStorage.removeItem('token');
+                        localStorage.removeItem('user');
+                        localStorage.removeItem('userId');
+                        localStorage.removeItem('userName');
+                        
+                        showMessage('error', 'Sesión expirada. Redirigiendo...');
+                        setTimeout(() => window.location.href = 'login.html', 2000);
+                        return;
+                    }
+                    throw new Error(`Error ${response.status}: ${response.statusText}`);
+                }
+
+                console.log('Tarea eliminada exitosamente');
+                showMessage('success', '🗑️ Tarea eliminada exitosamente', 3000);
+                
+                // Recargar tareas
+                await cargarTareas();
+                
+            } catch (err) {
+                console.error('Error eliminando tarea:', err);
+                showMessage('error', 'Error al eliminar la tarea: ' + err.message);
+            } finally {
+                elements.confirmDelete.disabled = false;
+                elements.confirmDelete.textContent = 'Eliminar';
+                ocultarModalEliminar();
+            }
+        }
+
+        // Función para guardar edición
+        async function guardarEdicion(e) {
+            e.preventDefault();
+            
+            if (!tareaSeleccionadaParaEditar) return;
+
+            const token = localStorage.getItem('token');
+            if (!token) {
+                showMessage('error', 'No hay sesión activa');
+                return;
+            }
+
+            try {
+                elements.saveEdit.disabled = true;
+                elements.saveEdit.textContent = 'Guardando...';
+
+                // Combinar fecha y hora
+                let fechaCompleta = null;
+                const fecha = elements.editFecha.value;
+                const hora = elements.editHora.value;
+                
+                if (fecha && hora) {
+                    fechaCompleta = new Date(`${fecha}T${hora}:00`).toISOString();
+                } else if (fecha) {
+                    fechaCompleta = new Date(`${fecha}T23:59:00`).toISOString();
+                }
+
+                const taskData = {
+                    titulo: elements.editTitulo.value.trim(),
+                    descripcion: elements.editDescripcion.value.trim(),
+                    prioridad: elements.editPrioridad.value,
+                    estado: elements.editEstado.value,
+                    completada: elements.editCompletada.checked,
+                    fechaVencimiento: fechaCompleta
+                };
+
+                const tareaId = tareaSeleccionadaParaEditar.id || tareaSeleccionadaParaEditar._id;
+                const response = await fetch(`https://checknote-27fe.onrender.com/api/v1/tasks/${tareaId}`, {
+                    method: 'PUT',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${token}`,
+                    },
+                    body: JSON.stringify(taskData),
+                });
+
+                if (!response.ok) {
+                    if (response.status === 401) {
+                        localStorage.removeItem('token');
+                        localStorage.removeItem('user');
+                        localStorage.removeItem('userId');
+                        localStorage.removeUser('userName');
+                        
+                        showMessage('error', 'Sesión expirada. Redirigiendo...');
+                        setTimeout(() => window.location.href = 'login.html', 2000);
+                        return;
+                    }
+                    throw new Error(`Error ${response.status}: ${response.statusText}`);
+                }
+
+                console.log('Tarea actualizada exitosamente');
+                showMessage('success', '✏️ Tarea actualizada exitosamente', 3000);
+                
+                // Recargar tareas
+                await cargarTareas();
+                
+            } catch (err) {
+                console.error('Error actualizando tarea:', err);
+                showMessage('error', 'Error al actualizar la tarea: ' + err.message);
+            } finally {
+                elements.saveEdit.disabled = false;
+                elements.saveEdit.textContent = 'Guardar';
+                ocultarModalEditar();
+            }
+        }
+
+        // Función para renderizar tareas con botones de acción
         function renderTareas(listaTareas, containerElement) {
             if (loading) {
                 containerElement.innerHTML = `
@@ -313,6 +721,14 @@
                     <span class="kanban-task-priority ${getPriorityClass(tarea.prioridad)}">
                         ${(tarea.prioridad || 'media').toUpperCase()}
                     </span>
+                    <div class="task-actions">
+                        <button class="task-action-btn edit" onclick="mostrarModalEditar(${JSON.stringify(tarea).replace(/"/g, '&quot;')})">
+                            <img src="/edit.png" alt="editar" />
+                        </button>
+                        <button class="task-action-btn delete" onclick="mostrarModalEliminar(${JSON.stringify(tarea).replace(/"/g, '&quot;')})">
+                            <img src="/delete.png" alt="eliminar" />
+                        </button>
+                    </div>
                 </div>
             `).join('');
         }
@@ -360,11 +776,11 @@
             window.location.href = 'login.html';
         }
 
-        // Función SUPER SIMPLE para cargar tareas - SIN VERIFY
+        // Función para cargar tareas
         async function cargarTareas() {
             const token = localStorage.getItem('token');
             
-            console.log("=== CARGA SIMPLE DE TAREAS ===");
+            console.log("=== CARGA DE TAREAS ===");
             console.log("Token presente:", token ? "✅ SÍ" : "❌ NO");
             
             if (!token) {
@@ -380,10 +796,7 @@
                 hideMessage('error');
                 updateUI();
 
-                console.log("Cargando tareas directamente (SIN verify)...");
-                console.log("Token completo que se está enviando:", token);
-                console.log("Longitud del token:", token.length);
-                console.log("¿Empieza con 'Bearer'?", token.startsWith('Bearer'));
+                console.log("Cargando tareas...");
                 
                 const response = await fetch("https://checknote-27fe.onrender.com/api/v1/tasks", {
                     method: "GET",
@@ -393,40 +806,12 @@
                     },
                 });
 
-                console.log("Tasks response status:", response.status);
-                console.log("Tasks response headers:", Object.fromEntries(response.headers.entries()));
+                console.log("Response status:", response.status);
 
                 if (!response.ok) {
-                    const errorText = await response.text();
-                    console.log("❌ Error response body completo:", errorText);
-                    
                     if (response.status === 401) {
-                        console.log("❌ 401 en /tasks - Token inválido o expirado");
+                        console.log("❌ 401 - Token inválido o expirado");
                         
-                        // ANTES de limpiar, vamos a intentar hacer verify nuevamente para comparar
-                        console.log("🔍 Haciendo verify nuevamente para comparar...");
-                        try {
-                            const testVerify = await fetch("https://checknote-27fe.onrender.com/api/v1/auth/verify", {
-                                method: "POST",
-                                headers: {
-                                    "Authorization": `Bearer ${token}`,
-                                    "Content-Type": "application/json",
-                                },
-                                body: JSON.stringify({}) // ← AGREGAR BODY VACÍO PARA EVITAR ERROR JSON
-                            });
-                            console.log("🔍 Test verify status:", testVerify.status);
-                            if (testVerify.ok) {
-                                const testVerifyData = await testVerify.json();
-                                console.log("🔍 Test verify data:", testVerifyData);
-                            } else {
-                                const testVerifyError = await testVerify.text();
-                                console.log("🔍 Test verify error:", testVerifyError);
-                            }
-                        } catch (verifyErr) {
-                            console.log("🔍 Error en test verify:", verifyErr);
-                        }
-                        
-                        // Limpiar sesión solo después de la investigación
                         localStorage.removeItem('token');
                         localStorage.removeItem('user');
                         localStorage.removeItem('userId');
@@ -439,7 +824,8 @@
                         return;
                     }
                     
-                    console.log("Error response body:", errorText);
+                    const errorText = await response.text();
+                    console.log("Error response:", errorText);
                     throw new Error(`Error ${response.status}: ${errorText || response.statusText}`);
                 }
 
@@ -450,7 +836,6 @@
                 let tareasData = [];
                 try {
                     const responseData = responseText ? JSON.parse(responseText) : {};
-                    // Manejar diferentes estructuras de respuesta
                     tareasData = responseData.tasks || responseData.data || responseData;
                     if (!Array.isArray(tareasData)) {
                         tareasData = [];
@@ -482,17 +867,32 @@
             }
         }
 
-        // Toggle del menú flotante
-        function toggleMenu() {
-            menuOpen = !menuOpen;
-            elements.floatingOptions.classList.toggle('active', menuOpen);
-            elements.addBtn.classList.toggle('active', menuOpen);
-        }
-
         // Event listeners
         elements.retryBtn.addEventListener('click', cargarTareas);
         elements.newLoginBtn.addEventListener('click', forzarNuevoLogin);
-        elements.addBtn.addEventListener('click', toggleMenu);
+        
+        // Modales
+        elements.cancelDelete.addEventListener('click', ocultarModalEliminar);
+        elements.confirmDelete.addEventListener('click', eliminarTarea);
+        elements.cancelEdit.addEventListener('click', ocultarModalEditar);
+        elements.editForm.addEventListener('submit', guardarEdicion);
+
+        // Cerrar modales al hacer click fuera
+        elements.deleteModal.addEventListener('click', function(e) {
+            if (e.target === elements.deleteModal) {
+                ocultarModalEliminar();
+            }
+        });
+
+        elements.editModal.addEventListener('click', function(e) {
+            if (e.target === elements.editModal) {
+                ocultarModalEditar();
+            }
+        });
+
+        // Hacer las funciones globales para usar en onclick
+        window.mostrarModalEliminar = mostrarModalEliminar;
+        window.mostrarModalEditar = mostrarModalEditar;
 
         // Inicialización al cargar la página
         document.addEventListener('DOMContentLoaded', function() {
