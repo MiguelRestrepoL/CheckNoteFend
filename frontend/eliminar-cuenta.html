@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 <html lang="es">
 <head>
@@ -7,6 +6,21 @@
     <title>Eliminar Cuenta - CheckNote</title>
     <link rel="stylesheet" href="./GlobalCSS3.css">
     <style>
+        /* OVERRIDE DE ESTILOS DE GLOBALCSS3 PARA ESTA PÁGINA */
+        /* Redefinir anchos más apropiados para eliminar cuenta */
+        .form-field.field-sm,
+        .form-field.field-md,
+        .form-field.field-lg {
+            max-width: 480px !important;
+            width: 100% !important;
+        }
+
+        .form-field .form-label,
+        .form-field .form-input {
+            width: 100% !important;
+            max-width: none !important;
+        }
+
         /* Estilos específicos para eliminar cuenta */
         .danger-steps {
             background: rgba(239, 68, 68, 0.1);
@@ -34,15 +48,15 @@
         }
 
         .confirmation-input {
-            background: rgba(239, 68, 68, 0.1);
-            border: 2px solid rgba(239, 68, 68, 0.3);
+            background: rgba(239, 68, 68, 0.1) !important;
+            border: 2px solid rgba(239, 68, 68, 0.3) !important;
             color: var(--text-primary);
             margin: var(--spacing-lg) 0;
         }
 
         .confirmation-input:focus {
-            border-color: #ef4444;
-            box-shadow: 0 0 0 3px rgba(239, 68, 68, 0.1);
+            border-color: #ef4444 !important;
+            box-shadow: 0 0 0 3px rgba(239, 68, 68, 0.1) !important;
         }
 
         .confirmation-text {
@@ -55,6 +69,16 @@
             font-weight: bold;
         }
 
+        /* Ajustar el contenedor principal para campos más estrechos */
+        .task-card {
+            max-width: 600px !important;
+        }
+
+        /* Botones más apropiados */
+        .button-group .action-button {
+            max-width: 400px !important;
+        }
+
         @media (max-width: 768px) {
             .form-container {
                 margin: var(--spacing-md);
@@ -63,6 +87,12 @@
 
             .button-group {
                 flex-direction: column;
+            }
+
+            .form-field.field-sm,
+            .form-field.field-md,
+            .form-field.field-lg {
+                max-width: none !important;
             }
 
             .btn-danger, .btn-secondary {
