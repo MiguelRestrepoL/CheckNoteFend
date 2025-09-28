@@ -1,4 +1,4 @@
-/* ============================================
+* ============================================
    GLOBALCSS3.CSS - Sistema completo e independiente para perfil
    Sin dependencias de GlobalCSS2
    ============================================ */
@@ -571,37 +571,27 @@ body {
 }
 
 /* ============================================
-   VISIBILIDAD DE SECCIONES - CORREGIDO PARA MANTENER DIMENSIONES
+   VISIBILIDAD DE SECCIONES - VOLVER AL MÉTODO ORIGINAL
    ============================================ */
 #section-personal,
 #section-cuenta,
 #section-manejo {
   width: 100%;
   display: block;
-  position: relative;
 }
 
 #section-personal.hidden,
 #section-cuenta.hidden,
 #section-manejo.hidden {
-  position: absolute;
-  top: 0;
-  left: 0;
-  width: 100%;
-  visibility: hidden;
-  opacity: 0;
-  pointer-events: none;
-  z-index: -1;
+  display: none;
 }
 
 #section-personal:not(.hidden),
 #section-cuenta:not(.hidden),
 #section-manejo:not(.hidden) {
-  position: relative;
+  display: block;
   opacity: 1;
   visibility: visible;
-  pointer-events: all;
-  z-index: 1;
 }
 
 /* ============================================

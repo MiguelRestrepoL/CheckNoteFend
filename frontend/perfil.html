@@ -853,8 +853,8 @@
             cargarDatosUsuario();
         });
 
-    // SCRIPT DE DEBUGGING - Agregar al final del HTML antes de </body>
-console.log("=== DEBUGGING LABELS ===");
+// SCRIPT DE DEBUGGING Y CORRECCIÓN - Agregar al final del HTML antes de </body>
+console.log("=== DEBUGGING Y CORRECCIÓN DE LABELS ===");
 
 function debugLabels() {
     const labels = document.querySelectorAll('.form-label');
@@ -869,87 +869,134 @@ function debugLabels() {
         console.log(`\n--- LABEL ${index + 1} ---`);
         console.log('Texto:', label.textContent);
         console.log('Width computado:', computedStyle.width);
-        console.log('Max-width computado:', computedStyle.maxWidth);
-        console.log('Min-width computado:', computedStyle.minWidth);
-        console.log('Display computado:', computedStyle.display);
-        console.log('Box-sizing computado:', computedStyle.boxSizing);
-        console.log('Position computado:', computedStyle.position);
         console.log('Ancho real (getBoundingClientRect):', rect.width + 'px');
-        console.log('Clase del label:', label.className);
-        console.log('Clase del padre:', parent ? parent.className : 'N/A');
         console.log('Ancho del padre:', parentRect ? parentRect.width + 'px' : 'N/A');
-        
-        // Verificar si hay estilos inline
-        if (label.style.cssText) {
-            console.log('Estilos inline:', label.style.cssText);
-        }
-        
-        // Verificar reglas CSS aplicadas
-        const rules = [];
-        const sheets = document.styleSheets;
-        for (let i = 0; i < sheets.length; i++) {
-            try {
-                const sheet = sheets[i];
-                const cssRules = sheet.cssRules || sheet.rules;
-                for (let j = 0; j < cssRules.length; j++) {
-                    const rule = cssRules[j];
-                    if (rule.selectorText && label.matches && label.matches(rule.selectorText)) {
-                        rules.push({
-                            selector: rule.selectorText,
-                            width: rule.style.width || 'no definido',
-                            maxWidth: rule.style.maxWidth || 'no definido'
-                        });
-                    }
-                }
-            } catch (e) {
-                // Ignorar errores de CORS en stylesheets externos
-            }
-        }
-        console.log('Reglas CSS que aplican:', rules);
+        console.log('Sección padre:', label.closest('[id^="section-"]')?.id || 'N/A');
+        console.log('Sección visible:', !label.closest('[id^="section-"]')?.classList.contains('hidden'));
     });
 }
 
-// Ejecutar el debug después de que todo esté cargado
-setTimeout(debugLabels, 1000);
-
-// También ejecutar cada vez que cambies de sección
-const originalShowSection = window.showSection;
-if (typeof originalShowSection === 'function') {
-    window.showSection = function(...args) {
-        const result = originalShowSection.apply(this, args);
-        setTimeout(debugLabels, 100);
-        return result;
-    };
-}
-
-// Forzar estilos con JavaScript como último recurso
-function forceLabelsWidth() {
-    console.log("=== FORZANDO ANCHOS CON JAVASCRIPT ===");
-    const labels = document.querySelectorAll('.form-label');
-    labels.forEach(label => {
+// Función para forzar los anchos correctos SOLO en la sección visible
+function fixLabelsInVisibleSection() {
+    console.log("=== CORRIGIENDO LABELS EN SECCIÓN VISIBLE ===");
+    
+    // Encontrar la sección visible
+    const sections = ['personal', 'cuenta', 'manejo'];
+    let visibleSection = null;
+    
+    for (const section of sections) {
+        const sectionEl = document.getElementById(`section-${section}`);
+        if (sectionEl && !sectionEl.classList.contains('hidden')) {
+            visibleSection = sectionEl;
+            break;
+        }
+    }
+    
+    if (!visibleSection) {
+        console.log("No se encontró sección visible");
+        return;
+    }
+    
+    console.log(`Sección visible: ${visibleSection.id}`);
+    
+    // Solo corregir labels de la sección visible
+    const visibleLabels = visibleSection.querySelectorAll('.form-label');
+    console.log(`Corrigiendo ${visibleLabels.length} labels en la sección visible`);
+    
+    visibleLabels.forEach((label, index) => {
         const parent = label.parentElement;
         if (parent) {
             const parentWidth = parent.getBoundingClientRect().width;
-            console.log(`Forzando label "${label.textContent}" a ${parentWidth}px`);
-            label.style.setProperty('width', parentWidth + 'px', 'important');
-            label.style.setProperty('max-width', 'none', 'important');
-            label.style.setProperty('min-width', parentWidth + 'px', 'important');
-            label.style.setProperty('display', 'block', 'important');
-            label.style.setProperty('box-sizing', 'border-box', 'important');
+            console.log(`Label ${index + 1} "${label.textContent}": padre=${parentWidth}px`);
+            
+            if (parentWidth > 0) {
+                // Forzar ancho específico basado en el padre
+                label.style.setProperty('width', parentWidth + 'px', 'important');
+                label.style.setProperty('max-width', 'none', 'important');
+                label.style.setProperty('min-width', parentWidth + 'px', 'important');
+                label.style.setProperty('display', 'block', 'important');
+                label.style.setProperty('box-sizing', 'border-box', 'important');
+                console.log(`✅ Corregido a ${parentWidth}px`);
+            } else {
+                console.log(`⚠️ Padre tiene ancho 0, saltando...`);
+            }
         }
     });
 }
 
-// Ejecutar el forzado
-setTimeout(forceLabelsWidth, 1500);
+// Ejecutar después de que todo esté cargado
+setTimeout(debugLabels, 1000);
+setTimeout(fixLabelsInVisibleSection, 1200);
 
-// Botón para ejecutar manualmente el debug
-console.log("Para ejecutar debug manualmente, escribe: debugLabels()");
-console.log("Para forzar anchos manualmente, escribe: forceLabelsWidth()");
+// IMPORTANTE: Interceptar la función showSection para corregir labels después de cada cambio
+const originalShowSection = window.showSection;
+if (typeof originalShowSection === 'function') {
+    window.showSection = function(...args) {
+        console.log('Cambiando a sección:', args[0]);
+        const result = originalShowSection.apply(this, args);
+        
+        // Esperar a que la nueva sección se renderice completamente
+        setTimeout(() => {
+            console.log('Corrigiendo labels después del cambio de sección');
+            fixLabelsInVisibleSection();
+        }, 100);
+        
+        return result;
+    };
+} else {
+    console.log('⚠️ Función showSection no encontrada');
+}
+
+// También interceptar los clicks en navegación
+document.addEventListener('DOMContentLoaded', function() {
+    const navButtons = document.querySelectorAll('.nav-button:not(.danger)');
+    navButtons.forEach(button => {
+        button.addEventListener('click', function() {
+            setTimeout(() => {
+                console.log('Corrigiendo labels después de click en navegación');
+                fixLabelsInVisibleSection();
+            }, 150);
+        });
+    });
+});
+
+// Función para ejecutar manualmente
+function fixLabelsManually() {
+    fixLabelsInVisibleSection();
+}
+
+// Observer para detectar cambios en las clases de las secciones
+const observer = new MutationObserver(function(mutations) {
+    mutations.forEach(function(mutation) {
+        if (mutation.type === 'attributes' && mutation.attributeName === 'class') {
+            const target = mutation.target;
+            if (target.id && target.id.startsWith('section-')) {
+                if (!target.classList.contains('hidden')) {
+                    console.log(`Sección ${target.id} se volvió visible, corrigiendo labels...`);
+                    setTimeout(fixLabelsInVisibleSection, 50);
+                }
+            }
+        }
+    });
+});
+
+// Observar cambios en las secciones
+document.addEventListener('DOMContentLoaded', function() {
+    const sections = document.querySelectorAll('[id^="section-"]');
+    sections.forEach(section => {
+        observer.observe(section, { attributes: true, attributeFilter: ['class'] });
+    });
+});
 
 // Hacer funciones globales
 window.debugLabels = debugLabels;
-window.forceLabelsWidth = forceLabelsWidth;
+window.fixLabelsInVisibleSection = fixLabelsInVisibleSection;
+window.fixLabelsManually = fixLabelsManually;
+
+console.log("Funciones disponibles:");
+console.log("- debugLabels() - Ver información de todos los labels");
+console.log("- fixLabelsInVisibleSection() - Corregir labels de la sección visible");
+console.log("- fixLabelsManually() - Alias para corrección manual");
     </script>
     
 </body>
