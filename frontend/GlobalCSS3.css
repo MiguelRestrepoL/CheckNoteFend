@@ -129,24 +129,27 @@
 }
 
 /* ============================================
-   FORMULARIOS
+   FORMULARIOS - CORREGIDO EL PROBLEMA PRINCIPAL
    ============================================ */
 .form-container {
   display: flex;
   flex-direction: column;
   gap: var(--spacing-lg);
+  width: 100%; /* Asegurar que ocupe todo el ancho disponible */
 }
 
 .form-grid-2 {
   display: grid;
   grid-template-columns: 1fr 1fr;
   gap: var(--spacing-lg);
+  width: 100%; /* Asegurar que ocupe todo el ancho disponible */
 }
 
 .form-field {
   display: flex;
   flex-direction: column;
   gap: var(--spacing-sm);
+  width: 100%; /* Asegurar que los campos ocupen todo el ancho */
 }
 
 .form-label {
@@ -158,6 +161,8 @@
   font-weight: bold;
   text-align: center;
   text-transform: uppercase;
+  width: 100%; /* Asegurar que las etiquetas ocupen todo el ancho */
+  box-sizing: border-box;
 }
 
 .form-input {
@@ -181,23 +186,28 @@
 .form-input:disabled {
   opacity: 0.6;
   cursor: not-allowed;
+  background: var(--form-bg);
+  color: var(--text-muted);
 }
 
 .form-input::placeholder {
   color: rgba(255,255,255,0.5);
 }
 
-/* Tamaños específicos de inputs */
+/* Tamaños específicos de inputs - CORREGIDOS */
 .form-input.width-sm {
   max-width: var(--input-width-sm);
+  width: 100%; /* Mantener responsive pero con máximo */
 }
 
 .form-input.width-md {
   max-width: var(--input-width-md);
+  width: 100%; /* Mantener responsive pero con máximo */
 }
 
 .form-input.width-lg {
   max-width: var(--input-width-lg);
+  width: 100%; /* Mantener responsive pero con máximo */
 }
 
 /* ============================================
@@ -236,6 +246,7 @@
 .action-button.loading {
   background: linear-gradient(135deg, #6b7280, #4b5563);
   cursor: not-allowed;
+  opacity: 0.8;
 }
 
 .action-button:hover:not(.loading) {
@@ -257,6 +268,8 @@
   text-align: center;
   font-weight: 500;
   margin-bottom: var(--spacing-lg);
+  width: 100%;
+  box-sizing: border-box;
 }
 
 .status-message.error {
@@ -295,18 +308,23 @@
 .danger-zone {
   border-top: 1px solid rgba(255,255,255,0.1);
   padding-top: var(--spacing-xl);
+  margin-top: var(--spacing-xl);
+  width: 100%;
+  box-sizing: border-box;
 }
 
 .danger-zone-title {
   color: #ef4444;
   margin-bottom: var(--spacing-md);
   font-size: 16px;
+  font-weight: bold;
 }
 
 .danger-zone-description {
   color: var(--text-muted);
   font-size: 14px;
   margin-bottom: var(--spacing-lg);
+  line-height: 1.5;
 }
 
 /* ============================================
@@ -320,6 +338,42 @@
 .loading-icon {
   margin-top: 20px;
   font-size: 24px;
+  animation: rotate 2s linear infinite;
+}
+
+@keyframes rotate {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+/* ============================================
+   VISIBILIDAD DE SECCIONES - FUNDAMENTAL PARA EL FUNCIONAMIENTO
+   ============================================ */
+/* Asegurar que las secciones ocultas no interfieran */
+#section-personal,
+#section-cuenta,
+#section-manejo {
+  width: 100%;
+  display: block; /* Importante: no usar flex aquí */
+}
+
+#section-personal.hidden,
+#section-cuenta.hidden,
+#section-manejo.hidden {
+  display: none !important;
+}
+
+/* Asegurar que las secciones visibles tengan el contenido correcto */
+#section-personal:not(.hidden),
+#section-cuenta:not(.hidden),
+#section-manejo:not(.hidden) {
+  display: block;
+  opacity: 1;
+  visibility: visible;
 }
 
 /* ============================================
@@ -363,6 +417,13 @@
   .nav-button.danger {
     margin-top: 0;
     margin-left: var(--spacing-lg);
+  }
+  
+  .form-input.width-sm,
+  .form-input.width-md,
+  .form-input.width-lg {
+    max-width: none;
+    width: 100%;
   }
 }
 
