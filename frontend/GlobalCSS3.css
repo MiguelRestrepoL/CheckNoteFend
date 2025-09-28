@@ -225,6 +225,17 @@
   max-width: none !important;
 }
 
+/* Clases específicas para ancho completo */
+.form-field.full-width {
+  width: 100% !important;
+}
+
+.form-label.full-width-label {
+  width: 100% !important;
+  max-width: none !important;
+  min-width: 100% !important;
+}
+
 /* ============================================
    BOTONES DE ACCIÓN
    ============================================ */
