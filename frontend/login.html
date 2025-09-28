@@ -23,18 +23,29 @@
             display: block;
         }
         
-        .success-message {
+        .success-message, .error-message {
             color: var(--primary);
             font-size: 0.875rem;
             margin: var(--spacing-lg) 0;
             padding: var(--spacing-md);
-            background: rgba(16, 185, 129, 0.1);
             border-radius: var(--radius-md);
             border-left: 4px solid var(--primary);
             display: none;
         }
         
-        .success-message.show {
+        .success-message {
+            background: rgba(16, 185, 129, 0.1);
+            color: var(--primary);
+            border-left-color: var(--primary);
+        }
+        
+        .error-message {
+            background: rgba(239, 68, 68, 0.1);
+            color: var(--text-error);
+            border-left-color: var(--text-error);
+        }
+        
+        .success-message.show, .error-message.show {
             display: block;
         }
         
@@ -96,7 +107,7 @@
                     
                     <!-- Mensajes de sistema -->
                     <div id="success-message" class="success-message"></div>
-                    <div id="error-message" class="text-error" style="display: none;"></div>
+                    <div id="error-message" class="error-message"></div>
                     <div id="rate-limit-warning" class="rate-limit-warning">
                         <strong>⚠️ Límite de intentos:</strong> Espere unos segundos antes de intentar nuevamente.
                     </div>
@@ -255,7 +266,7 @@
         }
 
         // ====================================================
-        // UI HELPER FUNCTIONS
+        // UI HELPER FUNCTIONS - CORREGIDAS
         // ====================================================
         
         function showFieldError(fieldId, message) {
@@ -276,18 +287,31 @@
         }
 
         function showMessage(type, message, duration = 0) {
+            console.log(`Mostrando mensaje ${type}:`, message); // Debug
             const messageDiv = document.getElementById(`${type}-message`);
+            
+            if (!messageDiv) {
+                console.error(`No se encontró elemento con ID: ${type}-message`);
+                return;
+            }
+            
+            // Limpiar otros mensajes primero
+            hideMessage('success');
+            hideMessage('error');
+            
             messageDiv.textContent = message;
             messageDiv.classList.add('show');
             
             if (duration > 0) {
-                setTimeout(() => messageDiv.classList.remove('show'), duration);
+                setTimeout(() => hideMessage(type), duration);
             }
         }
 
         function hideMessage(type) {
             const messageDiv = document.getElementById(`${type}-message`);
-            messageDiv.classList.remove('show');
+            if (messageDiv) {
+                messageDiv.classList.remove('show');
+            }
         }
 
         function setButtonLoading(button, loading) {
@@ -301,7 +325,7 @@
         }
 
         // ====================================================
-        // MAIN LOGIN LOGIC
+        // MAIN LOGIN LOGIC - CON MANEJO DE ERRORES MEJORADO
         // ====================================================
         
         document.addEventListener('DOMContentLoaded', function() {
@@ -368,7 +392,7 @@
                 }
             });
 
-            // Manejar envío del formulario
+            // Manejar envío del formulario - MEJORADO
             form.addEventListener('submit', async function(e) {
                 e.preventDefault();
                 
@@ -409,6 +433,8 @@
                 setButtonLoading(loginBtn, true);
 
                 try {
+                    console.log('Intentando login con:', emailResult.value); // Debug
+                    
                     const response = await fetch("https://checknote-27fe.onrender.com/api/v1/auth/login", {
                         method: "POST",
                         headers: {
@@ -420,29 +446,44 @@
                         }),
                     });
 
+                    console.log('Response status:', response.status); // Debug
+
                     if (!response.ok) {
-                        const errorData = await response.json();
-                        
                         // Registrar intento fallido
                         validator.recordAttempt();
                         validator.showRateLimitWarning();
                         
-                        // Mensajes específicos según el error
                         let errorMsg = "Error en el servidor";
-                        if (response.status === 401) {
-                            errorMsg = "Email o contraseña incorrectos";
-                        } else if (response.status === 423) {
-                            errorMsg = "Cuenta temporalmente bloqueada por seguridad";
-                        } else if (response.status === 429) {
-                            errorMsg = "Demasiados intentos. Espere antes de intentar nuevamente";
-                        } else {
-                            errorMsg = errorData.message || "Error en el servidor";
+                        
+                        try {
+                            const errorData = await response.json();
+                            console.log('Error data:', errorData); // Debug
+                            
+                            // Mensajes específicos según el error y status code
+                            if (response.status === 401) {
+                                errorMsg = "Email o contraseña incorrectos";
+                            } else if (response.status === 400) {
+                                errorMsg = errorData.message || "Datos de login inválidos";
+                            } else if (response.status === 423) {
+                                errorMsg = "Cuenta temporalmente bloqueada por seguridad";
+                            } else if (response.status === 429) {
+                                errorMsg = "Demasiados intentos. Espere antes de intentar nuevamente";
+                            } else if (response.status >= 500) {
+                                errorMsg = "Error en el servidor. Intente nuevamente.";
+                            } else {
+                                errorMsg = errorData.message || "Error de autenticación";
+                            }
+                        } catch (parseError) {
+                            console.error('Error parsing response:', parseError);
+                            errorMsg = `Error ${response.status}: Problemas de conexión`;
                         }
                         
                         throw new Error(errorMsg);
                     }
 
                     const loginData = await response.json();
+                    console.log('Login data:', loginData); // Debug
+                    
                     const token = loginData.data?.token || loginData.token;
                     const user = loginData.data?.usuario || loginData.data?.user || loginData.user;
 
