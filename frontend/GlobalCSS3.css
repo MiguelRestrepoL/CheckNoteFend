@@ -134,8 +134,9 @@
 .form-container {
   display: flex;
   flex-direction: column;
-  gap: var(--spacing-lg);
+  gap: var(--spacing-xl); /* Aumentar espacio entre campos para mejor visibilidad */
   width: 100%; /* Asegurar que ocupe todo el ancho disponible */
+  padding: var(--spacing-md) 0; /* Añadir padding superior e inferior */
 }
 
 .form-grid-2 {
@@ -150,6 +151,7 @@
   flex-direction: column;
   gap: var(--spacing-sm);
   width: 100%; /* Asegurar que los campos ocupen todo el ancho */
+  position: relative; /* Para posicionamiento correcto de labels */
 }
 
 .form-label {
@@ -163,6 +165,9 @@
   text-transform: uppercase;
   width: 100%; /* Asegurar que las etiquetas ocupen todo el ancho */
   box-sizing: border-box;
+  margin-bottom: 4px; /* Espacio entre label e input */
+  display: block; /* Asegurar que se muestre como bloque */
+  z-index: 2; /* Asegurar que esté encima de otros elementos */
 }
 
 .form-input {
@@ -381,6 +386,15 @@
   display: block;
   opacity: 1;
   visibility: visible;
+}
+
+/* Asegurar que todos los labels sean visibles */
+#section-personal:not(.hidden) .form-label,
+#section-cuenta:not(.hidden) .form-label,
+#section-manejo:not(.hidden) .form-label {
+  display: block !important;
+  visibility: visible !important;
+  opacity: 1 !important;
 }
 
 /* ============================================
