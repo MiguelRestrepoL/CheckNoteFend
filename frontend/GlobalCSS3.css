@@ -129,31 +129,32 @@
 }
 
 /* ============================================
-   FORMULARIOS - CORREGIDO EL PROBLEMA PRINCIPAL
+   FORMULARIOS - COMPLETAMENTE CORREGIDO
    ============================================ */
 .form-container {
   display: flex;
   flex-direction: column;
-  gap: var(--spacing-xl); /* Aumentar espacio entre campos para mejor visibilidad */
-  width: 100%; /* Asegurar que ocupe todo el ancho disponible */
-  padding: var(--spacing-md) 0; /* Añadir padding superior e inferior */
+  gap: var(--spacing-xl);
+  width: 100%;
+  padding: var(--spacing-md) 0;
 }
 
 .form-grid-2 {
   display: grid;
   grid-template-columns: 1fr 1fr;
   gap: var(--spacing-lg);
-  width: 100%; /* Asegurar que ocupe todo el ancho disponible */
+  width: 100%;
 }
 
 .form-field {
   display: flex;
   flex-direction: column;
   gap: var(--spacing-sm);
-  width: 100%; /* Asegurar que los campos ocupen todo el ancho */
-  position: relative; /* Para posicionamiento correcto de labels */
+  width: 100%;
+  position: relative;
 }
 
+/* CORRECIÓN PRINCIPAL: Los labels ocuparán SIEMPRE todo el ancho del form-field */
 .form-label {
   background: var(--form-label-bg);
   color: var(--text-dark);
@@ -163,13 +164,16 @@
   font-weight: bold;
   text-align: center;
   text-transform: uppercase;
-  width: 100% !important; /* Forzar que ocupe todo el ancho del contenedor padre */
-  max-width: none !important; /* Remover cualquier límite de ancho máximo */
+  width: 100% !important;
+  max-width: none !important;
+  min-width: 100% !important;
   box-sizing: border-box;
-  margin-bottom: 4px; /* Espacio entre label e input */
-  display: block; /* Asegurar que se muestre como bloque */
-  z-index: 2; /* Asegurar que esté encima de otros elementos */
-  position: relative; /* Para que ocupe el ancho completo independientemente del input */
+  margin-bottom: 4px;
+  display: block !important;
+  position: relative;
+  /* Eliminar cualquier restricción de ancho heredada */
+  flex-shrink: 0;
+  flex-grow: 1;
 }
 
 .form-input {
@@ -201,36 +205,40 @@
   color: rgba(255,255,255,0.5);
 }
 
-/* Tamaños específicos de inputs - CORREGIDOS */
+/* Tamaños específicos de inputs - SIN AFECTAR LOS LABELS */
 .form-input.width-sm {
   max-width: var(--input-width-sm);
-  width: var(--input-width-sm); /* Ancho fijo para inputs pequeños */
+  width: var(--input-width-sm);
 }
 
 .form-input.width-md {
   max-width: var(--input-width-md);
-  width: var(--input-width-md); /* Ancho fijo para inputs medianos */
+  width: var(--input-width-md);
 }
 
 .form-input.width-lg {
   max-width: var(--input-width-lg);
-  width: var(--input-width-lg); /* Ancho fijo para inputs grandes */
+  width: var(--input-width-lg);
 }
 
-/* Hacer que los labels ocupen TODO el ancho disponible del contenedor padre */
-.form-field.width-sm .form-label,
-.form-field.width-md .form-label,
-.form-field.width-lg .form-label {
+/* IMPORTANTE: Asegurar que los form-field con inputs de ancho específico 
+   mantengan sus labels ocupando todo el ancho disponible del contenedor */
+.form-field:has(.form-input.width-sm),
+.form-field:has(.form-input.width-md),
+.form-field:has(.form-input.width-lg) {
+  width: 100% !important;
+}
+
+.form-field:has(.form-input.width-sm) .form-label,
+.form-field:has(.form-input.width-md) .form-label,
+.form-field:has(.form-input.width-lg) .form-label {
   width: 100% !important;
   max-width: none !important;
+  min-width: 100% !important;
 }
 
-/* Clases específicas para ancho completo */
-.form-field.full-width {
-  width: 100% !important;
-}
-
-.form-label.full-width-label {
+/* Fallback para navegadores que no soporten :has() */
+.form-field .form-label {
   width: 100% !important;
   max-width: none !important;
   min-width: 100% !important;
@@ -248,9 +256,9 @@
   cursor: pointer;
   transition: all var(--transition);
   box-sizing: border-box;
-  align-self: center; /* Centrar botones */
-  width: 100%; /* Ocupar todo el ancho disponible */
-  max-width: 400px; /* Límite máximo para que no se vean demasiado anchos */
+  align-self: center;
+  width: 100%;
+  max-width: 400px;
   text-align: center;
 }
 
@@ -267,7 +275,7 @@
 .action-button.danger {
   background: linear-gradient(135deg, #ef4444, #dc2626);
   color: white;
-  margin: 0 auto; /* Centrar específicamente el botón de eliminar cuenta */
+  margin: 0 auto;
   display: block;
 }
 
@@ -339,7 +347,7 @@
   margin-top: var(--spacing-xl);
   width: 100%;
   box-sizing: border-box;
-  text-align: center; /* Centrar todo el contenido de la zona peligrosa */
+  text-align: center;
 }
 
 .danger-zone-title {
@@ -384,14 +392,13 @@
 }
 
 /* ============================================
-   VISIBILIDAD DE SECCIONES - FUNDAMENTAL PARA EL FUNCIONAMIENTO
+   VISIBILIDAD DE SECCIONES
    ============================================ */
-/* Asegurar que las secciones ocultas no interfieran */
 #section-personal,
 #section-cuenta,
 #section-manejo {
   width: 100%;
-  display: block; /* Importante: no usar flex aquí */
+  display: block;
 }
 
 #section-personal.hidden,
@@ -400,7 +407,6 @@
   display: none !important;
 }
 
-/* Asegurar que las secciones visibles tengan el contenido correcto */
 #section-personal:not(.hidden),
 #section-cuenta:not(.hidden),
 #section-manejo:not(.hidden) {
@@ -409,13 +415,15 @@
   visibility: visible;
 }
 
-/* Asegurar que todos los labels sean visibles */
 #section-personal:not(.hidden) .form-label,
 #section-cuenta:not(.hidden) .form-label,
 #section-manejo:not(.hidden) .form-label {
   display: block !important;
   visibility: visible !important;
   opacity: 1 !important;
+  width: 100% !important;
+  max-width: none !important;
+  min-width: 100% !important;
 }
 
 /* ============================================
@@ -467,6 +475,13 @@
     max-width: none;
     width: 100%;
   }
+  
+  /* En responsive, los labels siguen ocupando todo el ancho */
+  .form-label {
+    width: 100% !important;
+    max-width: none !important;
+    min-width: 100% !important;
+  }
 }
 
 @media (max-width: 480px) {
@@ -481,12 +496,15 @@
   .form-label {
     padding: 6px 10px;
     font-size: 11px;
+    width: 100% !important;
+    max-width: none !important;
+    min-width: 100% !important;
   }
   
   .action-button {
     padding: 10px 20px;
     font-size: 13px;
-    max-width: none; /* En móvil ocupar todo el ancho */
+    max-width: none;
     width: 100%;
   }
   
