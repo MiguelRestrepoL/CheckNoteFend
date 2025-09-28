@@ -1,18 +1,77 @@
 /* ============================================
-   GLOBALCSS3.CSS - Sistema para páginas de perfil y configuración
-   Basado en GlobalCSS2 con extensiones específicas
+   GLOBALCSS3.CSS - Sistema completo e independiente para perfil
+   Sin dependencias de GlobalCSS2
    ============================================ */
 
-/* Importar base de GlobalCSS2 */
-@import url('./GlobalCSS2.css');
+/* Reset y base */
+* { 
+  box-sizing: border-box; 
+  margin: 0; 
+  padding: 0; 
+}
+
+html, body, #root { 
+  height: 100%; 
+}
+
+body {
+  font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+  background: linear-gradient(180deg, #0b1220 0%, #0f172a 100%);
+  color: #ffffff;
+  overflow-x: hidden;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
 
 /* ============================================
-   VARIABLES ADICIONALES PARA PERFIL
+   VARIABLES
    ============================================ */
 :root {
-  /* Spacing adicional */
+  --primary: #10b981;
+  --primary-dark: #059669;
+  --primary-light: #34d399;
+  
+  --bg-gradient: linear-gradient(180deg, #0b1220 0%, #0f172a 100%);
+  --bg-topbar: #0b1220;
+  --bg-card: #1f2937;
+  --bg-card-secondary: #374151;
+  --bg-filter: #111827;
+  --bg-input: #374151;
+  --bg-footer: #0b1220;
+  
+  --text-primary: #ffffff;
+  --text-secondary: rgba(255,255,255,0.95);
+  --text-muted: rgba(255,255,255,0.6);
+  --text-dark: #111827;
+  --text-gray: #e6e6e6;
+  
+  --border-color: rgba(255,255,255,0.1);
+  
+  --shadow-topbar: 0 2px 6px rgba(0,0,0,0.25);
+  --shadow-search: 0 2px 8px rgba(0,0,0,0.15);
+  --shadow-card: 0 8px 16px rgba(0, 0, 0, 0.4);
+  --shadow-filter: 0 6px 18px rgba(0,0,0,0.25);
+  --shadow-add-btn: 0 8px 24px rgba(2,6,23,0.45);
+  
+  /* Spacing */
+  --spacing-xs: 6px;
+  --spacing-sm: 8px;
+  --spacing-md: 12px;
+  --spacing-lg: 16px;
+  --spacing-xl: 20px;
+  --spacing-2xl: 28px;
+  --spacing-3xl: 32px;
   --spacing-4xl: 48px;
   --spacing-5xl: 64px;
+  
+  --radius-sm: 10px;
+  --radius-md: 14px;
+  --radius-lg: 999px;
+  
+  --icon-sm: 20px;
+  --icon-md: 26px;
+  
+  --transition: 0.2s ease;
   
   /* Colores específicos para formularios */
   --form-bg: rgba(255,255,255,0.05);
@@ -34,6 +93,157 @@
   --input-width-sm: 300px;
   --input-width-md: 400px;
   --input-width-lg: 500px;
+}
+
+/* ============================================
+   LAYOUT PRINCIPAL
+   ============================================ */
+.page-root { 
+  min-height: 100vh; 
+  display: flex; 
+  flex-direction: column; 
+}
+
+/* ============================================
+   TOPBAR
+   ============================================ */
+.topbar {
+  width: 100%;
+  display: grid;
+  grid-template-columns: 1fr auto 1fr;
+  align-items: center;
+  padding: 14px var(--spacing-2xl);
+  background: var(--bg-topbar);
+  gap: var(--spacing-md);
+  box-shadow: var(--shadow-topbar);
+}
+
+.topbar-left, 
+.topbar-right { 
+  display: flex; 
+  align-items: center; 
+  gap: var(--spacing-sm); 
+}
+
+.topbar-left { 
+  justify-self: start; 
+}
+
+.topbar-right { 
+  justify-self: end; 
+}
+
+.topbar-center { 
+  justify-self: center; 
+}
+
+/* Iconos del topbar */
+.icon { 
+  width: var(--icon-md); 
+  height: var(--icon-md); 
+  display: block; 
+  cursor: pointer;
+  transition: opacity var(--transition);
+}
+
+.icon:hover {
+  opacity: 0.8;
+}
+
+.user-icon { 
+  filter: brightness(0) invert(1); 
+}
+
+.user-icon.no-filter {
+  filter: none;
+}
+
+/* Username en topbar */
+.username {
+  color: var(--text-primary);
+  font-size: 14px;
+  font-weight: 500;
+}
+
+/* ============================================
+   BUSCADOR
+   ============================================ */
+.search-wrap {
+  display: flex;
+  align-items: center;
+  background: #ffffff;
+  color: var(--text-dark);
+  border-radius: var(--radius-lg);
+  padding: var(--spacing-xs) var(--spacing-sm);
+  width: 420px;
+  max-width: 56vw;
+  box-shadow: var(--shadow-search);
+}
+
+.search-icon { 
+  margin-right: var(--spacing-sm); 
+  opacity: 0.7; 
+  width: var(--icon-sm);
+  height: var(--icon-sm);
+}
+
+.search-input {
+  border: none;
+  outline: none;
+  width: 100%;
+  background: transparent;
+  font-size: 14px;
+  padding: var(--spacing-xs) 4px;
+  color: var(--text-dark);
+}
+
+.search-input::placeholder {
+  color: rgba(0,0,0,0.5);
+}
+
+/* ============================================
+   MAIN CONTENT
+   ============================================ */
+.main {
+  flex: 1;
+  display: flex;
+  justify-content: center;
+  padding: var(--spacing-3xl) var(--spacing-lg);
+}
+
+.center-column {
+  width: 100%;
+  max-width: 760px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 22px;
+}
+
+/* ============================================
+   TARJETA BASE
+   ============================================ */
+.task-card {
+  width: 100%;
+  max-width: 620px;
+  background: var(--bg-card);
+  border-radius: var(--radius-md);
+  padding: var(--spacing-xl);
+  box-shadow: var(--shadow-card);
+  text-align: center;
+  color: var(--text-primary);
+}
+
+.task-title { 
+  font-size: 18px; 
+  margin-bottom: var(--spacing-xs); 
+  font-weight: 700; 
+}
+
+.task-sub { 
+  margin-bottom: var(--spacing-sm); 
+  color: var(--text-secondary); 
+  font-size: 14px;
 }
 
 /* ============================================
@@ -129,7 +339,7 @@
 }
 
 /* ============================================
-   FORMULARIOS - COMPLETAMENTE CORREGIDO
+   FORMULARIOS - NUESTRO SISTEMA LIMPIO
    ============================================ */
 .form-container {
   display: flex;
@@ -139,104 +349,36 @@
   padding: var(--spacing-md) 0;
 }
 
-.form-grid-2 {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: var(--spacing-lg);
+.form-field {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-sm);
   width: 100%;
+  position: relative;
 }
 
-.form-field,
-.profile-content .form-field,
-.task-card .form-field,
-#section-personal .form-field,
-#section-cuenta .form-field,
-#section-manejo .form-field,
-.form-container .form-field,
-div.form-field {
-  display: flex !important;
-  flex-direction: column !important;
-  gap: var(--spacing-sm) !important;
-  width: 100% !important;
-  position: relative !important;
-  max-width: none !important;
-  min-width: 100% !important;
-  box-sizing: border-box !important;
-}
-
-/* ============================================
-   ANULAR ESTILOS DE LABELS DEL CSS2 - MÁXIMA PRIORIDAD
-   ============================================ */
-
-/* Anular COMPLETAMENTE los estilos de labels del CSS2 */
-.form-group label,
-.form-label,
-.profile-content .form-group label,
-.profile-content .form-label,
-.task-card .form-group label,
-.task-card .form-label {
-  /* ANULAR TODOS los estilos del CSS2 */
-  display: block !important;
-  margin-bottom: 4px !important;
-  font-size: 12px !important;
-  color: var(--text-dark) !important;
-  font-weight: bold !important;
-  /* FORZAR ANCHO COMPLETO */
-  width: 100% !important;
-  max-width: none !important;
-  min-width: 100% !important;
-  /* APLICAR NUESTROS ESTILOS */
-  background: var(--form-label-bg) !important;
-  padding: 8px 12px !important;
-  border-radius: 4px !important;
-  text-align: center !important;
-  text-transform: uppercase !important;
-  box-sizing: border-box !important;
-  position: relative !important;
-  flex-shrink: 0 !important;
-  flex-grow: 1 !important;
-  left: auto !important;
-  right: auto !important;
-  margin-left: 0 !important;
-  margin-right: 0 !important;
-}
-
-/* CORRECIÓN PRINCIPAL: Los labels ocuparán SIEMPRE todo el ancho del form-field */
-.form-label,
-.profile-content .form-label,
-.task-card .form-label,
-#section-personal .form-label,
-#section-cuenta .form-label,
-#section-manejo .form-label,
-.form-container .form-label,
-.form-field .form-label,
-div.form-field div.form-label {
-  background: var(--form-label-bg) !important;
-  color: var(--text-dark) !important;
-  padding: 8px 12px !important;
-  border-radius: 4px !important;
-  font-size: 12px !important;
-  font-weight: bold !important;
-  text-align: center !important;
-  text-transform: uppercase !important;
-  width: 100% !important;
-  max-width: none !important;
-  min-width: 100% !important;
-  box-sizing: border-box !important;
-  margin-bottom: 4px !important;
-  display: block !important;
-  position: relative !important;
-  flex-shrink: 0 !important;
-  flex-grow: 1 !important;
-  /* Forzar que no herede restricciones de ancho */
-  left: auto !important;
-  right: auto !important;
-  margin-left: 0 !important;
-  margin-right: 0 !important;
+/* LABELS - ANCHO COMPLETO GARANTIZADO */
+.form-label {
+  background: var(--form-label-bg);
+  color: var(--text-dark);
+  padding: 8px 12px;
+  border-radius: 4px;
+  font-size: 12px;
+  font-weight: bold;
+  text-align: center;
+  text-transform: uppercase;
+  width: 100%;
+  max-width: none;
+  min-width: 100%;
+  box-sizing: border-box;
+  margin-bottom: 4px;
+  display: block;
+  position: relative;
+  flex-shrink: 0;
+  flex-grow: 1;
 }
 
 .form-input {
-  width: 100%;
   padding: 12px 16px;
   border-radius: var(--radius-sm);
   border: 1px solid var(--form-border);
@@ -246,6 +388,7 @@ div.form-field div.form-label {
   outline: none;
   transition: all var(--transition);
   box-sizing: border-box;
+  width: 100%;
 }
 
 .form-input:focus {
@@ -264,7 +407,7 @@ div.form-field div.form-label {
   color: rgba(255,255,255,0.5);
 }
 
-/* Tamaños específicos de inputs - SIN AFECTAR LOS LABELS */
+/* Tamaños específicos de inputs */
 .form-input.width-sm {
   max-width: var(--input-width-sm);
   width: var(--input-width-sm);
@@ -278,57 +421,6 @@ div.form-field div.form-label {
 .form-input.width-lg {
   max-width: var(--input-width-lg);
   width: var(--input-width-lg);
-}
-
-/* IMPORTANTE: Asegurar que los form-field con inputs de ancho específico 
-   mantengan sus labels ocupando todo el ancho disponible del contenedor */
-.form-field:has(.form-input.width-sm),
-.form-field:has(.form-input.width-md),
-.form-field:has(.form-input.width-lg) {
-  width: 100% !important;
-}
-
-.form-field:has(.form-input.width-sm) .form-label,
-.form-field:has(.form-input.width-md) .form-label,
-.form-field:has(.form-input.width-lg) .form-label {
-  width: 100% !important;
-  max-width: none !important;
-  min-width: 100% !important;
-}
-
-/* SOPORTE EXTRA: Reglas ultra específicas para casos extremos */
-body .profile-content .form-field .form-label,
-html body .task-card .form-field .form-label,
-.page-root .main .profile-content .form-field .form-label,
-.page-root .main .center-column .profile-content .form-field .form-label {
-  width: 100% !important;
-  max-width: none !important;
-  min-width: 100% !important;
-  display: block !important;
-  box-sizing: border-box !important;
-}
-
-/* Regla nuclear - la más específica posible */
-.page-root .main .center-column .profile-container .profile-content.task-card #section-personal .form-container .form-field .form-label,
-.page-root .main .center-column .profile-container .profile-content.task-card #section-cuenta .form-container .form-field .form-label,
-.page-root .main .center-column .profile-container .profile-content.task-card #section-manejo .form-container .form-field .form-label {
-  width: 100% !important;
-  max-width: none !important;
-  min-width: 100% !important;
-  flex: 1 1 100% !important;
-  display: block !important;
-  box-sizing: border-box !important;
-}
-
-/* Anular cualquier regla que pueda estar afectando desde GlobalCSS2 */
-.form-label[class*="width"],
-.form-field[class*="width"] .form-label,
-.form-input.width-sm + .form-label,
-.form-input.width-md + .form-label,
-.form-input.width-lg + .form-label {
-  width: 100% !important;
-  max-width: none !important;
-  min-width: 100% !important;
 }
 
 /* ============================================
@@ -491,7 +583,7 @@ html body .task-card .form-field .form-label,
 #section-personal.hidden,
 #section-cuenta.hidden,
 #section-manejo.hidden {
-  display: none !important;
+  display: none;
 }
 
 #section-personal:not(.hidden),
@@ -502,15 +594,36 @@ html body .task-card .form-field .form-label,
   visibility: visible;
 }
 
-#section-personal:not(.hidden) .form-label,
-#section-cuenta:not(.hidden) .form-label,
-#section-manejo:not(.hidden) .form-label {
-  display: block !important;
-  visibility: visible !important;
-  opacity: 1 !important;
-  width: 100% !important;
-  max-width: none !important;
-  min-width: 100% !important;
+/* ============================================
+   FOOTER
+   ============================================ */
+.footer {
+  width: 100%;
+  background: var(--bg-footer);
+  padding: var(--spacing-md) 0;
+  display: flex; 
+  justify-content: center; 
+  align-items: center; 
+  gap: var(--spacing-sm);
+  border-top: 1px solid rgba(255,255,255,0.02);
+}
+
+.footer-link {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-xs);
+  text-decoration: none;
+  color: var(--text-primary);
+  transition: opacity var(--transition);
+}
+
+.footer-link:hover {
+  opacity: 0.8;
+}
+
+.footer-text {
+  font-size: 12px;
+  color: var(--text-muted);
 }
 
 /* ============================================
@@ -528,11 +641,6 @@ html body .task-card .form-field .form-label,
   
   .profile-content {
     order: 1;
-  }
-  
-  .form-grid-2 {
-    grid-template-columns: 1fr;
-    gap: var(--spacing-md);
   }
   
   .brand-logo {
@@ -563,11 +671,57 @@ html body .task-card .form-field .form-label,
     width: 100%;
   }
   
-  /* En responsive, los labels siguen ocupando todo el ancho */
-  .form-label {
-    width: 100% !important;
-    max-width: none !important;
-    min-width: 100% !important;
+  .topbar {
+    padding: 14px var(--spacing-lg);
+  }
+  
+  .search-wrap { 
+    width: 300px; 
+    max-width: 60vw; 
+  }
+}
+
+@media (max-width: 600px) {
+  .topbar { 
+    grid-template-columns: 1fr; 
+    gap: var(--spacing-sm); 
+    padding: var(--spacing-md); 
+  }
+  
+  .topbar-right { 
+    justify-self: start; 
+  }
+  
+  .topbar-left { 
+    justify-self: start; 
+  }
+  
+  .topbar-center { 
+    justify-self: stretch; 
+    display: flex; 
+    justify-content: center; 
+  }
+  
+  .search-wrap { 
+    width: 100%; 
+    max-width: 360px; 
+  }
+  
+  .main {
+    padding: var(--spacing-xl) var(--spacing-sm);
+  }
+  
+  .center-column {
+    gap: var(--spacing-lg);
+  }
+  
+  .task-card {
+    padding: var(--spacing-lg);
+    max-width: 95%;
+  }
+  
+  .task-title {
+    font-size: 16px;
   }
 }
 
@@ -583,9 +737,6 @@ html body .task-card .form-field .form-label,
   .form-label {
     padding: 6px 10px;
     font-size: 11px;
-    width: 100% !important;
-    max-width: none !important;
-    min-width: 100% !important;
   }
   
   .action-button {
@@ -638,6 +789,8 @@ html body .task-card .form-field .form-label,
 
 .w-full { width: 100%; }
 .max-w-none { max-width: none; }
+
+.hidden { display: none; }
 
 /* Animaciones */
 @keyframes fadeIn {
