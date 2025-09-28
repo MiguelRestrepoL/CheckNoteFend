@@ -358,7 +358,7 @@ body {
   align-items: flex-start; /* Esto es clave para que los labels se alineen con los inputs */
 }
 
-/* LABELS - AHORA HEREDAN EL ANCHO DEL INPUT */
+/* LABELS Y INPUTS - AMBOS OCUPAN 100% DEL CONTENEDOR */
 .form-label {
   background: var(--form-label-bg);
   color: var(--text-dark);
@@ -372,9 +372,9 @@ body {
   margin-bottom: 4px;
   display: block;
   position: relative;
-  /* El label tendrá el mismo ancho que el input que lo sigue */
-  width: var(--input-width-md); /* Por defecto */
-  max-width: var(--input-width-md);
+  /* OCUPAR TODO EL ANCHO DISPONIBLE */
+  width: 100%;
+  max-width: none;
 }
 
 .form-input {
@@ -387,7 +387,10 @@ body {
   outline: none;
   transition: all var(--transition);
   box-sizing: border-box;
-  width: var(--input-width-md); /* Por defecto */
+  display: block;
+  /* OCUPAR TODO EL ANCHO DISPONIBLE */
+  width: 100%;
+  max-width: none;
 }
 
 .form-input:focus {
@@ -406,42 +409,35 @@ body {
   color: rgba(255,255,255,0.5);
 }
 
-/* Tamaños específicos de inputs Y sus labels correspondientes */
-.form-input.width-sm,
-.form-field:has(.form-input.width-sm) .form-label {
+/* Las clases width-sm, width-md, width-lg ahora solo controlan el contenedor padre */
+.form-field {
+  width: 100%;
+}
+
+/* Contenedores con diferentes anchos máximos */
+.form-field.field-sm {
   max-width: var(--input-width-sm);
-  width: var(--input-width-sm);
 }
 
-.form-input.width-md,
-.form-field:has(.form-input.width-md) .form-label {
+.form-field.field-md {
   max-width: var(--input-width-md);
-  width: var(--input-width-md);
 }
 
-.form-input.width-lg,
-.form-field:has(.form-input.width-lg) .form-label {
+.form-field.field-lg {
   max-width: var(--input-width-lg);
-  width: var(--input-width-lg);
 }
 
-/* Fallback para navegadores que no soportan :has() */
-.form-field.field-sm .form-label,
-.form-field.field-sm .form-input {
+/* Mantener compatibilidad con las clases en los inputs */
+.form-field:has(.form-input.width-sm) {
   max-width: var(--input-width-sm);
-  width: var(--input-width-sm);
 }
 
-.form-field.field-md .form-label,
-.form-field.field-md .form-input {
+.form-field:has(.form-input.width-md) {
   max-width: var(--input-width-md);
-  width: var(--input-width-md);
 }
 
-.form-field.field-lg .form-label,
-.form-field.field-lg .form-input {
+.form-field:has(.form-input.width-lg) {
   max-width: var(--input-width-lg);
-  width: var(--input-width-lg);
 }
 
 /* ============================================
