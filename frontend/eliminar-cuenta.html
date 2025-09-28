@@ -209,7 +209,7 @@
                             <p style="margin-bottom: 8px; font-size: 14px; color: var(--text-muted);">
                                 Escribe exactamente esta frase:
                             </p>
-                            <div class="confirmation-text">ELIMINAR MI CUENTA PERMANENTEMENTE</div>
+                            <div class="confirmation-text">ELIMINAR</div>
                             <input
                                 type="text"
                                 id="confirmation-input"
@@ -407,7 +407,7 @@
             const isChecked = elements.finalConfirmation.checked;
 
             const isValid = password && 
-                           confirmation === 'ELIMINAR MI CUENTA PERMANENTEMENTE' && 
+                           confirmation === 'ELIMINAR' && 
                            isChecked;
 
             elements.deleteBtn.disabled = !isValid;
@@ -433,7 +433,7 @@
                 return;
             }
 
-            if (confirmation !== 'ELIMINAR MI CUENTA PERMANENTEMENTE') {
+            if (confirmation !== 'ELIMINAR') {
                 showMessage('error', 'La frase de confirmación no coincide exactamente');
                 return;
             }
@@ -463,7 +463,8 @@
                         'Content-Type': 'application/json',
                     },
                     body: JSON.stringify({
-                        contrasena: password
+                        contrasenaActual: password,
+                        confirmacion: "ELIMINAR"
                     }),
                 });
 
