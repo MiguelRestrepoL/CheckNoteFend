@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="es">
 <head>
@@ -6,193 +7,7 @@
     <title>Editar Tarea - CheckNote</title>
     <link rel="stylesheet" href="./GlobalCSS2.css">
     <style>
-        /* Estilos específicos para la página de edición */
-        .form-container {
-            max-width: 600px;
-            margin: 0 auto;
-            background: var(--bg-card);
-            border-radius: var(--radius-lg);
-            padding: var(--spacing-xl);
-            box-shadow: var(--shadow-card);
-        }
-
-        .page-header {
-            text-align: center;
-            margin-bottom: var(--spacing-xl);
-        }
-
-        .page-title {
-            font-size: 28px;
-            font-weight: bold;
-            color: var(--text-primary);
-            margin-bottom: var(--spacing-sm);
-        }
-
-        .page-subtitle {
-            color: var(--text-secondary);
-            font-size: 16px;
-        }
-
-        .form-group {
-            margin-bottom: var(--spacing-lg);
-        }
-
-        .form-label {
-            display: block;
-            margin-bottom: var(--spacing-sm);
-            color: var(--text-primary);
-            font-weight: 500;
-            font-size: 14px;
-        }
-
-        .form-input, .form-textarea, .form-select {
-            width: 100%;
-            padding: 12px 16px;
-            border: 2px solid var(--border-color);
-            border-radius: var(--radius-md);
-            background: var(--bg-input);
-            color: var(--text-primary);
-            font-size: 14px;
-            transition: all var(--transition);
-            box-sizing: border-box;
-        }
-
-        .form-input:focus, .form-textarea:focus, .form-select:focus {
-            outline: none;
-            border-color: var(--primary);
-            box-shadow: 0 0 0 3px rgba(16,185,129,0.1);
-        }
-
-        .form-textarea {
-            resize: vertical;
-            min-height: 100px;
-        }
-
-        .form-grid {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: var(--spacing-md);
-        }
-
-        .checkbox-group {
-            display: flex;
-            align-items: center;
-            gap: var(--spacing-sm);
-            margin-bottom: var(--spacing-lg);
-        }
-
-        .checkbox-group input[type="checkbox"] {
-            width: 18px;
-            height: 18px;
-            accent-color: var(--primary);
-        }
-
-        .checkbox-group label {
-            color: var(--text-primary);
-            font-weight: 500;
-            cursor: pointer;
-        }
-
-        .button-group {
-            display: flex;
-            gap: var(--spacing-md);
-            justify-content: center;
-            margin-top: var(--spacing-xl);
-        }
-
-        .btn-primary {
-            background: linear-gradient(135deg, var(--primary), var(--primary-dark));
-            color: white;
-            border: none;
-            padding: 12px 24px;
-            border-radius: var(--radius-md);
-            font-size: 16px;
-            font-weight: 500;
-            cursor: pointer;
-            transition: all var(--transition);
-            min-width: 120px;
-        }
-
-        .btn-primary:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 8px 25px rgba(16,185,129,0.3);
-        }
-
-        .btn-primary:disabled {
-            opacity: 0.6;
-            transform: none;
-            cursor: not-allowed;
-        }
-
-        .btn-secondary {
-            background: rgba(255,255,255,0.1);
-            color: var(--text-secondary);
-            border: 2px solid var(--border-color);
-            padding: 10px 24px;
-            border-radius: var(--radius-md);
-            font-size: 16px;
-            font-weight: 500;
-            cursor: pointer;
-            transition: all var(--transition);
-            text-decoration: none;
-            display: inline-flex;
-            align-items: center;
-            justify-content: center;
-            min-width: 120px;
-        }
-
-        .btn-secondary:hover {
-            background: rgba(255,255,255,0.2);
-            border-color: var(--text-secondary);
-        }
-
-        .error-message {
-            padding: 16px;
-            border-radius: 8px;
-            background: linear-gradient(135deg, #ef4444, #dc2626);
-            color: white;
-            font-size: 14px;
-            text-align: center;
-            font-weight: 500;
-            margin-bottom: 20px;
-        }
-
-        .success-message {
-            padding: 16px;
-            border-radius: 8px;
-            background: linear-gradient(135deg, var(--primary), var(--primary-dark));
-            color: white;
-            font-size: 14px;
-            text-align: center;
-            font-weight: 500;
-            margin-bottom: 20px;
-        }
-
-        .hidden {
-            display: none;
-        }
-
-        .loading-state {
-            text-align: center;
-            padding: var(--spacing-xl);
-            color: var(--text-secondary);
-        }
-
-        .loading-spinner {
-            width: 32px;
-            height: 32px;
-            border: 3px solid var(--border-color);
-            border-top: 3px solid var(--primary);
-            border-radius: 50%;
-            animation: spin 1s linear infinite;
-            margin: 0 auto var(--spacing-md);
-        }
-
-        @keyframes spin {
-            0% { transform: rotate(0deg); }
-            100% { transform: rotate(360deg); }
-        }
-
+        /* Solo estilos específicos que no están en GlobalCSS2 */
         @media (max-width: 768px) {
             .form-container {
                 margin: var(--spacing-md);
@@ -229,8 +44,9 @@
             </div>
 
             <div class="topbar-right">
-                <a href="perfil.html">
-                    <img src="/settings.png" alt="configuración" class="icon" />
+                <a href="perfil.html" style="display: flex; align-items: center; gap: 8px; text-decoration: none;">
+                    <img src="/usuario.png" alt="usuario" class="icon user-icon" />
+                    <span class="username" id="username">Usuario</span>
                 </a>
             </div>
         </header>
@@ -255,7 +71,7 @@
                         <p class="page-subtitle">Modifica los detalles de tu tarea</p>
                     </div>
 
-                    <form id="edit-form">
+                    <form id="edit-form" class="form">
                         <!-- Título -->
                         <div class="form-group">
                             <label class="form-label" for="titulo">Título de la tarea</label>
@@ -348,7 +164,8 @@
             estado: document.getElementById('estado'),
             prioridad: document.getElementById('prioridad'),
             completada: document.getElementById('completada'),
-            saveBtn: document.getElementById('save-btn')
+            saveBtn: document.getElementById('save-btn'),
+            username: document.getElementById('username')
         };
 
         // Función para mostrar mensajes
@@ -565,6 +382,17 @@
                 showMessage('error', 'No hay sesión activa. Redirigiendo al login...');
                 setTimeout(() => window.location.href = 'login.html', 2000);
                 return;
+            }
+
+            // Cargar datos del usuario
+            const storedUser = localStorage.getItem('user');
+            if (storedUser) {
+                try {
+                    const user = JSON.parse(storedUser);
+                    elements.username.textContent = user.nombres || 'Usuario';
+                } catch (e) {
+                    elements.username.textContent = 'Usuario';
+                }
             }
 
             // Cargar datos de la tarea
