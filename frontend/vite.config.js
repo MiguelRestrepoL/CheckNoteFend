@@ -13,7 +13,8 @@ export default defineConfig({
         perfil: resolve(__dirname, 'perfil.html'),
         'olvidar-password2': resolve(__dirname, 'olvidar-password2.html'),
         'crear-tarea': resolve(__dirname, 'crear-tarea.html'),
-        'editar-tarea': resolve(__dirname, 'editar-tarea.html')
+        'editar-tarea': resolve(__dirname, 'editar-tarea.html'),
+        'eliminar-tarea': resolve(__dirname, 'eliminar-tarea.html'),
       }
     }
   }
