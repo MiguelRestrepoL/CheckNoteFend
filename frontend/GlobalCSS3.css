@@ -339,7 +339,7 @@ body {
 }
 
 /* ============================================
-   FORMULARIOS - SISTEMA CORREGIDO PARA ANCHO COMPLETO
+   FORMULARIOS - NUESTRO SISTEMA LIMPIO
    ============================================ */
 .form-container {
   display: flex;
@@ -357,23 +357,25 @@ body {
   position: relative;
 }
 
-/* LABELS - ANCHO COMPLETO DEL FORMULARIO */
+/* LABELS - ANCHO COMPLETO GARANTIZADO */
 .form-label {
-  background: var(--form-label-bg) !important;
-  color: var(--text-dark) !important;
-  padding: 8px 12px !important;
-  border-radius: 4px !important;
-  font-size: 12px !important;
-  font-weight: bold !important;
-  text-align: center !important;
-  text-transform: uppercase !important;
-  width: 100% !important;
-  max-width: none !important;
-  min-width: 100% !important;
-  box-sizing: border-box !important;
-  margin-bottom: 4px !important;
-  display: block !important;
-  flex: none !important;
+  background: var(--form-label-bg);
+  color: var(--text-dark);
+  padding: 8px 12px;
+  border-radius: 4px;
+  font-size: 12px;
+  font-weight: bold;
+  text-align: center;
+  text-transform: uppercase;
+  width: 100%;
+  max-width: none;
+  min-width: 100%;
+  box-sizing: border-box;
+  margin-bottom: 4px;
+  display: block;
+  position: relative;
+  flex-shrink: 0;
+  flex-grow: 1;
 }
 
 .form-input {
@@ -405,17 +407,20 @@ body {
   color: rgba(255,255,255,0.5);
 }
 
-/* Tamaños específicos de inputs - SOLO para los inputs, NO para los labels */
+/* Tamaños específicos de inputs */
 .form-input.width-sm {
   max-width: var(--input-width-sm);
+  width: var(--input-width-sm);
 }
 
 .form-input.width-md {
   max-width: var(--input-width-md);
+  width: var(--input-width-md);
 }
 
 .form-input.width-lg {
   max-width: var(--input-width-lg);
+  width: var(--input-width-lg);
 }
 
 /* ============================================
@@ -566,7 +571,7 @@ body {
 }
 
 /* ============================================
-   VISIBILIDAD DE SECCIONES
+   VISIBILIDAD DE SECCIONES - VOLVER AL MÉTODO ORIGINAL
    ============================================ */
 #section-personal,
 #section-cuenta,

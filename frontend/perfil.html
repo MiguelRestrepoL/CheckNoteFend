@@ -5,6 +5,32 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Perfil - CheckNote</title>
     <link rel="stylesheet" href="./GlobalCSS3.css">
+    <style>
+        /* FORZAR LABELS A ANCHO COMPLETO - CSS INLINE PARA MÁXIMA PRIORIDAD */
+        .form-label {
+            width: 100% !important;
+            max-width: none !important;
+            min-width: 100% !important;
+            flex: 1 1 100% !important;
+            display: block !important;
+            box-sizing: border-box !important;
+        }
+        
+        .form-field {
+            width: 100% !important;
+            display: flex !important;
+            flex-direction: column !important;
+        }
+        
+        /* Asegurar que el contenedor padre también sea de ancho completo */
+        .form-container {
+            width: 100% !important;
+        }
+        
+        .profile-content {
+            width: 100% !important;
+        }
+    </style>
 </head>
 <body>
     <div class="page-root">
@@ -29,7 +55,7 @@
 
         <!-- MAIN -->
         <main class="main">
-            <div class="center-column">
+            <div class="center-column" style="max-width: 1000px; gap: 0">
                 
                 <!-- Loading Screen -->
                 <div id="loading-container" class="loading-container">
@@ -76,8 +102,8 @@
                             </p>
 
                             <form id="form-personal" class="form-container">
-                                <div class="form-field">
-                                    <div class="form-label">NOMBRE ✏️</div>
+                                <div class="form-field" style="width: 100% !important;">
+                                    <div class="form-label" style="width: 100% !important; max-width: none !important; min-width: 100% !important; display: block !important;">NOMBRE ✏️</div>
                                     <input
                                         type="text"
                                         id="input-nombres"
@@ -88,8 +114,8 @@
                                     />
                                 </div>
                                 
-                                <div class="form-field">
-                                    <div class="form-label">APELLIDO ✏️</div>
+                                <div class="form-field" style="width: 100% !important;">
+                                    <div class="form-label" style="width: 100% !important; max-width: none !important; min-width: 100% !important; display: block !important;">APELLIDO ✏️</div>
                                     <input
                                         type="text"
                                         id="input-apellidos"
@@ -100,8 +126,8 @@
                                     />
                                 </div>
 
-                                <div class="form-field">
-                                    <div class="form-label">EDAD ✏️</div>
+                                <div class="form-field" style="width: 100% !important;">
+                                    <div class="form-label" style="width: 100% !important; max-width: none !important; min-width: 100% !important; display: block !important;">EDAD ✏️</div>
                                     <input
                                         type="number"
                                         id="input-edad"
@@ -131,8 +157,8 @@
                             </p>
 
                             <form id="form-cuenta" class="form-container">
-                                <div class="form-field">
-                                    <div class="form-label">CORREO ✏️</div>
+                                <div class="form-field" style="width: 100% !important;">
+                                    <div class="form-label" style="width: 100% !important; max-width: none !important; min-width: 100% !important; display: block !important;">CORREO ✏️</div>
                                     <input
                                         type="email"
                                         id="input-email"
@@ -143,8 +169,8 @@
                                     />
                                 </div>
 
-                                <div class="form-field">
-                                    <div class="form-label">CREADO EL</div>
+                                <div class="form-field" style="width: 100% !important;">
+                                    <div class="form-label" style="width: 100% !important; max-width: none !important; min-width: 100% !important; display: block !important;">CREADO EL</div>
                                     <input
                                         type="date"
                                         id="input-fecha"
@@ -171,8 +197,8 @@
                             </p>
 
                             <form id="form-manejo" class="form-container mb-xl">
-                                <div class="form-field">
-                                    <div class="form-label">CONTRASEÑA ACTUAL</div>
+                                <div class="form-field" style="width: 100% !important;">
+                                    <div class="form-label" style="width: 100% !important; max-width: none !important; min-width: 100% !important; display: block !important;">CONTRASEÑA ACTUAL</div>
                                     <input
                                         type="password"
                                         id="input-current-password"
@@ -183,8 +209,8 @@
                                     />
                                 </div>
 
-                                <div class="form-field">
-                                    <div class="form-label">NUEVA CONTRASEÑA</div>
+                                <div class="form-field" style="width: 100% !important;">
+                                    <div class="form-label" style="width: 100% !important; max-width: none !important; min-width: 100% !important; display: block !important;">NUEVA CONTRASEÑA</div>
                                     <input
                                         type="password"
                                         id="input-password"
@@ -196,8 +222,8 @@
                                     />
                                 </div>
 
-                                <div class="form-field">
-                                    <div class="form-label">CONFIRMAR CONTRASEÑA</div>
+                                <div class="form-field" style="width: 100% !important;">
+                                    <div class="form-label" style="width: 100% !important; max-width: none !important; min-width: 100% !important; display: block !important;">CONFIRMAR CONTRASEÑA</div>
                                     <input
                                         type="password"
                                         id="input-confirm-password"
@@ -313,6 +339,21 @@
             elements.inputConfirmPassword = document.getElementById('input-confirm-password');
 
             console.log('Elements initialized:', Object.keys(elements).length, 'elements found');
+            
+            // FORZAR LABELS A ANCHO COMPLETO MEDIANTE JAVASCRIPT
+            document.querySelectorAll('.form-label').forEach(label => {
+                label.style.width = '100%';
+                label.style.maxWidth = 'none';
+                label.style.minWidth = '100%';
+                label.style.display = 'block';
+                label.style.boxSizing = 'border-box';
+            });
+            
+            document.querySelectorAll('.form-field').forEach(field => {
+                field.style.width = '100%';
+                field.style.display = 'flex';
+                field.style.flexDirection = 'column';
+            });
         }
 
         // Funciones utilitarias
@@ -385,6 +426,17 @@
             if (targetSection) {
                 targetSection.classList.remove('hidden');
                 console.log('Section', sectionName, 'is now visible');
+                
+                // REFORZAR LABELS AL CAMBIAR DE SECCIÓN
+                setTimeout(() => {
+                    targetSection.querySelectorAll('.form-label').forEach(label => {
+                        label.style.width = '100%';
+                        label.style.maxWidth = 'none';
+                        label.style.minWidth = '100%';
+                        label.style.display = 'block';
+                        label.style.boxSizing = 'border-box';
+                    });
+                }, 10);
             } else {
                 console.error('Target section not found:', sectionName);
             }
@@ -800,6 +852,152 @@
             // Cargar datos desde la API
             cargarDatosUsuario();
         });
+
+// SCRIPT DE DEBUGGING Y CORRECCIÓN - Agregar al final del HTML antes de </body>
+console.log("=== DEBUGGING Y CORRECCIÓN DE LABELS ===");
+
+function debugLabels() {
+    const labels = document.querySelectorAll('.form-label');
+    console.log(`Encontrados ${labels.length} labels`);
+    
+    labels.forEach((label, index) => {
+        const computedStyle = window.getComputedStyle(label);
+        const rect = label.getBoundingClientRect();
+        const parent = label.parentElement;
+        const parentRect = parent ? parent.getBoundingClientRect() : null;
+        
+        console.log(`\n--- LABEL ${index + 1} ---`);
+        console.log('Texto:', label.textContent);
+        console.log('Width computado:', computedStyle.width);
+        console.log('Ancho real (getBoundingClientRect):', rect.width + 'px');
+        console.log('Ancho del padre:', parentRect ? parentRect.width + 'px' : 'N/A');
+        console.log('Sección padre:', label.closest('[id^="section-"]')?.id || 'N/A');
+        console.log('Sección visible:', !label.closest('[id^="section-"]')?.classList.contains('hidden'));
+    });
+}
+
+// Función para forzar los anchos correctos SOLO en la sección visible
+function fixLabelsInVisibleSection() {
+    console.log("=== CORRIGIENDO LABELS EN SECCIÓN VISIBLE ===");
+    
+    // Encontrar la sección visible
+    const sections = ['personal', 'cuenta', 'manejo'];
+    let visibleSection = null;
+    
+    for (const section of sections) {
+        const sectionEl = document.getElementById(`section-${section}`);
+        if (sectionEl && !sectionEl.classList.contains('hidden')) {
+            visibleSection = sectionEl;
+            break;
+        }
+    }
+    
+    if (!visibleSection) {
+        console.log("No se encontró sección visible");
+        return;
+    }
+    
+    console.log(`Sección visible: ${visibleSection.id}`);
+    
+    // Solo corregir labels de la sección visible
+    const visibleLabels = visibleSection.querySelectorAll('.form-label');
+    console.log(`Corrigiendo ${visibleLabels.length} labels en la sección visible`);
+    
+    visibleLabels.forEach((label, index) => {
+        const parent = label.parentElement;
+        if (parent) {
+            const parentWidth = parent.getBoundingClientRect().width;
+            console.log(`Label ${index + 1} "${label.textContent}": padre=${parentWidth}px`);
+            
+            if (parentWidth > 0) {
+                // Forzar ancho específico basado en el padre
+                label.style.setProperty('width', parentWidth + 'px', 'important');
+                label.style.setProperty('max-width', 'none', 'important');
+                label.style.setProperty('min-width', parentWidth + 'px', 'important');
+                label.style.setProperty('display', 'block', 'important');
+                label.style.setProperty('box-sizing', 'border-box', 'important');
+                console.log(`✅ Corregido a ${parentWidth}px`);
+            } else {
+                console.log(`⚠️ Padre tiene ancho 0, saltando...`);
+            }
+        }
+    });
+}
+
+// Ejecutar después de que todo esté cargado
+setTimeout(debugLabels, 1000);
+setTimeout(fixLabelsInVisibleSection, 1200);
+
+// IMPORTANTE: Interceptar la función showSection para corregir labels después de cada cambio
+const originalShowSection = window.showSection;
+if (typeof originalShowSection === 'function') {
+    window.showSection = function(...args) {
+        console.log('Cambiando a sección:', args[0]);
+        const result = originalShowSection.apply(this, args);
+        
+        // Esperar a que la nueva sección se renderice completamente
+        setTimeout(() => {
+            console.log('Corrigiendo labels después del cambio de sección');
+            fixLabelsInVisibleSection();
+        }, 100);
+        
+        return result;
+    };
+} else {
+    console.log('⚠️ Función showSection no encontrada');
+}
+
+// También interceptar los clicks en navegación
+document.addEventListener('DOMContentLoaded', function() {
+    const navButtons = document.querySelectorAll('.nav-button:not(.danger)');
+    navButtons.forEach(button => {
+        button.addEventListener('click', function() {
+            setTimeout(() => {
+                console.log('Corrigiendo labels después de click en navegación');
+                fixLabelsInVisibleSection();
+            }, 150);
+        });
+    });
+});
+
+// Función para ejecutar manualmente
+function fixLabelsManually() {
+    fixLabelsInVisibleSection();
+}
+
+// Observer para detectar cambios en las clases de las secciones
+const observer = new MutationObserver(function(mutations) {
+    mutations.forEach(function(mutation) {
+        if (mutation.type === 'attributes' && mutation.attributeName === 'class') {
+            const target = mutation.target;
+            if (target.id && target.id.startsWith('section-')) {
+                if (!target.classList.contains('hidden')) {
+                    console.log(`Sección ${target.id} se volvió visible, corrigiendo labels...`);
+                    setTimeout(fixLabelsInVisibleSection, 50);
+                }
+            }
+        }
+    });
+});
+
+// Observar cambios en las secciones
+document.addEventListener('DOMContentLoaded', function() {
+    const sections = document.querySelectorAll('[id^="section-"]');
+    sections.forEach(section => {
+        observer.observe(section, { attributes: true, attributeFilter: ['class'] });
+    });
+});
+
+// Hacer funciones globales
+window.debugLabels = debugLabels;
+window.fixLabelsInVisibleSection = fixLabelsInVisibleSection;
+window.fixLabelsManually = fixLabelsManually;
+
+console.log("Funciones disponibles:");
+console.log("- debugLabels() - Ver información de todos los labels");
+console.log("- fixLabelsInVisibleSection() - Corregir labels de la sección visible");
+console.log("- fixLabelsManually() - Alias para corrección manual");
     </script>
+    
 </body>
 </html>
