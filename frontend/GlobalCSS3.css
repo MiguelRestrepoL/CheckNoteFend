@@ -222,25 +222,27 @@
   cursor: pointer;
   transition: all var(--transition);
   box-sizing: border-box;
-  align-self: flex-start;
+  align-self: center; /* Centrar botones */
+  width: 100%; /* Ocupar todo el ancho disponible */
+  max-width: 400px; /* Límite máximo para que no se vean demasiado anchos */
+  text-align: center;
 }
 
 .action-button.primary {
   background: linear-gradient(135deg, var(--primary), var(--primary-dark));
   color: white;
-  min-width: 160px;
 }
 
 .action-button.info {
   background: linear-gradient(135deg, #3b82f6, #1d4ed8);
   color: white;
-  min-width: 200px;
 }
 
 .action-button.danger {
   background: linear-gradient(135deg, #ef4444, #dc2626);
   color: white;
-  min-width: 200px;
+  margin: 0 auto; /* Centrar específicamente el botón de eliminar cuenta */
+  display: block;
 }
 
 .action-button.loading {
@@ -311,6 +313,7 @@
   margin-top: var(--spacing-xl);
   width: 100%;
   box-sizing: border-box;
+  text-align: center; /* Centrar todo el contenido de la zona peligrosa */
 }
 
 .danger-zone-title {
@@ -325,6 +328,10 @@
   font-size: 14px;
   margin-bottom: var(--spacing-lg);
   line-height: 1.5;
+  max-width: 500px;
+  margin-left: auto;
+  margin-right: auto;
+  margin-bottom: var(--spacing-lg);
 }
 
 /* ============================================
@@ -444,12 +451,8 @@
   .action-button {
     padding: 10px 20px;
     font-size: 13px;
-    min-width: 140px;
-  }
-  
-  .action-button.info,
-  .action-button.danger {
-    min-width: 160px;
+    max-width: none; /* En móvil ocupar todo el ancho */
+    width: 100%;
   }
   
   .brand-icon {
