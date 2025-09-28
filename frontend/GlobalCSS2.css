@@ -347,7 +347,7 @@ body {
 
 .kanban-column {
   background: var(--bg-card);
-  border-radius: var(--radius-lg);
+  border-radius: var(--radius-md);
   padding: var(--spacing-lg);
   box-shadow: var(--shadow-card);
   display: flex;
