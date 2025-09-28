@@ -269,46 +269,52 @@
             confirmPassword: ""
         };
 
-        // Referencias DOM
-        const elements = {
-            loadingContainer: document.getElementById('loading-container'),
-            profileContainer: document.getElementById('profile-container'),
-            errorMessage: document.getElementById('error-message'),
-            successMessage: document.getElementById('success-message'),
-            topbarUsername: document.getElementById('topbar-username'),
+        // Referencias DOM - CORREGIDAS
+        const elements = {};
+
+        // Función para inicializar las referencias DOM de forma segura
+        function initializeElements() {
+            // Elementos principales
+            elements.loadingContainer = document.getElementById('loading-container');
+            elements.profileContainer = document.getElementById('profile-container');
+            elements.errorMessage = document.getElementById('error-message');
+            elements.successMessage = document.getElementById('success-message');
+            elements.topbarUsername = document.getElementById('topbar-username');
             
             // Navegación
-            navPersonal: document.getElementById('nav-personal'),
-            navCuenta: document.getElementById('nav-cuenta'),
-            navManejo: document.getElementById('nav-manejo'),
-            navLogout: document.getElementById('nav-logout'),
+            elements.navPersonal = document.getElementById('nav-personal');
+            elements.navCuenta = document.getElementById('nav-cuenta');
+            elements.navManejo = document.getElementById('nav-manejo');
+            elements.navLogout = document.getElementById('nav-logout');
             
             // Secciones
-            sectionPersonal: document.getElementById('section-personal'),
-            sectionCuenta: document.getElementById('section-cuenta'),
-            sectionManejo: document.getElementById('section-manejo'),
+            elements.sectionPersonal = document.getElementById('section-personal');
+            elements.sectionCuenta = document.getElementById('section-cuenta');
+            elements.sectionManejo = document.getElementById('section-manejo');
             
             // Formularios
-            formPersonal: document.getElementById('form-personal'),
-            formCuenta: document.getElementById('form-cuenta'),
-            formManejo: document.getElementById('form-manejo'),
+            elements.formPersonal = document.getElementById('form-personal');
+            elements.formCuenta = document.getElementById('form-cuenta');
+            elements.formManejo = document.getElementById('form-manejo');
             
             // Botones
-            btnPersonal: document.getElementById('btn-personal'),
-            btnCuenta: document.getElementById('btn-cuenta'),
-            btnManejo: document.getElementById('btn-manejo'),
-            btnDeleteAccount: document.getElementById('btn-delete-account'),
+            elements.btnPersonal = document.getElementById('btn-personal');
+            elements.btnCuenta = document.getElementById('btn-cuenta');
+            elements.btnManejo = document.getElementById('btn-manejo');
+            elements.btnDeleteAccount = document.getElementById('btn-delete-account');
             
             // Inputs
-            inputNombres: document.getElementById('input-nombres'),
-            inputApellidos: document.getElementById('input-apellidos'),
-            inputEdad: document.getElementById('input-edad'),
-            inputEmail: document.getElementById('input-email'),
-            inputFecha: document.getElementById('input-fecha'),
-            inputCurrentPassword: document.getElementById('input-current-password'),
-            inputPassword: document.getElementById('input-password'),
-            inputConfirmPassword: document.getElementById('input-confirm-password')
-        };
+            elements.inputNombres = document.getElementById('input-nombres');
+            elements.inputApellidos = document.getElementById('input-apellidos');
+            elements.inputEdad = document.getElementById('input-edad');
+            elements.inputEmail = document.getElementById('input-email');
+            elements.inputFecha = document.getElementById('input-fecha');
+            elements.inputCurrentPassword = document.getElementById('input-current-password');
+            elements.inputPassword = document.getElementById('input-password');
+            elements.inputConfirmPassword = document.getElementById('input-confirm-password');
+
+            console.log('Elements initialized:', Object.keys(elements).length, 'elements found');
+        }
 
         // Funciones utilitarias
         function showMessage(type, message, duration = 5000) {
@@ -316,20 +322,26 @@
             hideMessage('success');
             
             const messageEl = elements[type + 'Message'];
-            messageEl.textContent = message;
-            messageEl.classList.remove('hidden');
-            
-            if (duration > 0) {
-                setTimeout(() => hideMessage(type), duration);
+            if (messageEl) {
+                messageEl.textContent = message;
+                messageEl.classList.remove('hidden');
+                
+                if (duration > 0) {
+                    setTimeout(() => hideMessage(type), duration);
+                }
             }
         }
 
         function hideMessage(type) {
             const messageEl = elements[type + 'Message'];
-            messageEl.classList.add('hidden');
+            if (messageEl) {
+                messageEl.classList.add('hidden');
+            }
         }
 
         function setLoading(buttonElement, isLoading) {
+            if (!buttonElement) return;
+            
             if (isLoading) {
                 buttonElement.disabled = true;
                 buttonElement.classList.add('loading');
@@ -346,21 +358,41 @@
             }
         }
 
+        // Función showSection CORREGIDA
         function showSection(sectionName) {
+            console.log('Switching to section:', sectionName);
+            
+            // Verificar que los elementos existen
+            if (!elements.sectionPersonal || !elements.sectionCuenta || !elements.sectionManejo) {
+                console.error('Section elements not found');
+                return;
+            }
+            
             // Ocultar todas las secciones
             elements.sectionPersonal.classList.add('hidden');
             elements.sectionCuenta.classList.add('hidden');
             elements.sectionManejo.classList.add('hidden');
             
             // Desactivar todos los botones de navegación
-            elements.navPersonal.classList.remove('active');
-            elements.navCuenta.classList.remove('active');
-            elements.navManejo.classList.remove('active');
+            if (elements.navPersonal) elements.navPersonal.classList.remove('active');
+            if (elements.navCuenta) elements.navCuenta.classList.remove('active');
+            if (elements.navManejo) elements.navManejo.classList.remove('active');
             
-            // Mostrar la sección activa
+            // Mostrar la sección activa y activar el botón correspondiente
             activeSection = sectionName;
-            elements[`section-${sectionName}`].classList.remove('hidden');
-            elements[`nav-${sectionName}`].classList.add('active');
+            const targetSection = elements['section' + sectionName.charAt(0).toUpperCase() + sectionName.slice(1)];
+            const targetNavButton = elements['nav' + sectionName.charAt(0).toUpperCase() + sectionName.slice(1)];
+            
+            if (targetSection) {
+                targetSection.classList.remove('hidden');
+                console.log('Section', sectionName, 'is now visible');
+            } else {
+                console.error('Target section not found:', sectionName);
+            }
+            
+            if (targetNavButton) {
+                targetNavButton.classList.add('active');
+            }
             
             // Limpiar mensajes
             hideMessage('error');
@@ -436,7 +468,9 @@
                 // Actualizar localStorage
                 localStorage.setItem('userName', userData.nombres || "");
                 localStorage.setItem('user', JSON.stringify(userData));
-                elements.topbarUsername.textContent = userData.nombres || 'Usuario';
+                if (elements.topbarUsername) {
+                    elements.topbarUsername.textContent = userData.nombres || 'Usuario';
+                }
 
             } catch (err) {
                 console.error("Error cargando datos:", err);
@@ -459,27 +493,29 @@
                                 new Date().toISOString().split('T')[0]
                         };
                         updateFormInputs();
-                        elements.topbarUsername.textContent = personalData.nombres || 'Usuario';
+                        if (elements.topbarUsername) {
+                            elements.topbarUsername.textContent = personalData.nombres || 'Usuario';
+                        }
                     } catch (parseError) {
                         console.error('Error parsing stored data:', parseError);
                     }
                 }
             } finally {
                 loadingData = false;
-                elements.loadingContainer.classList.add('hidden');
-                elements.profileContainer.classList.remove('hidden');
+                if (elements.loadingContainer) elements.loadingContainer.classList.add('hidden');
+                if (elements.profileContainer) elements.profileContainer.classList.remove('hidden');
             }
         }
 
         function updateFormInputs() {
             // Actualizar inputs de información personal
-            elements.inputNombres.value = personalData.nombres;
-            elements.inputApellidos.value = personalData.apellidos;
-            elements.inputEdad.value = personalData.edad;
+            if (elements.inputNombres) elements.inputNombres.value = personalData.nombres;
+            if (elements.inputApellidos) elements.inputApellidos.value = personalData.apellidos;
+            if (elements.inputEdad) elements.inputEdad.value = personalData.edad;
             
             // Actualizar inputs de información de cuenta
-            elements.inputEmail.value = cuentaData.email;
-            elements.inputFecha.value = cuentaData.fechaCreacion;
+            if (elements.inputEmail) elements.inputEmail.value = cuentaData.email;
+            if (elements.inputFecha) elements.inputFecha.value = cuentaData.fechaCreacion;
         }
 
         async function makeRequest(endpoint, data, isPasswordChange = false) {
@@ -549,189 +585,216 @@
             }
         }
 
-        // Event handlers para formularios
-        elements.formPersonal.addEventListener('submit', async (e) => {
-            e.preventDefault();
-            loading = true;
-            setLoading(elements.btnPersonal, true);
-            hideMessage('error');
-            hideMessage('success');
+        // Función para agregar event listeners de forma segura
+        function addEventListeners() {
+            // Event handlers para formularios
+            if (elements.formPersonal) {
+                elements.formPersonal.addEventListener('submit', async (e) => {
+                    e.preventDefault();
+                    loading = true;
+                    setLoading(elements.btnPersonal, true);
+                    hideMessage('error');
+                    hideMessage('success');
 
-            try {
-                // Obtener valores actuales del formulario
-                const nombres = elements.inputNombres.value.trim();
-                const apellidos = elements.inputApellidos.value.trim();
-                const edad = elements.inputEdad.value.trim();
+                    try {
+                        // Obtener valores actuales del formulario
+                        const nombres = elements.inputNombres.value.trim();
+                        const apellidos = elements.inputApellidos.value.trim();
+                        const edad = elements.inputEdad.value.trim();
 
-                // Validaciones básicas
-                if (!nombres) {
-                    throw new Error("El nombre es requerido");
-                }
-                if (!apellidos) {
-                    throw new Error("Los apellidos son requeridos");
-                }
+                        // Validaciones básicas
+                        if (!nombres) {
+                            throw new Error("El nombre es requerido");
+                        }
+                        if (!apellidos) {
+                            throw new Error("Los apellidos son requeridos");
+                        }
 
-                const updateData = { nombres, apellidos };
+                        const updateData = { nombres, apellidos };
 
-                // Solo agregar edad si se proporcionó
-                if (edad) {
-                    const edadNum = parseInt(edad);
-                    if (isNaN(edadNum) || edadNum < 13 || edadNum > 120) {
-                        throw new Error("La edad debe ser un número válido entre 13 y 120");
+                        // Solo agregar edad si se proporcionó
+                        if (edad) {
+                            const edadNum = parseInt(edad);
+                            if (isNaN(edadNum) || edadNum < 13 || edadNum > 120) {
+                                throw new Error("La edad debe ser un número válido entre 13 y 120");
+                            }
+                            updateData.edad = edadNum;
+                        }
+
+                        console.log("Personal update data:", updateData);
+                        
+                        await makeRequest('/users/me', updateData);
+                        
+                        // Actualizar datos locales
+                        personalData.nombres = nombres;
+                        personalData.apellidos = apellidos;
+                        personalData.edad = edad;
+                        
+                        // Actualizar localStorage
+                        localStorage.setItem('userName', nombres);
+                        elements.topbarUsername.textContent = nombres;
+                        
+                        // Recargar datos para confirmar cambios
+                        await cargarDatosUsuario();
+                        
+                        showMessage('success', "Información personal actualizada correctamente");
+                    } catch (err) {
+                        console.error("Error updating personal data:", err);
+                        showMessage('error', "Error al actualizar la información personal: " + err.message);
+                    } finally {
+                        loading = false;
+                        setLoading(elements.btnPersonal, false);
                     }
-                    updateData.edad = edadNum;
-                }
-
-                console.log("Personal update data:", updateData);
-                
-                await makeRequest('/users/me', updateData);
-                
-                // Actualizar datos locales
-                personalData.nombres = nombres;
-                personalData.apellidos = apellidos;
-                personalData.edad = edad;
-                
-                // Actualizar localStorage
-                localStorage.setItem('userName', nombres);
-                elements.topbarUsername.textContent = nombres;
-                
-                // Recargar datos para confirmar cambios
-                await cargarDatosUsuario();
-                
-                showMessage('success', "Información personal actualizada correctamente");
-            } catch (err) {
-                console.error("Error updating personal data:", err);
-                showMessage('error', "Error al actualizar la información personal: " + err.message);
-            } finally {
-                loading = false;
-                setLoading(elements.btnPersonal, false);
-            }
-        });
-
-        elements.formCuenta.addEventListener('submit', async (e) => {
-            e.preventDefault();
-            loading = true;
-            setLoading(elements.btnCuenta, true);
-            hideMessage('error');
-            hideMessage('success');
-
-            try {
-                const email = elements.inputEmail.value.trim();
-                
-                if (!email) {
-                    throw new Error("El correo electrónico es requerido");
-                }
-
-                // Validación básica de email
-                const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-                if (!emailRegex.test(email)) {
-                    throw new Error("Por favor ingresa un correo electrónico válido");
-                }
-
-                const updateData = { 
-                    correo: email.toLowerCase() 
-                };
-                
-                console.log("Email update data:", updateData);
-                
-                await makeRequest('/users/me', updateData);
-                
-                // Actualizar datos locales
-                cuentaData.email = email.toLowerCase();
-                
-                // Recargar datos para confirmar cambios
-                await cargarDatosUsuario();
-                
-                showMessage('success', "Información de cuenta actualizada correctamente");
-            } catch (err) {
-                console.error("Error updating account data:", err);
-                showMessage('error', "Error al actualizar la información de cuenta: " + err.message);
-            } finally {
-                loading = false;
-                setLoading(elements.btnCuenta, false);
-            }
-        });
-
-        elements.formManejo.addEventListener('submit', async (e) => {
-            e.preventDefault();
-            loading = true;
-            setLoading(elements.btnManejo, true);
-            hideMessage('error');
-            hideMessage('success');
-
-            try {
-                const currentPassword = elements.inputCurrentPassword.value;
-                const password = elements.inputPassword.value;
-                const confirmPassword = elements.inputConfirmPassword.value;
-
-                // Validaciones
-                if (!currentPassword) {
-                    throw new Error("Debes ingresar tu contraseña actual");
-                }
-                if (!password) {
-                    throw new Error("Debes ingresar una nueva contraseña");
-                }
-                if (password !== confirmPassword) {
-                    throw new Error("Las contraseñas no coinciden");
-                }
-                if (password.length < 8) {
-                    throw new Error("La contraseña debe tener al menos 8 caracteres");
-                }
-                if (currentPassword === password) {
-                    throw new Error("La nueva contraseña debe ser diferente a la actual");
-                }
-
-                // Preparar datos para cambio de contraseña
-                const updateData = {
-                    contrasenaActual: currentPassword,
-                    nuevaContrasena: password,
-                    confirmarNuevaContrasena: confirmPassword
-                };
-
-                console.log("Password change data:", { 
-                    hasCurrentPassword: !!updateData.contrasenaActual,
-                    hasNewPassword: !!updateData.nuevaContrasena,
-                    hasConfirmation: !!updateData.confirmarNuevaContrasena,
-                    endpoint: '/users/me'
                 });
-
-                await makeRequest('/users/me', updateData, true);
-                
-                showMessage('success', "Contraseña cambiada correctamente");
-                
-                // Limpiar formulario
-                elements.inputCurrentPassword.value = "";
-                elements.inputPassword.value = "";
-                elements.inputConfirmPassword.value = "";
-                
-            } catch (err) {
-                console.error("Error changing password:", err);
-                showMessage('error', "Error al cambiar la contraseña: " + err.message);
-            } finally {
-                loading = false;
-                setLoading(elements.btnManejo, false);
             }
-        });
 
-        // Event listeners para navegación
-        elements.navPersonal.addEventListener('click', () => showSection('personal'));
-        elements.navCuenta.addEventListener('click', () => showSection('cuenta'));
-        elements.navManejo.addEventListener('click', () => showSection('manejo'));
-        
-        elements.navLogout.addEventListener('click', () => {
-            localStorage.clear();
-            window.location.href = 'login.html';
-        });
+            if (elements.formCuenta) {
+                elements.formCuenta.addEventListener('submit', async (e) => {
+                    e.preventDefault();
+                    loading = true;
+                    setLoading(elements.btnCuenta, true);
+                    hideMessage('error');
+                    hideMessage('success');
 
-        elements.btnDeleteAccount.addEventListener('click', () => {
-            window.location.href = 'eliminar-cuenta.html';
-        });
+                    try {
+                        const email = elements.inputEmail.value.trim();
+                        
+                        if (!email) {
+                            throw new Error("El correo electrónico es requerido");
+                        }
+
+                        // Validación básica de email
+                        const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+                        if (!emailRegex.test(email)) {
+                            throw new Error("Por favor ingresa un correo electrónico válido");
+                        }
+
+                        const updateData = { 
+                            correo: email.toLowerCase() 
+                        };
+                        
+                        console.log("Email update data:", updateData);
+                        
+                        await makeRequest('/users/me', updateData);
+                        
+                        // Actualizar datos locales
+                        cuentaData.email = email.toLowerCase();
+                        
+                        // Recargar datos para confirmar cambios
+                        await cargarDatosUsuario();
+                        
+                        showMessage('success', "Información de cuenta actualizada correctamente");
+                    } catch (err) {
+                        console.error("Error updating account data:", err);
+                        showMessage('error', "Error al actualizar la información de cuenta: " + err.message);
+                    } finally {
+                        loading = false;
+                        setLoading(elements.btnCuenta, false);
+                    }
+                });
+            }
+
+            if (elements.formManejo) {
+                elements.formManejo.addEventListener('submit', async (e) => {
+                    e.preventDefault();
+                    loading = true;
+                    setLoading(elements.btnManejo, true);
+                    hideMessage('error');
+                    hideMessage('success');
+
+                    try {
+                        const currentPassword = elements.inputCurrentPassword.value;
+                        const password = elements.inputPassword.value;
+                        const confirmPassword = elements.inputConfirmPassword.value;
+
+                        // Validaciones
+                        if (!currentPassword) {
+                            throw new Error("Debes ingresar tu contraseña actual");
+                        }
+                        if (!password) {
+                            throw new Error("Debes ingresar una nueva contraseña");
+                        }
+                        if (password !== confirmPassword) {
+                            throw new Error("Las contraseñas no coinciden");
+                        }
+                        if (password.length < 8) {
+                            throw new Error("La contraseña debe tener al menos 8 caracteres");
+                        }
+                        if (currentPassword === password) {
+                            throw new Error("La nueva contraseña debe ser diferente a la actual");
+                        }
+
+                        // Preparar datos para cambio de contraseña
+                        const updateData = {
+                            contrasenaActual: currentPassword,
+                            nuevaContrasena: password,
+                            confirmarNuevaContrasena: confirmPassword
+                        };
+
+                        console.log("Password change data:", { 
+                            hasCurrentPassword: !!updateData.contrasenaActual,
+                            hasNewPassword: !!updateData.nuevaContrasena,
+                            hasConfirmation: !!updateData.confirmarNuevaContrasena,
+                            endpoint: '/users/me'
+                        });
+
+                        await makeRequest('/users/me', updateData, true);
+                        
+                        showMessage('success', "Contraseña cambiada correctamente");
+                        
+                        // Limpiar formulario
+                        elements.inputCurrentPassword.value = "";
+                        elements.inputPassword.value = "";
+                        elements.inputConfirmPassword.value = "";
+                        
+                    } catch (err) {
+                        console.error("Error changing password:", err);
+                        showMessage('error', "Error al cambiar la contraseña: " + err.message);
+                    } finally {
+                        loading = false;
+                        setLoading(elements.btnManejo, false);
+                    }
+                });
+            }
+
+            // Event listeners para navegación
+            if (elements.navPersonal) {
+                elements.navPersonal.addEventListener('click', () => showSection('personal'));
+            }
+            if (elements.navCuenta) {
+                elements.navCuenta.addEventListener('click', () => showSection('cuenta'));
+            }
+            if (elements.navManejo) {
+                elements.navManejo.addEventListener('click', () => showSection('manejo'));
+            }
+            
+            if (elements.navLogout) {
+                elements.navLogout.addEventListener('click', () => {
+                    localStorage.clear();
+                    window.location.href = 'login.html';
+                });
+            }
+
+            if (elements.btnDeleteAccount) {
+                elements.btnDeleteAccount.addEventListener('click', () => {
+                    window.location.href = 'eliminar-cuenta.html';
+                });
+            }
+        }
 
         // Inicialización
         document.addEventListener('DOMContentLoaded', function() {
+            console.log('DOM loaded, initializing...');
+            
+            // Inicializar elementos
+            initializeElements();
+            
+            // Agregar event listeners
+            addEventListeners();
+            
             // Cargar datos del usuario
             const storedUserName = localStorage.getItem('userName');
-            if (storedUserName) {
+            if (storedUserName && elements.topbarUsername) {
                 elements.topbarUsername.textContent = storedUserName;
             }
 
