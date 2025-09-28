@@ -155,25 +155,37 @@
 }
 
 /* CORRECIÓN PRINCIPAL: Los labels ocuparán SIEMPRE todo el ancho del form-field */
-.form-label {
-  background: var(--form-label-bg);
-  color: var(--text-dark);
-  padding: 8px 12px;
-  border-radius: 4px;
-  font-size: 12px;
-  font-weight: bold;
-  text-align: center;
-  text-transform: uppercase;
+.form-label,
+.profile-content .form-label,
+.task-card .form-label,
+#section-personal .form-label,
+#section-cuenta .form-label,
+#section-manejo .form-label,
+.form-container .form-label,
+.form-field .form-label,
+div.form-field div.form-label {
+  background: var(--form-label-bg) !important;
+  color: var(--text-dark) !important;
+  padding: 8px 12px !important;
+  border-radius: 4px !important;
+  font-size: 12px !important;
+  font-weight: bold !important;
+  text-align: center !important;
+  text-transform: uppercase !important;
   width: 100% !important;
   max-width: none !important;
   min-width: 100% !important;
-  box-sizing: border-box;
-  margin-bottom: 4px;
+  box-sizing: border-box !important;
+  margin-bottom: 4px !important;
   display: block !important;
-  position: relative;
-  /* Eliminar cualquier restricción de ancho heredada */
-  flex-shrink: 0;
-  flex-grow: 1;
+  position: relative !important;
+  flex-shrink: 0 !important;
+  flex-grow: 1 !important;
+  /* Forzar que no herede restricciones de ancho */
+  left: auto !important;
+  right: auto !important;
+  margin-left: 0 !important;
+  margin-right: 0 !important;
 }
 
 .form-input {
