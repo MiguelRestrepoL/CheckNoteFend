@@ -852,6 +852,105 @@
             // Cargar datos desde la API
             cargarDatosUsuario();
         });
+
+    // SCRIPT DE DEBUGGING - Agregar al final del HTML antes de </body>
+console.log("=== DEBUGGING LABELS ===");
+
+function debugLabels() {
+    const labels = document.querySelectorAll('.form-label');
+    console.log(`Encontrados ${labels.length} labels`);
+    
+    labels.forEach((label, index) => {
+        const computedStyle = window.getComputedStyle(label);
+        const rect = label.getBoundingClientRect();
+        const parent = label.parentElement;
+        const parentRect = parent ? parent.getBoundingClientRect() : null;
+        
+        console.log(`\n--- LABEL ${index + 1} ---`);
+        console.log('Texto:', label.textContent);
+        console.log('Width computado:', computedStyle.width);
+        console.log('Max-width computado:', computedStyle.maxWidth);
+        console.log('Min-width computado:', computedStyle.minWidth);
+        console.log('Display computado:', computedStyle.display);
+        console.log('Box-sizing computado:', computedStyle.boxSizing);
+        console.log('Position computado:', computedStyle.position);
+        console.log('Ancho real (getBoundingClientRect):', rect.width + 'px');
+        console.log('Clase del label:', label.className);
+        console.log('Clase del padre:', parent ? parent.className : 'N/A');
+        console.log('Ancho del padre:', parentRect ? parentRect.width + 'px' : 'N/A');
+        
+        // Verificar si hay estilos inline
+        if (label.style.cssText) {
+            console.log('Estilos inline:', label.style.cssText);
+        }
+        
+        // Verificar reglas CSS aplicadas
+        const rules = [];
+        const sheets = document.styleSheets;
+        for (let i = 0; i < sheets.length; i++) {
+            try {
+                const sheet = sheets[i];
+                const cssRules = sheet.cssRules || sheet.rules;
+                for (let j = 0; j < cssRules.length; j++) {
+                    const rule = cssRules[j];
+                    if (rule.selectorText && label.matches && label.matches(rule.selectorText)) {
+                        rules.push({
+                            selector: rule.selectorText,
+                            width: rule.style.width || 'no definido',
+                            maxWidth: rule.style.maxWidth || 'no definido'
+                        });
+                    }
+                }
+            } catch (e) {
+                // Ignorar errores de CORS en stylesheets externos
+            }
+        }
+        console.log('Reglas CSS que aplican:', rules);
+    });
+}
+
+// Ejecutar el debug después de que todo esté cargado
+setTimeout(debugLabels, 1000);
+
+// También ejecutar cada vez que cambies de sección
+const originalShowSection = window.showSection;
+if (typeof originalShowSection === 'function') {
+    window.showSection = function(...args) {
+        const result = originalShowSection.apply(this, args);
+        setTimeout(debugLabels, 100);
+        return result;
+    };
+}
+
+// Forzar estilos con JavaScript como último recurso
+function forceLabelsWidth() {
+    console.log("=== FORZANDO ANCHOS CON JAVASCRIPT ===");
+    const labels = document.querySelectorAll('.form-label');
+    labels.forEach(label => {
+        const parent = label.parentElement;
+        if (parent) {
+            const parentWidth = parent.getBoundingClientRect().width;
+            console.log(`Forzando label "${label.textContent}" a ${parentWidth}px`);
+            label.style.setProperty('width', parentWidth + 'px', 'important');
+            label.style.setProperty('max-width', 'none', 'important');
+            label.style.setProperty('min-width', parentWidth + 'px', 'important');
+            label.style.setProperty('display', 'block', 'important');
+            label.style.setProperty('box-sizing', 'border-box', 'important');
+        }
+    });
+}
+
+// Ejecutar el forzado
+setTimeout(forceLabelsWidth, 1500);
+
+// Botón para ejecutar manualmente el debug
+console.log("Para ejecutar debug manualmente, escribe: debugLabels()");
+console.log("Para forzar anchos manualmente, escribe: forceLabelsWidth()");
+
+// Hacer funciones globales
+window.debugLabels = debugLabels;
+window.forceLabelsWidth = forceLabelsWidth;
     </script>
+    
 </body>
 </html>
