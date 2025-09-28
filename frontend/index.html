@@ -112,6 +112,11 @@ function redirectToEliminarCuenta() {
     window.location.href = '/eliminar-cuenta.html';  // ✅ apunta a raíz del build
 }
 
+function redirectToSobreNosotros() {
+    console.log('Redirigiendo a sobre nosotros...');   
+    window.location.href = '/sobre-nosotros.html';  // ✅ apunta a raíz del build
+}   
+
 
 
         // Función global para redirigir a cualquier ruta
@@ -129,6 +134,7 @@ const routes = {
     '/editar-tarea': '/editar-tarea.html',
     '/eliminar-tarea': '/eliminar-tarea.html',
     '/eliminar-cuenta': '/eliminar-cuenta.html',
+    '/sobre-nosotros': '/sobre-nosotros.html'
 };
             if (!route.startsWith('/')) {
                 route = '/' + route;
