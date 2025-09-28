@@ -92,6 +92,12 @@ function redirectToOlvidarPassword2() {
     window.location.href = '/olvidar-password2.html';  // ✅ apunta a raíz del build
 } 
 
+function redirectToCrearTarea() {
+    console.log('Redirigiendo a crear tarea...');   
+    window.location.href = '/crear-tarea.html';  // ✅ apunta a raíz del build
+}
+
+
         // Función global para redirigir a cualquier ruta
         window.navigateTo = function(route) {
             console.log('Navegando a:', route);
@@ -102,7 +108,8 @@ const routes = {
     '/home': '/home.html',
     '/olvidar-password': '/olvidar-password1.html',
     '/perfil': '/perfil.html',
-    '/olvidar-password2': '/olvidar-password2.html'
+    '/olvidar-password2': '/olvidar-password2.html',
+    '/crear-tarea': '/crear-tarea.html'
 };
             if (!route.startsWith('/')) {
                 route = '/' + route;
