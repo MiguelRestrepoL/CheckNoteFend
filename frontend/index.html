@@ -107,6 +107,12 @@ function redirectToEliminarTarea() {
     window.location.href = '/eliminar-tarea.html';  // ✅ apunta a raíz del build
 }
 
+function redirectToEliminarCuenta() {
+    console.log('Redirigiendo a eliminar cuenta...');   
+    window.location.href = '/eliminar-cuenta.html';  // ✅ apunta a raíz del build
+}
+
+
 
         // Función global para redirigir a cualquier ruta
         window.navigateTo = function(route) {
@@ -122,6 +128,7 @@ const routes = {
     '/crear-tarea': '/crear-tarea.html',
     '/editar-tarea': '/editar-tarea.html',
     '/eliminar-tarea': '/eliminar-tarea.html',
+    '/eliminar-cuenta': '/eliminar-cuenta.html',
 };
             if (!route.startsWith('/')) {
                 route = '/' + route;

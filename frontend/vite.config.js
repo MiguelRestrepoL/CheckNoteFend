@@ -15,6 +15,7 @@ export default defineConfig({
         'crear-tarea': resolve(__dirname, 'crear-tarea.html'),
         'editar-tarea': resolve(__dirname, 'editar-tarea.html'),
         'eliminar-tarea': resolve(__dirname, 'eliminar-tarea.html'),
+        'eliminar-cuenta': resolve(__dirname, 'eliminar-cuenta.html')
       }
     }
   }

@@ -10,7 +10,8 @@
     {"src": "/olvidar-password2.html", "dest": "/olvidar-password2.html"},
     {"src": "/crear-tarea.html", "dest": "/crear-tarea.html"},
     {  "src": "/editar-tarea.html", "dest": "/editar-tarea.html"},
-    {  "src": "/eliminar-tarea.html", "dest": "/eliminar-tarea.html"}
+    {  "src": "/eliminar-tarea.html", "dest": "/eliminar-tarea.html"},
+    {  "src": "/eliminar-cuenta.html", "dest": "/eliminar-cuenta.html"}
   
   ]
 }
