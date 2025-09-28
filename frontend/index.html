@@ -97,6 +97,11 @@ function redirectToCrearTarea() {
     window.location.href = '/crear-tarea.html';  // ✅ apunta a raíz del build
 }
 
+function redirectToEditarTarea() {
+    console.log('Redirigiendo a editar tarea...');      
+    window.location.href = '/editar-tarea.html';  // ✅ apunta a raíz del build
+}
+
 
         // Función global para redirigir a cualquier ruta
         window.navigateTo = function(route) {
@@ -109,7 +114,8 @@ const routes = {
     '/olvidar-password': '/olvidar-password1.html',
     '/perfil': '/perfil.html',
     '/olvidar-password2': '/olvidar-password2.html',
-    '/crear-tarea': '/crear-tarea.html'
+    '/crear-tarea': '/crear-tarea.html',
+    '/editar-tarea': '/editar-tarea.html'
 };
             if (!route.startsWith('/')) {
                 route = '/' + route;

@@ -346,74 +346,6 @@
         </div>
     </div>
 
-    <!-- Modal de edición -->
-    <div id="edit-modal" class="modal-overlay hidden">
-        <div class="modal-content" style="max-width: 500px;">
-            <h3>✏️ Editar Tarea</h3>
-            
-            <form id="edit-form" style="text-align: left; margin-top: 20px;">
-                <!-- Título -->
-                <div class="form-group">
-                    <label for="edit-titulo">Título</label>
-                    <input type="text" id="edit-titulo" class="form-input" required />
-                </div>
-
-                <!-- Descripción -->
-                <div class="form-group">
-                    <label for="edit-descripcion">Descripción</label>
-                    <textarea id="edit-descripcion" class="form-textarea" required></textarea>
-                </div>
-
-                <!-- Fecha y Hora -->
-                <div class="form-grid">
-                    <div class="form-group">
-                        <label for="edit-fecha">Fecha límite</label>
-                        <input type="date" id="edit-fecha" class="form-input" />
-                    </div>
-                    <div class="form-group">
-                        <label for="edit-hora">Hora límite</label>
-                        <input type="time" id="edit-hora" class="form-input" />
-                    </div>
-                </div>
-
-                <!-- Estado y Prioridad -->
-                <div class="form-grid">
-                    <div class="form-group">
-                        <label for="edit-estado">Estado</label>
-                        <select id="edit-estado" class="form-select">
-                            <option value="pendiente">⏰ Pendiente</option>
-                            <option value="en_progreso">⚡ En Progreso</option>
-                            <option value="terminada">✅ Terminada</option>
-                        </select>
-                    </div>
-                    <div class="form-group">
-                        <label for="edit-prioridad">Prioridad</label>
-                        <select id="edit-prioridad" class="form-select">
-                            <option value="baja">🟢 Baja</option>
-                            <option value="media">🟡 Media</option>
-                            <option value="alta">🔴 Alta</option>
-                        </select>
-                    </div>
-                </div>
-
-                <!-- Checkbox completada -->
-                <div class="checkbox-group">
-                    <input type="checkbox" id="edit-completada" />
-                    <label for="edit-completada">Marcar como completada</label>
-                </div>
-
-                <div class="modal-buttons" style="margin-top: 20px;">
-                    <button type="submit" id="save-edit" class="modal-btn" style="background: linear-gradient(135deg, var(--primary), var(--primary-dark)); color: white;">
-                        Guardar
-                    </button>
-                    <button type="button" id="cancel-edit" class="modal-btn cancel">
-                        Cancelar
-                    </button>
-                </div>
-            </form>
-        </div>
-    </div>
-
     <script>
         // Variables globales
         let tareas = {
@@ -422,7 +354,6 @@
             terminada: []
         };
         let loading = true;
-        let tareaSeleccionadaParaEditar = null;
         let tareaSeleccionadaParaEliminar = null;
 
         // Detectar ambiente de desarrollo
@@ -454,20 +385,7 @@
             deleteModal: document.getElementById('delete-modal'),
             deleteMessage: document.getElementById('delete-message'),
             confirmDelete: document.getElementById('confirm-delete'),
-            cancelDelete: document.getElementById('cancel-delete'),
-            
-            // Modal de edición
-            editModal: document.getElementById('edit-modal'),
-            editForm: document.getElementById('edit-form'),
-            editTitulo: document.getElementById('edit-titulo'),
-            editDescripcion: document.getElementById('edit-descripcion'),
-            editFecha: document.getElementById('edit-fecha'),
-            editHora: document.getElementById('edit-hora'),
-            editEstado: document.getElementById('edit-estado'),
-            editPrioridad: document.getElementById('edit-prioridad'),
-            editCompletada: document.getElementById('edit-completada'),
-            saveEdit: document.getElementById('save-edit'),
-            cancelEdit: document.getElementById('cancel-edit')
+            cancelDelete: document.getElementById('cancel-delete')
         };
 
         // Función para mostrar mensajes
@@ -516,6 +434,15 @@
             }
         }
 
+        // Función para redirigir a editar tarea
+        function editarTarea(tarea) {
+            // Guardar datos en localStorage para acceso seguro
+            localStorage.setItem('tareaParaEditar', JSON.stringify(tarea));
+            
+            // Redirigir a página de edición
+            window.location.href = 'editar-tarea.html';
+        }
+
         // Función para mostrar modal de eliminación
         function mostrarModalEliminar(tarea) {
             tareaSeleccionadaParaEliminar = tarea;
@@ -527,43 +454,6 @@
         function ocultarModalEliminar() {
             tareaSeleccionadaParaEliminar = null;
             elements.deleteModal.classList.add('hidden');
-        }
-
-        // Función para formatear fecha para input
-        function formatearFechaParaInput(fechaISO) {
-            if (!fechaISO) return { fecha: "", hora: "" };
-            
-            const fecha = new Date(fechaISO);
-            const fechaStr = fecha.toISOString().split('T')[0];
-            const horaStr = fecha.toTimeString().split(' ')[0].substring(0, 5);
-            
-            return { fecha: fechaStr, hora: horaStr };
-        }
-
-        // Función para mostrar modal de edición
-        function mostrarModalEditar(tarea) {
-            tareaSeleccionadaParaEditar = tarea;
-            
-            // Llenar formulario con datos de la tarea
-            elements.editTitulo.value = tarea.titulo || '';
-            elements.editDescripcion.value = tarea.descripcion || '';
-            
-            const { fecha, hora } = formatearFechaParaInput(tarea.fechaVencimiento);
-            elements.editFecha.value = fecha;
-            elements.editHora.value = hora;
-            
-            elements.editEstado.value = tarea.estado || 'pendiente';
-            elements.editPrioridad.value = tarea.prioridad || 'media';
-            elements.editCompletada.checked = tarea.completada || false;
-            
-            elements.editModal.classList.remove('hidden');
-        }
-
-        // Función para ocultar modal de edición
-        function ocultarModalEditar() {
-            tareaSeleccionadaParaEditar = null;
-            elements.editModal.classList.add('hidden');
-            elements.editForm.reset();
         }
 
         // Función para eliminar tarea
@@ -619,82 +509,6 @@
             }
         }
 
-        // Función para guardar edición
-        async function guardarEdicion(e) {
-            e.preventDefault();
-            
-            if (!tareaSeleccionadaParaEditar) return;
-
-            const token = localStorage.getItem('token');
-            if (!token) {
-                showMessage('error', 'No hay sesión activa');
-                return;
-            }
-
-            try {
-                elements.saveEdit.disabled = true;
-                elements.saveEdit.textContent = 'Guardando...';
-
-                // Combinar fecha y hora
-                let fechaCompleta = null;
-                const fecha = elements.editFecha.value;
-                const hora = elements.editHora.value;
-                
-                if (fecha && hora) {
-                    fechaCompleta = new Date(`${fecha}T${hora}:00`).toISOString();
-                } else if (fecha) {
-                    fechaCompleta = new Date(`${fecha}T23:59:00`).toISOString();
-                }
-
-                const taskData = {
-                    titulo: elements.editTitulo.value.trim(),
-                    descripcion: elements.editDescripcion.value.trim(),
-                    prioridad: elements.editPrioridad.value,
-                    estado: elements.editEstado.value,
-                    completada: elements.editCompletada.checked,
-                    fechaVencimiento: fechaCompleta
-                };
-
-                const tareaId = tareaSeleccionadaParaEditar.id || tareaSeleccionadaParaEditar._id;
-                const response = await fetch(`https://checknote-27fe.onrender.com/api/v1/tasks/${tareaId}`, {
-                    method: 'PUT',
-                    headers: {
-                        'Content-Type': 'application/json',
-                        'Authorization': `Bearer ${token}`,
-                    },
-                    body: JSON.stringify(taskData),
-                });
-
-                if (!response.ok) {
-                    if (response.status === 401) {
-                        localStorage.removeItem('token');
-                        localStorage.removeItem('user');
-                        localStorage.removeItem('userId');
-                        localStorage.removeUser('userName');
-                        
-                        showMessage('error', 'Sesión expirada. Redirigiendo...');
-                        setTimeout(() => window.location.href = 'login.html', 2000);
-                        return;
-                    }
-                    throw new Error(`Error ${response.status}: ${response.statusText}`);
-                }
-
-                console.log('Tarea actualizada exitosamente');
-                showMessage('success', '✏️ Tarea actualizada exitosamente', 3000);
-                
-                // Recargar tareas
-                await cargarTareas();
-                
-            } catch (err) {
-                console.error('Error actualizando tarea:', err);
-                showMessage('error', 'Error al actualizar la tarea: ' + err.message);
-            } finally {
-                elements.saveEdit.disabled = false;
-                elements.saveEdit.textContent = 'Guardar';
-                ocultarModalEditar();
-            }
-        }
-
         // Función para renderizar tareas con botones de acción
         function renderTareas(listaTareas, containerElement) {
             if (loading) {
@@ -722,7 +536,7 @@
                         ${(tarea.prioridad || 'media').toUpperCase()}
                     </span>
                     <div class="task-actions">
-                        <button class="task-action-btn edit" onclick="mostrarModalEditar(${JSON.stringify(tarea).replace(/"/g, '&quot;')})">
+                        <button class="task-action-btn edit" onclick="editarTarea(${JSON.stringify(tarea).replace(/"/g, '&quot;')})">
                             <img src="/edit.png" alt="editar" />
                         </button>
                         <button class="task-action-btn delete" onclick="mostrarModalEliminar(${JSON.stringify(tarea).replace(/"/g, '&quot;')})">
@@ -874,33 +688,30 @@
         // Modales
         elements.cancelDelete.addEventListener('click', ocultarModalEliminar);
         elements.confirmDelete.addEventListener('click', eliminarTarea);
-        elements.cancelEdit.addEventListener('click', ocultarModalEditar);
-        elements.editForm.addEventListener('submit', guardarEdicion);
 
-        // Cerrar modales al hacer click fuera
+        // Cerrar modal al hacer click fuera
         elements.deleteModal.addEventListener('click', function(e) {
             if (e.target === elements.deleteModal) {
                 ocultarModalEliminar();
             }
         });
 
-        elements.editModal.addEventListener('click', function(e) {
-            if (e.target === elements.editModal) {
-                ocultarModalEditar();
-            }
-        });
-
         // Hacer las funciones globales para usar en onclick
+        window.editarTarea = editarTarea;
         window.mostrarModalEliminar = mostrarModalEliminar;
-        window.mostrarModalEditar = mostrarModalEditar;
 
         // Inicialización al cargar la página
         document.addEventListener('DOMContentLoaded', function() {
-            // Verificar si hay mensaje de éxito del login
+            // Verificar si hay mensaje de éxito del login o edición
             const loginSuccess = sessionStorage.getItem('loginExitoso');
+            const editSuccess = sessionStorage.getItem('tareaEditadaExito');
+            
             if (loginSuccess) {
                 showMessage('success', loginSuccess, 5000);
                 sessionStorage.removeItem('loginExitoso');
+            } else if (editSuccess) {
+                showMessage('success', editSuccess, 5000);
+                sessionStorage.removeItem('tareaEditadaExito');
             }
 
             // Cargar datos del usuario
