@@ -146,12 +146,59 @@
   width: 100%;
 }
 
-.form-field {
-  display: flex;
-  flex-direction: column;
-  gap: var(--spacing-sm);
-  width: 100%;
-  position: relative;
+.form-field,
+.profile-content .form-field,
+.task-card .form-field,
+#section-personal .form-field,
+#section-cuenta .form-field,
+#section-manejo .form-field,
+.form-container .form-field,
+div.form-field {
+  display: flex !important;
+  flex-direction: column !important;
+  gap: var(--spacing-sm) !important;
+  width: 100% !important;
+  position: relative !important;
+  max-width: none !important;
+  min-width: 100% !important;
+  box-sizing: border-box !important;
+}
+
+/* ============================================
+   ANULAR ESTILOS DE LABELS DEL CSS2 - MÁXIMA PRIORIDAD
+   ============================================ */
+
+/* Anular COMPLETAMENTE los estilos de labels del CSS2 */
+.form-group label,
+.form-label,
+.profile-content .form-group label,
+.profile-content .form-label,
+.task-card .form-group label,
+.task-card .form-label {
+  /* ANULAR TODOS los estilos del CSS2 */
+  display: block !important;
+  margin-bottom: 4px !important;
+  font-size: 12px !important;
+  color: var(--text-dark) !important;
+  font-weight: bold !important;
+  /* FORZAR ANCHO COMPLETO */
+  width: 100% !important;
+  max-width: none !important;
+  min-width: 100% !important;
+  /* APLICAR NUESTROS ESTILOS */
+  background: var(--form-label-bg) !important;
+  padding: 8px 12px !important;
+  border-radius: 4px !important;
+  text-align: center !important;
+  text-transform: uppercase !important;
+  box-sizing: border-box !important;
+  position: relative !important;
+  flex-shrink: 0 !important;
+  flex-grow: 1 !important;
+  left: auto !important;
+  right: auto !important;
+  margin-left: 0 !important;
+  margin-right: 0 !important;
 }
 
 /* CORRECIÓN PRINCIPAL: Los labels ocuparán SIEMPRE todo el ancho del form-field */
@@ -249,8 +296,36 @@ div.form-field div.form-label {
   min-width: 100% !important;
 }
 
-/* Fallback para navegadores que no soporten :has() */
-.form-field .form-label {
+/* SOPORTE EXTRA: Reglas ultra específicas para casos extremos */
+body .profile-content .form-field .form-label,
+html body .task-card .form-field .form-label,
+.page-root .main .profile-content .form-field .form-label,
+.page-root .main .center-column .profile-content .form-field .form-label {
+  width: 100% !important;
+  max-width: none !important;
+  min-width: 100% !important;
+  display: block !important;
+  box-sizing: border-box !important;
+}
+
+/* Regla nuclear - la más específica posible */
+.page-root .main .center-column .profile-container .profile-content.task-card #section-personal .form-container .form-field .form-label,
+.page-root .main .center-column .profile-container .profile-content.task-card #section-cuenta .form-container .form-field .form-label,
+.page-root .main .center-column .profile-container .profile-content.task-card #section-manejo .form-container .form-field .form-label {
+  width: 100% !important;
+  max-width: none !important;
+  min-width: 100% !important;
+  flex: 1 1 100% !important;
+  display: block !important;
+  box-sizing: border-box !important;
+}
+
+/* Anular cualquier regla que pueda estar afectando desde GlobalCSS2 */
+.form-label[class*="width"],
+.form-field[class*="width"] .form-label,
+.form-input.width-sm + .form-label,
+.form-input.width-md + .form-label,
+.form-input.width-lg + .form-label {
   width: 100% !important;
   max-width: none !important;
   min-width: 100% !important;
