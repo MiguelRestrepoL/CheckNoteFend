@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="es">
 <head>
@@ -311,11 +312,8 @@
             elements.inputCurrentPassword = document.getElementById('input-current-password');
             elements.inputPassword = document.getElementById('input-password');
             elements.inputConfirmPassword = document.getElementById('input-confirm-password');
-
-            console.log('Elements initialized:', Object.keys(elements).length, 'elements found');
         }
 
-        // Resto del JavaScript idéntico al anterior...
         function showMessage(type, message, duration = 5000) {
             hideMessage('error');
             hideMessage('success');
@@ -357,10 +355,7 @@
         }
 
         function showSection(sectionName) {
-            console.log('Switching to section:', sectionName);
-            
             if (!elements.sectionPersonal || !elements.sectionCuenta || !elements.sectionManejo) {
-                console.error('Section elements not found');
                 return;
             }
             
@@ -381,7 +376,6 @@
             
             if (targetSection) {
                 targetSection.classList.remove('hidden');
-                console.log('Section', sectionName, 'is now visible');
             }
             
             if (targetNavButton) {
@@ -402,8 +396,6 @@
             try {
                 loadingData = true;
                 hideMessage('error');
-
-                console.log("Cargando datos del usuario...");
                 
                 const response = await fetch("https://checknote-27fe.onrender.com/api/v1/users/me", {
                     method: "GET",
@@ -453,7 +445,6 @@
                 }
 
             } catch (err) {
-                console.error("Error cargando datos:", err);
                 showMessage('error', "Error al cargar los datos: " + err.message);
                 
                 const storedUser = localStorage.getItem('user');
@@ -686,8 +677,6 @@
 
         // Inicialización
         document.addEventListener('DOMContentLoaded', function() {
-            console.log('DOM loaded, initializing...');
-            
             initializeElements();
             addEventListeners();
             
@@ -698,35 +687,6 @@
 
             cargarDatosUsuario();
         });
-
-        console.log("=== VERIFICACIÓN DE LABELS Y INPUTS ===");
-        
-        function verificarAnchos() {
-            document.querySelectorAll('.form-field').forEach((field, index) => {
-                const label = field.querySelector('.form-label');
-                const input = field.querySelector('.form-input');
-                
-                if (label && input) {
-                    const labelRect = label.getBoundingClientRect();
-                    const inputRect = input.getBoundingClientRect();
-                    const fieldRect = field.getBoundingClientRect();
-                    
-                    console.log(`\n--- CAMPO ${index + 1} ---`);
-                    console.log('Label texto:', label.textContent.trim());
-                    console.log('Contenedor:', fieldRect.width.toFixed(1) + 'px');
-                    console.log('Label:', labelRect.width.toFixed(1) + 'px');
-                    console.log('Input:', inputRect.width.toFixed(1) + 'px');
-                    console.log('¿Coinciden?', Math.abs(labelRect.width - inputRect.width) < 1 ? '✅ SÍ' : '❌ NO');
-                }
-            });
-        }
-
-        // Verificar anchos después de que la página cargue
-        setTimeout(verificarAnchos, 2000);
-        
-        // Hacer función global para debugging manual
-        window.verificarAnchos = verificarAnchos;
-        console.log("Función disponible: verificarAnchos()");
     </script>
     
 </body>
