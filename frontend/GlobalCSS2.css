@@ -164,23 +164,23 @@ body {
 }
 
 .logo.size-md {
-  width: 48px;
-  height: 48px;
+  width: 64px;
+  height: 64px;
 }
 
 .logo.size-md img {
+  width: 64px;
+  height: 64px;
+}
+
+.logo.size-sm {
   width: 48px;
   height: 48px;
 }
 
-.logo.size-sm {
-  width: 32px;
-  height: 32px;
-}
-
 .logo.size-sm img {
-  width: 32px;
-  height: 32px;
+  width: 48px;
+  height: 48px;
 }
 
 /* Logo-icon legacy - mantener para compatibilidad */
