@@ -1,3 +1,4 @@
+
 /* ============================================
    GLOBALCSS3.CSS - Sistema completo e independiente para perfil
    Sin dependencias de GlobalCSS2
@@ -372,9 +373,10 @@ body {
   margin-bottom: 4px;
   display: block;
   position: relative;
-  /* OCUPAR TODO EL ANCHO DISPONIBLE */
-  width: 100%;
-  max-width: none;
+  /* FORZAR A OCUPAR TODO EL ANCHO DEL CONTENEDOR */
+  width: 100% !important;
+  max-width: none !important;
+  min-width: 100% !important;
 }
 
 .form-input {
@@ -388,9 +390,10 @@ body {
   transition: all var(--transition);
   box-sizing: border-box;
   display: block;
-  /* OCUPAR TODO EL ANCHO DISPONIBLE */
-  width: 100%;
-  max-width: none;
+  /* FORZAR A OCUPAR TODO EL ANCHO DEL CONTENEDOR */
+  width: 100% !important;
+  max-width: none !important;
+  min-width: 100% !important;
 }
 
 .form-input:focus {
@@ -409,35 +412,44 @@ body {
   color: rgba(255,255,255,0.5);
 }
 
-/* Las clases width-sm, width-md, width-lg ahora solo controlan el contenedor padre */
+/* FORM-FIELD: el contenedor que controla el ancho total */
 .form-field {
   width: 100%;
+  display: flex !important;
+  flex-direction: column !important;
+  gap: var(--spacing-sm);
 }
 
-/* Contenedores con diferentes anchos máximos */
+/* Contenedores con diferentes anchos - ESTOS definen el espacio total */
 .form-field.field-sm {
   max-width: var(--input-width-sm);
+  width: var(--input-width-sm);
 }
 
 .form-field.field-md {
   max-width: var(--input-width-md);
+  width: var(--input-width-md);
 }
 
 .form-field.field-lg {
   max-width: var(--input-width-lg);
+  width: var(--input-width-lg);
 }
 
 /* Mantener compatibilidad con las clases en los inputs */
 .form-field:has(.form-input.width-sm) {
   max-width: var(--input-width-sm);
+  width: var(--input-width-sm);
 }
 
 .form-field:has(.form-input.width-md) {
   max-width: var(--input-width-md);
+  width: var(--input-width-md);
 }
 
 .form-field:has(.form-input.width-lg) {
   max-width: var(--input-width-lg);
+  width: var(--input-width-lg);
 }
 
 /* ============================================
