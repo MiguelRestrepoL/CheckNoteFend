@@ -204,7 +204,6 @@
                 window.location.href = file;
             } else {
                 console.error('Ruta no encontrada:', route);
-                // Fallback: intentar ir directamente
                 window.location.href = route;
             }
         }
@@ -225,7 +224,6 @@
                 const now = Date.now();
                 const timeDiff = now - this.lastAttemptTime;
                 
-                // Resetear contador cada 5 minutos
                 if (timeDiff > 5 * 60 * 1000) {
                     this.rateLimitCount = 0;
                     localStorage.setItem('loginAttempts', '0');
@@ -308,7 +306,6 @@
                 return;
             }
             
-            // Limpiar otros mensajes primero
             hideMessage('success');
             hideMessage('error');
             

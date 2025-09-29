@@ -258,7 +258,6 @@
         // Función para redirigir a editar tarea
         function editarTarea(tarea) {
             console.log('Editando tarea:', tarea);
-            // Guardar datos en localStorage para acceso seguro
             localStorage.setItem('tareaParaEditar', JSON.stringify(tarea));
             
             // Redirigir a página de edición
@@ -268,7 +267,6 @@
         // Función para redirigir a eliminar tarea
         function eliminarTarea(tarea) {
             console.log('Eliminando tarea:', tarea);
-            // Guardar datos en localStorage para acceso seguro
             localStorage.setItem('tareaParaEliminar', JSON.stringify(tarea));
             
             // Redirigir a página de eliminación
@@ -368,7 +366,6 @@
             renderTareas(tareas.en_progreso, elements.enProgresoTasks);
             renderTareas(tareas.terminada, elements.terminadasTasks);
 
-            // Actualizar debug info
             updateDebugInfo();
         }
 
@@ -512,7 +509,6 @@
                 cargarTareas();
             }, 100);
 
-            // Configurar debug info si es desarrollo
             updateDebugInfo();
         });
 

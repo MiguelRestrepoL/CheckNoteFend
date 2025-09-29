@@ -147,7 +147,6 @@
                                     />
                                 </div>
 
-                                <!-- Campo FECHA -->
                                 <div class="form-field field-sm">
                                     <div class="form-label">CREADO EL</div>
                                     <input
@@ -176,7 +175,6 @@
                             </p>
 
                             <form id="form-seguridad" class="form-container mb-xl">
-                                <!-- Campo CONTRASEÑA ACTUAL -->
                                 <div class="form-field field-sm">
                                     <div class="form-label">CONTRASEÑA ACTUAL</div>
                                     <input
@@ -189,7 +187,6 @@
                                     />
                                 </div>
 
-                                <!-- Campo NUEVA CONTRASEÑA -->
                                 <div class="form-field field-sm">
                                     <div class="form-label">NUEVA CONTRASEÑA</div>
                                     <input
@@ -280,7 +277,6 @@
             elements.successMessage = document.getElementById('success-message');
             elements.topbarUsername = document.getElementById('topbar-username');
             
-            // Navegación
             elements.navPersonal = document.getElementById('nav-personal');
             elements.navCuenta = document.getElementById('nav-cuenta');
             elements.navSeguridad = document.getElementById('nav-seguridad');
@@ -358,17 +354,14 @@
                 return;
             }
             
-            // Ocultar todas las secciones
             elements.sectionPersonal.classList.add('hidden');
             elements.sectionCuenta.classList.add('hidden');
             elements.sectionSeguridad.classList.add('hidden');
             
-            // Desactivar todos los botones de navegación
             if (elements.navPersonal) elements.navPersonal.classList.remove('active');
             if (elements.navCuenta) elements.navCuenta.classList.remove('active');
             if (elements.navSeguridad) elements.navSeguridad.classList.remove('active');
             
-            // Mostrar la sección activa
             activeSection = sectionName;
             const targetSection = elements['section' + sectionName.charAt(0).toUpperCase() + sectionName.slice(1)];
             const targetNavButton = elements['nav' + sectionName.charAt(0).toUpperCase() + sectionName.slice(1)];
@@ -635,7 +628,6 @@
                         await makeRequest('/users/me', updateData, true);
                         showMessage('success', "Contraseña cambiada correctamente");
                         
-                        // Limpiar formulario
                         elements.inputCurrentPassword.value = "";
                         elements.inputPassword.value = "";
                         elements.inputConfirmPassword.value = "";

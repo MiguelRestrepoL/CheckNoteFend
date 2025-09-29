@@ -165,7 +165,6 @@
             border-radius: 50%;
         }
 
-        /* Fallback para cuando no hay imagen */
         .member-avatar:not(:has(img)) {
             background: linear-gradient(135deg, var(--primary), var(--primary-light));
         }
@@ -559,7 +558,6 @@
             const errorElement = document.getElementById('connectionError');
             errorElement.classList.add('show');
             
-            // Auto-hide después de 10 segundos
             setTimeout(() => {
                 hideConnectionError();
             }, 10000);
@@ -581,7 +579,6 @@
                     console.log('Conexión restablecida');
                 }, 1000);
             } else {
-                // Después del máximo de reintentos, mostrar mensaje diferente
                 alert('No se pudo establecer conexión. Por favor, verifica tu internet e intenta más tarde.');
             }
         }
@@ -607,7 +604,6 @@
 
         // Initialize animations
         document.addEventListener('DOMContentLoaded', function() {
-            // Preparar elementos para animación
             const elements = document.querySelectorAll('.content-card, .team-member');
             elements.forEach(element => {
                 element.style.opacity = '0';
