@@ -1234,9 +1234,21 @@ body {
     width: 100% !important;
   }
   
-  .form-field {
+  .form-field,
+  .form-field.field-md,
+  .form-field.field-sm,
+  .form-field.field-lg {
     max-width: 100% !important;
     width: 100% !important;
+  }
+  
+  .form-container {
+    padding: var(--spacing-md);
+    max-width: 100% !important;
+  }
+  
+  .profile-content {
+    padding: var(--spacing-md) !important;
   }
   
   .main {
