@@ -1196,59 +1196,12 @@ body {
   }
 }
 
-
 /* ============================================
-   RESPONSIVE - MÓVIL
+   RESPONSIVE - MÓVIL PEQUEÑO
    ============================================ */
-@media (max-width: 600px) {
-  .topbar { 
-    grid-template-columns: 1fr; 
-    gap: var(--spacing-sm); 
-    padding: var(--spacing-md); 
-  }
-  
-  .topbar-right { 
-    justify-self: start; 
-  }
-  
-  .topbar-left { 
-    justify-self: start; 
-  }
-  
-  .topbar-center { 
-    justify-self: stretch; 
-    display: flex; 
-    justify-content: center; 
-  }
-  
-  .search-wrap { 
-    width: 100%; 
-    max-width: 360px; 
-  }
-  
-  /* FIX: Forzar inputs a ser responsive */
-  .form-input,
-  .form-textarea,
-  .form-select {
-    max-width: 100% !important;
-    width: 100% !important;
-  }
-  
-  .form-field,
-  .form-field.field-md,
-  .form-field.field-sm,
-  .form-field.field-lg {
-    max-width: 100% !important;
-    width: 100% !important;
-  }
-  
-  .form-container {
-    padding: var(--spacing-md);
-    max-width: 100% !important;
-  }
-  
-  .profile-content {
-    padding: var(--spacing-md) !important;
+@media (max-width: 360px) {
+  .topbar {
+    padding: var(--spacing-sm);
   }
   
   .main {
