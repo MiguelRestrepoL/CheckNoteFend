@@ -1196,12 +1196,47 @@ body {
   }
 }
 
+
 /* ============================================
-   RESPONSIVE - MÓVIL PEQUEÑO
+   RESPONSIVE - MÓVIL
    ============================================ */
-@media (max-width: 360px) {
-  .topbar {
-    padding: var(--spacing-sm);
+@media (max-width: 600px) {
+  .topbar { 
+    grid-template-columns: 1fr; 
+    gap: var(--spacing-sm); 
+    padding: var(--spacing-md); 
+  }
+  
+  .topbar-right { 
+    justify-self: start; 
+  }
+  
+  .topbar-left { 
+    justify-self: start; 
+  }
+  
+  .topbar-center { 
+    justify-self: stretch; 
+    display: flex; 
+    justify-content: center; 
+  }
+  
+  .search-wrap { 
+    width: 100%; 
+    max-width: 360px; 
+  }
+  
+  /* FIX: Forzar inputs a ser responsive */
+  .form-input,
+  .form-textarea,
+  .form-select {
+    max-width: 100% !important;
+    width: 100% !important;
+  }
+  
+  .form-field {
+    max-width: 100% !important;
+    width: 100% !important;
   }
   
   .main {
