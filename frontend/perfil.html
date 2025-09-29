@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 <html lang="es">
 <head>
@@ -54,8 +53,8 @@
                             <button id="nav-cuenta" class="nav-button">
                                 INFO. CUENTA
                             </button>
-                            <button id="nav-manejo" class="nav-button">
-                                MANEJO
+                            <button id="nav-seguridad" class="nav-button">
+                                SEGURIDAD
                             </button>
                             <button id="nav-logout" class="nav-button danger">
                                 CERRAR SESIÓN
@@ -169,14 +168,14 @@
                             </form>
                         </div>
 
-                        <!-- MANEJO -->
-                        <div id="section-manejo" class="fade-in hidden">
-                            <h2 class="task-title section-header">MANEJO</h2>
+                        <!-- SEGURIDAD -->
+                        <div id="section-seguridad" class="fade-in hidden">
+                            <h2 class="task-title section-header">SEGURIDAD</h2>
                             <p class="section-description">
-                                Configuraciones sensibles de seguridad y cuenta
+                                Configuraciones de seguridad y privacidad de tu cuenta
                             </p>
 
-                            <form id="form-manejo" class="form-container mb-xl">
+                            <form id="form-seguridad" class="form-container mb-xl">
                                 <!-- Campo CONTRASEÑA ACTUAL -->
                                 <div class="form-field field-sm">
                                     <div class="form-label">CONTRASEÑA ACTUAL</div>
@@ -219,7 +218,7 @@
 
                                 <button
                                     type="submit"
-                                    id="btn-manejo"
+                                    id="btn-seguridad"
                                     class="action-button info"
                                 >
                                     CAMBIAR CONTRASEÑA
@@ -284,23 +283,23 @@
             // Navegación
             elements.navPersonal = document.getElementById('nav-personal');
             elements.navCuenta = document.getElementById('nav-cuenta');
-            elements.navManejo = document.getElementById('nav-manejo');
+            elements.navSeguridad = document.getElementById('nav-seguridad');
             elements.navLogout = document.getElementById('nav-logout');
             
             // Secciones
             elements.sectionPersonal = document.getElementById('section-personal');
             elements.sectionCuenta = document.getElementById('section-cuenta');
-            elements.sectionManejo = document.getElementById('section-manejo');
+            elements.sectionSeguridad = document.getElementById('section-seguridad');
             
             // Formularios
             elements.formPersonal = document.getElementById('form-personal');
             elements.formCuenta = document.getElementById('form-cuenta');
-            elements.formManejo = document.getElementById('form-manejo');
+            elements.formSeguridad = document.getElementById('form-seguridad');
             
             // Botones
             elements.btnPersonal = document.getElementById('btn-personal');
             elements.btnCuenta = document.getElementById('btn-cuenta');
-            elements.btnManejo = document.getElementById('btn-manejo');
+            elements.btnSeguridad = document.getElementById('btn-seguridad');
             elements.btnDeleteAccount = document.getElementById('btn-delete-account');
             
             // Inputs
@@ -350,24 +349,24 @@
                 buttonElement.classList.remove('loading');
                 if (buttonElement === elements.btnPersonal) buttonElement.textContent = 'Guardar Cambios';
                 if (buttonElement === elements.btnCuenta) buttonElement.textContent = 'Actualizar Email';
-                if (buttonElement === elements.btnManejo) buttonElement.textContent = 'CAMBIAR CONTRASEÑA';
+                if (buttonElement === elements.btnSeguridad) buttonElement.textContent = 'CAMBIAR CONTRASEÑA';
             }
         }
 
         function showSection(sectionName) {
-            if (!elements.sectionPersonal || !elements.sectionCuenta || !elements.sectionManejo) {
+            if (!elements.sectionPersonal || !elements.sectionCuenta || !elements.sectionSeguridad) {
                 return;
             }
             
             // Ocultar todas las secciones
             elements.sectionPersonal.classList.add('hidden');
             elements.sectionCuenta.classList.add('hidden');
-            elements.sectionManejo.classList.add('hidden');
+            elements.sectionSeguridad.classList.add('hidden');
             
             // Desactivar todos los botones de navegación
             if (elements.navPersonal) elements.navPersonal.classList.remove('active');
             if (elements.navCuenta) elements.navCuenta.classList.remove('active');
-            if (elements.navManejo) elements.navManejo.classList.remove('active');
+            if (elements.navSeguridad) elements.navSeguridad.classList.remove('active');
             
             // Mostrar la sección activa
             activeSection = sectionName;
@@ -607,12 +606,12 @@
                 });
             }
 
-            // Formulario manejo
-            if (elements.formManejo) {
-                elements.formManejo.addEventListener('submit', async (e) => {
+            // Formulario seguridad
+            if (elements.formSeguridad) {
+                elements.formSeguridad.addEventListener('submit', async (e) => {
                     e.preventDefault();
                     loading = true;
-                    setLoading(elements.btnManejo, true);
+                    setLoading(elements.btnSeguridad, true);
                     hideMessage('error');
                     hideMessage('success');
 
@@ -645,7 +644,7 @@
                         showMessage('error', "Error al cambiar la contraseña: " + err.message);
                     } finally {
                         loading = false;
-                        setLoading(elements.btnManejo, false);
+                        setLoading(elements.btnSeguridad, false);
                     }
                 });
             }
@@ -657,8 +656,8 @@
             if (elements.navCuenta) {
                 elements.navCuenta.addEventListener('click', () => showSection('cuenta'));
             }
-            if (elements.navManejo) {
-                elements.navManejo.addEventListener('click', () => showSection('manejo'));
+            if (elements.navSeguridad) {
+                elements.navSeguridad.addEventListener('click', () => showSection('seguridad'));
             }
             
             if (elements.navLogout) {
