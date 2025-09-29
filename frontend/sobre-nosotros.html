@@ -165,6 +165,7 @@
             border-radius: 50%;
         }
 
+        /* Fallback para cuando no hay imagen */
         .member-avatar:not(:has(img)) {
             background: linear-gradient(135deg, var(--primary), var(--primary-light));
         }
@@ -533,7 +534,18 @@
     </div>
 
     <script>
-        // Heurística #1: Visibilidad del sistema - Progress indicator
+        /**
+         * @file Página "Sobre Nosotros" - CheckNote
+         * @description Página informativa con equipo, misión y estadísticas
+         */
+
+        // ============================================
+        // HEURÍSTICA #1: VISIBILIDAD DEL SISTEMA
+        // ============================================
+
+        /**
+         * Actualiza barra de progreso según el scroll
+         */
         function updateProgressBar() {
             const scrollTop = window.pageYOffset;
             const docHeight = document.body.offsetHeight - window.innerHeight;
@@ -543,31 +555,47 @@
 
         window.addEventListener('scroll', updateProgressBar);
 
-        // Heurística #5: Prevención de errores - Connection monitoring
+        // ============================================
+        // HEURÍSTICA #5: PREVENCIÓN DE ERRORES
+        // ============================================
+
+        /** @type {number} Contador de reintentos de conexión */
         let connectionRetries = 0;
         const maxRetries = 3;
 
+        /**
+         * Simula verificación de conexión (demo)
+         */
         function simulateConnectionCheck() {
-            // Simular verificación de conexión
-            if (Math.random() < 0.1 && connectionRetries === 0) { // 10% chance de "error"
+            if (Math.random() < 0.1 && connectionRetries === 0) {
                 showConnectionError();
             }
         }
 
+        /**
+         * Muestra mensaje de error de conexión
+         */
         function showConnectionError() {
             const errorElement = document.getElementById('connectionError');
             errorElement.classList.add('show');
             
+            // Auto-hide después de 10 segundos
             setTimeout(() => {
                 hideConnectionError();
             }, 10000);
         }
 
+        /**
+         * Oculta mensaje de error de conexión
+         */
         function hideConnectionError() {
             const errorElement = document.getElementById('connectionError');
             errorElement.classList.remove('show');
         }
 
+        /**
+         * Maneja reintento de conexión
+         */
         function retryConnection() {
             connectionRetries++;
             hideConnectionError();
@@ -579,16 +607,29 @@
                     console.log('Conexión restablecida');
                 }, 1000);
             } else {
+                // Después del máximo de reintentos, mostrar mensaje diferente
                 alert('No se pudo establecer conexión. Por favor, verifica tu internet e intenta más tarde.');
             }
         }
 
-        // Heurística #6: Reconocimiento en lugar de recuerdo - Chat function
+        // ============================================
+        // HEURÍSTICA #6: RECONOCIMIENTO EN LUGAR DE RECUERDO
+        // ============================================
+
+        /**
+         * Abre diálogo de chat (placeholder)
+         */
         function openChat() {
             alert('🤖 Chat en vivo próximamente disponible!\n\nMientras tanto, puedes escribirnos a: hola@checknote.com');
         }
 
-        // Animaciones suaves para elementos que entran en viewport
+        // ============================================
+        // ANIMACIONES DE SCROLL
+        // ============================================
+
+        /**
+         * Anima elementos al entrar en viewport
+         */
         function animateOnScroll() {
             const elements = document.querySelectorAll('.content-card, .team-member');
             elements.forEach(element => {
@@ -602,8 +643,12 @@
             });
         }
 
-        // Initialize animations
+        // ============================================
+        // INICIALIZACIÓN
+        // ============================================
+
         document.addEventListener('DOMContentLoaded', function() {
+            // Preparar elementos para animación
             const elements = document.querySelectorAll('.content-card, .team-member');
             elements.forEach(element => {
                 element.style.opacity = '0';
@@ -616,7 +661,7 @@
         });
 
         window.addEventListener('scroll', animateOnScroll);
-        animateOnScroll(); // Ejecutar una vez al cargar
+        animateOnScroll();
     </script>
 </body>
 </html>
