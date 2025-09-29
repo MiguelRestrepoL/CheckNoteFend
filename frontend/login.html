@@ -86,6 +86,17 @@
             display: block;
         }
 
+        /* Logo clickeable */
+        .logo-link {
+            display: inline-block;
+            cursor: pointer;
+            transition: opacity var(--transition);
+        }
+
+        .logo-link:hover {
+            opacity: 0.85;
+        }
+
         @keyframes spin {
             0% { transform: rotate(0deg); }
             100% { transform: rotate(360deg); }
@@ -98,9 +109,11 @@
         <div id="login-page" class="page active">
             <div class="main-container gradient-bg">
                 <div class="card login-style with-shadow">
-                    <div class="logo size-lg">
-                        <img src="/logo.png" alt="CheckNote logo" onerror="this.src='data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iODAiIGhlaWdodD0iODAiIHZpZXdCb3g9IjAgMCA4MCA4MCIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KPHJlY3Qgd2lkdGg9IjgwIiBoZWlnaHQ9IjgwIiByeD0iMTAiIGZpbGw9IiMxMGI5ODEiLz4KPHN2ZyB4PSIyMCIgeT0iMjAiIHdpZHRoPSI0MCIgaGVpZ2h0PSI0MCIgdmlld0JveD0iMCAwIDI0IDI0IiBmaWxsPSJ3aGl0ZSI+CjxwYXRoIGQ9Ik05IDEyTDExIDE0TDIyIDNNMjEgMTJWMTlBMiAyIDAgMCAxIDE5IDIxSDVBMiAyIDAgMCAxIDMgMTlWNUEyIDIgMCAwIDEgNSAzSDE2Ii8+Cjwvc3ZnPgo8L3N2Zz4='" />
-                    </div>
+                    <a href="sobre-nosotros.html" class="logo-link" title="Conoce más sobre CheckNote">
+                        <div class="logo size-lg">
+                            <img src="/logo.png" alt="CheckNote logo" onerror="this.src='data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iODAiIGhlaWdodD0iODAiIHZpZXdCb3g9IjAgMCA4MCA4MCIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KPHJlY3Qgd2lkdGg9IjgwIiBoZWlnaHQ9IjgwIiByeD0iMTAiIGZpbGw9IiMxMGI5ODEiLz4KPHN2ZyB4PSIyMCIgeT0iMjAiIHdpZHRoPSI0MCIgaGVpZ2h0PSI0MCIgdmlld0JveD0iMCAwIDI0IDI0IiBmaWxsPSJ3aGl0ZSI+CjxwYXRoIGQ9Ik05IDEyTDExIDE0TDIyIDNNMjEgMTJWMTlBMiAyIDAgMCAxIDE5IDIxSDVBMiAyIDAgMCAxIDMgMTlWNUEyIDIgMCAwIDEgNSAzSDE2Ii8+Cjwvc3ZnPgo8L3N2Zz4='" />
+                        </div>
+                    </a>
 
                     <h2 class="title-secondary">¡Bienvenido nuevamente!</h2>
                     <p class="subtitle">Ingrese su correo y contraseña para acceder</p>
