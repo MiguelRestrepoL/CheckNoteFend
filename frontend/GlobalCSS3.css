@@ -90,10 +90,10 @@ body {
   --warning: #f59e0b;
   --info: #3b82f6;
   
-  /* Anchos máximos para campos */
-  --input-width-sm: 300px;
-  --input-width-md: 400px;
-  --input-width-lg: 500px;
+  /* Anchos máximos para campos - Desktop ocupa más */
+  --input-width-sm: 600px;
+  --input-width-md: 700px;
+  --input-width-lg: 800px;
 }
 
 /* ============================================
