@@ -12,7 +12,7 @@
     {  "src": "/editar-tarea.html", "dest": "/editar-tarea.html"},
     {  "src": "/eliminar-tarea.html", "dest": "/eliminar-tarea.html"},
     {  "src": "/eliminar-cuenta.html", "dest": "/eliminar-cuenta.html"},
-    {  "src": "/sobre-nosotros.html", "dest": "/sobre-nosotros.html"}
-  
+    {  "src": "/sobre-nosotros.html", "dest": "/sobre-nosotros.html"},
+    {  "src": "/components/footer.html", "dest": "/components/footer.html"}
   ]
 }

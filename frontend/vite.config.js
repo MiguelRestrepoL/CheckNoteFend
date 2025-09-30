@@ -16,7 +16,8 @@ export default defineConfig({
         'editar-tarea': resolve(__dirname, 'editar-tarea.html'),
         'eliminar-tarea': resolve(__dirname, 'eliminar-tarea.html'),
         'eliminar-cuenta': resolve(__dirname, 'eliminar-cuenta.html'),
-        'sobre-nosotros': resolve(__dirname, 'sobre-nosotros.html')
+        'sobre-nosotros': resolve(__dirname, 'sobre-nosotros.html'),
+        footer: resolve(__dirname, 'footer.html'),
       }
     }
   }

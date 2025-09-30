@@ -581,6 +581,19 @@
         // Hacer funciones globales disponibles (backup para onclick)
         window.editarTarea = editarTarea;
         window.eliminarTarea = eliminarTarea;
+
+document.addEventListener('DOMContentLoaded', function() {
+  // Cargar footer si no existe
+  if (!document.querySelector('.site-footer')) {
+    fetch('/components/footer.html')
+      .then(res => res.text())
+      .then(html => {
+        document.body.insertAdjacentHTML('beforeend', html);
+      });
+  }
+});
     </script>
+
+    
 </body>
 </html>

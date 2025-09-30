@@ -205,6 +205,16 @@
             console.log('Redirigiendo a sobre nosotros...');   
             window.location.href = '/sobre-nosotros.html';
         }   
+        /**
+         * Redirige al usuario a la página del footer
+         * @description Navega a la página del componente footer
+         * @function redirectToFooter
+         * @since 2.0.0
+         */
+function redirectToFooter() {
+            console.log('Redirigiendo a footer...');   
+            window.location.href = '/footer.html';
+        }
 
         // ===============================================
         // FUNCIONES GLOBALES DE NAVEGACIÓN
@@ -242,7 +252,8 @@
                 '/editar-tarea': '/editar-tarea.html',
                 '/eliminar-tarea': '/eliminar-tarea.html',
                 '/eliminar-cuenta': '/eliminar-cuenta.html',
-                '/sobre-nosotros': '/sobre-nosotros.html'
+                '/sobre-nosotros': '/sobre-nosotros.html',
+                '/footer': '/footer.html'
             };
 
             // Normalizar ruta (agregar '/' al inicio si no lo tiene)
