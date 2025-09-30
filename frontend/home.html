@@ -585,7 +585,7 @@
 document.addEventListener('DOMContentLoaded', function() {
   // Cargar footer si no existe
   if (!document.querySelector('.site-footer')) {
-    fetch('/components/footer.html')
+    fetch('/footer.html')
       .then(res => res.text())
       .then(html => {
         document.body.insertAdjacentHTML('beforeend', html);
