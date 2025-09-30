@@ -662,6 +662,24 @@
 
         window.addEventListener('scroll', animateOnScroll);
         animateOnScroll();
+
+        /**
+ * Inicialización de la aplicación  
+    * @since 1.0.0
+    * @listens DOMContentLoaded
+    * @description Carga el footer dinámicamente si no está presente en la página
+
+ */
+document.addEventListener('DOMContentLoaded', function() {
+  // Cargar footer si no existe
+  if (!document.querySelector('.site-footer')) {
+    fetch('/footer.html')
+      .then(res => res.text())
+      .then(html => {
+        document.body.insertAdjacentHTML('beforeend', html);
+      });
+  }
+});
     </script>
 </body>
 </html>

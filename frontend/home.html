@@ -438,6 +438,8 @@
          * Carga tareas desde el servidor
          * @async
          * @function
+            * @description Obtiene tareas y actualiza la UI
+            * @since 1.0.0  
          */
         async function cargarTareas() {
             const token = localStorage.getItem('token');
@@ -537,7 +539,10 @@
         // === INICIALIZACIÓN ===
 
         /**
-         * Inicializa la aplicación al cargar el DOM
+         * Inicializa la aplicación al cargar el DOM}
+            * @since 1.0.0  
+            * @listens DOMContentLoaded
+            * @description Carga mensajes de sesión, datos de usuario y tareas
          */
         document.addEventListener('DOMContentLoaded', function() {
             console.log('DOM loaded, inicializando...');
@@ -582,6 +587,14 @@
         window.editarTarea = editarTarea;
         window.eliminarTarea = eliminarTarea;
 
+
+/**
+ * Inicialización de la aplicación  
+    * @since 1.0.0
+    * @listens DOMContentLoaded
+    * @description Carga el footer dinámicamente si no está presente en la página
+
+ */
 document.addEventListener('DOMContentLoaded', function() {
   // Cargar footer si no existe
   if (!document.querySelector('.site-footer')) {
